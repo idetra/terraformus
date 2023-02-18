@@ -1,0 +1,10 @@
+.idea/
+*.sqlite3
+dbsqlite3
+dbsqlite3-journal
+__pycache__
+*.pyc
+.venv
+.env
+staticfiles
+.ipynb_checkpoints/

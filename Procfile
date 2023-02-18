@@ -1,0 +1,1 @@
+web: gunicorn terraformus.wsgi --log-file -
