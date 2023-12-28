@@ -39,8 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'django_extensions',
-    'terraformus.core'
+    'terraformus.core',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.google',
+    # 'debug_toolbar',
+    # 'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -82,6 +89,8 @@ DATABASES = {
     'default': config('DATABASE_URL', default=default_dburl, cast=dburl),
 }
 
+if config('DATABASE_URL', default=''):
+    DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

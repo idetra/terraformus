@@ -8,3 +8,6 @@ __pycache__
 .env
 staticfiles
 .ipynb_checkpoints/
+/refs
+terraformus/core/fixtures/*
+terraformus/media/*
