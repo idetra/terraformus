@@ -7,4 +7,4 @@ services:
       - ./staticfiles:/app/staticfiles
       - .:/app
     ports:
-      - "8080:8000"
+      - "8002:8000"
