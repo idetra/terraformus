@@ -5,7 +5,7 @@ services:
   web:
     build: .
     env_file: .env
-    command: gunicorn --workers 3 --bind 0.0.0.0:8000 --timeout 500 MIP.wsgi:application
+    command: gunicorn --workers 3 --bind 0.0.0.0:8000 --timeout 500 terraformus.wsgi:application
     volumes:
       - ./staticfiles:/app/staticfiles
       - ./:/app
