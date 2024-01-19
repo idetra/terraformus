@@ -9,11 +9,10 @@ services:
     volumes:
       - ./staticfiles:/app/staticfiles
       - ./:/app
-    networks:
-      - terraformus
     expose:
       - 8001
     restart: unless-stopped
+    network_mode: host
 
 #  nginx:
 #    build: ./nginx
@@ -27,5 +26,3 @@ services:
 #    depends_on:
 #      - web
 
-networks:
-  terraformus:
