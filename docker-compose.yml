@@ -5,27 +5,27 @@ services:
   web:
     build: .
     env_file: .env
-    command: gunicorn --workers 3 --bind 0.0.0.0:8000 --timeout 500 terraformus.wsgi:application
+    command: gunicorn --workers 3 --bind 0.0.0.0:8001 --timeout 500 terraformus.wsgi:application
     volumes:
       - ./staticfiles:/app/staticfiles
       - ./:/app
     networks:
       - terraformus
     expose:
-      - 8000
+      - 8001
     restart: unless-stopped
 
-  nginx:
-    build: ./nginx
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - ./staticfiles:/app/staticfiles
-    networks:
-      - terraformus
-    depends_on:
-      - web
+#  nginx:
+#    build: ./nginx
+#    ports:
+#      - '80:80'
+#      - '443:443'
+#    volumes:
+#      - ./staticfiles:/app/staticfiles
+#    networks:
+#      - terraformus
+#    depends_on:
+#      - web
 
 networks:
   terraformus:
