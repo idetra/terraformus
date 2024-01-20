@@ -13,16 +13,3 @@ services:
       - 8001
     restart: unless-stopped
     network_mode: host
-
-#  nginx:
-#    build: ./nginx
-#    ports:
-#      - '80:80'
-#      - '443:443'
-#    volumes:
-#      - ./staticfiles:/app/staticfiles
-#    networks:
-#      - terraformus
-#    depends_on:
-#      - web
-
