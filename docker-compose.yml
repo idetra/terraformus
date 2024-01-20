@@ -7,7 +7,6 @@ services:
     env_file: .env
     command: gunicorn --workers 3 --bind 0.0.0.0:8001 --timeout 500 terraformus.wsgi:application
     volumes:
-      - ./staticfiles:/app/staticfiles
       - ./:/app
     expose:
       - 8001
