@@ -18,6 +18,14 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
 
+# SSL config
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='*', cast=Csv())
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=False, cast=bool)
+USE_X_FORWARDED_HOST = config('USE_X_FORWARDED_HOST', default=True)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+X_FRAME_OPTIONS = 'ALLOWALL'
+
 # Application definition
 
 INSTALLED_APPS = [
