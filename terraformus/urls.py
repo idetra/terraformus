@@ -13,12 +13,25 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf.urls.static import static
 
-from terraformus.core.views import home
+from terraformus.core import views
 
 urlpatterns = [
-    path('', home, name='home'),
+    path('accounts/', include('allauth.urls')),
+    path('account/delete_account/', views.delete_account, name='delete_account'),
+    # users
+    path('profile/', views.profile, name='profile'),
+    path('author/<str:name>', views.author, name='author'),
+    # system
+    path('privacy_policy/', views.privacy_policy, name='privacy_policy'),
+    path('terms_of_service/', views.terms_of_service, name='terms_of_service'),
     path('admin/', admin.site.urls),
+    path('', views.home, name='home'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

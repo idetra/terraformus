@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-8">
+            <form method="post">
+                {% csrf_token %}
+                {{ user_form.as_p }}
+                {{ profile_form.as_p }}
+                <button class="btn btn-outline-dark" type="submit">Update</button>
+            </form>
+        </div>
+    
+    </div>
+
+
+    <br>
+    <br>
+
+    <div class="row justify-content-center">
+        <div class="col-8 text-center">
+            <a class="btn btn-outline-dark bg-light mr-3" href="{% url 'account_change_password' %}">Change password</a>
+            <a class="btn btn-outline-dark bg-light" href="{% url 'account_email' %}">Change email</a>
+            <a class="btn btn-outline-danger bg-light ml-3" href="{% url 'delete_account' %}">Delete account</a>
+        </div>
+    </div>
+
+    <br>
+    <br>
+
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <p class="text-center text-white bg-dark">DATA POINTS</p>
+            {% for data_point in data_points %}
+
+                <div class="d-flex justify-content-between">
+                    <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'datapoint' data_point.slug %}">
+                        {{ data_point.title|truncatechars:90 }}
+                    </a>
+                    <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'edit_datapoint' data_point.slug %}">
+                        <span class="material-icons md-18 mr-2">edit</span> Edit
+                    </a>
+                </div>
+                <p>{{ data_point.description }}</p>
+
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock content %}

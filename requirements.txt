@@ -1,8 +1,10 @@
-dj-database-url==1.2.0
+dj-database-url==2.1.0
 dj-static==0.0.6
-Django==5.0
-django-extensions==3.2.1
+Django==5.0.4
+django-allauth==0.59.0
+django-extensions==3.2.3
 django-jazzmin==2.6.0
-gunicorn==20.1.0
-python-decouple==3.7
-wheel==0.38.4
+django-recaptcha==4.0.0
+gunicorn==21.2.0
+python-decouple==3.8
+wheel==0.42.0

@@ -1,0 +1,40 @@
+<nav class="navbar navbar-light bg-light-2">
+
+    <a class="navbar-brand" href="/">
+        <span class="material-icons-outlined site_icon">
+            group_work
+        </span>
+        Terra Formus
+    </a>
+
+{#    <form class="form-inline" action="/datapoints" method="get">#}
+{#        <input class="form-control mx-2" type="search" name="q" value="{{ q }}" aria-label="Search">#}
+{#        <button class="btn btn-warning mx-2" type="submit">Search</button>#}
+{#    </form>#}
+
+    <div class="form-inline">
+
+        {% if user.is_authenticated and user.is_superuser %}
+            <a class="btn btn-icon btn-sm mx-2 bg-light-1" href="{% url 'admin:index' %}">
+                <span class="material-icons red">lock_open</span>
+            </a>
+        {% endif %}
+
+{#        {% if user.is_authenticated %}#}
+{#            <a class="btn btn-icon btn-sm mx-2 bg-light-1" data-toggle="tooltip" data-placement="bottom" title="Add Data Point" href="{% url 'create_datapoint' %}">#}
+{#                <span class="material-icons">add_circle_outline</span>#}
+{#            </a>#}
+{#        {% endif %}#}
+
+        {% if not user.is_authenticated %}
+            <a class="btn btn-outline-warning" href="{% url 'account_login' %}">Login / Register</a>
+        {% else %}
+            <div class="">
+                <a class="btn btn-outline-warning mx-2" href="{% url 'profile' %}">Profile</a>
+                <a class="btn btn-outline-dark mx-2" href="{% url 'account_logout' %}">Logout</a>
+            </div>
+        {% endif %}
+
+    </div>
+
+</nav>

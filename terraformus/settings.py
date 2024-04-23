@@ -39,13 +39,36 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django_extensions',
     'terraformus.core',
-    # 'allauth',
-    # 'allauth.account',
-    # 'allauth.socialaccount',
+    'django.contrib.humanize',
+    'django_recaptcha',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     # 'allauth.socialaccount.providers.google',
     # 'debug_toolbar',
     # 'rest_framework',
 ]
+
+# Allauth configurations
+
+SITE_ID = 1
+
+ACCOUNT_EMAIL_REQUIRED = True
+
+LOGIN_REDIRECT_URL = "/"
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+ACCOUNT_FORMS = {'signup': 'terraformus.core.forms.CustomSignupForm',
+                 'reset_password': 'terraformus.core.forms.CustomResetPasswordForm'}
+
+# django-recaptcha
+
+RECAPTCHA_PUBLIC_KEY = config('RECAPTCHA_PUBLIC_KEY', default='')
+RECAPTCHA_PRIVATE_KEY = config('RECAPTCHA_PRIVATE_KEY', default='')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -55,6 +78,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'terraformus.urls'

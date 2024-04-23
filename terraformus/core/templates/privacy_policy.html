@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% load core_template_tags %}
+{% load i18n %}
+
+{% block sidebar %}
+    {% include 'home_sidebar.html' %}
+{% endblock sidebar %}
+
+
+{% block content %}
+
+    
+    <div class="row justify-content-center mt-5">
+    
+        <div class="col col-lg-8">
+            
+            <h4>Privacy Policy</h4>
+            
+            <p>This Privacy Policy applies to the website Sci-Hive (the "Site") and governs the collection, processing, and usage of personal data through the Google OAuth login service. Sci-Hive is committed to protecting the privacy of its users. By using the Site and Google OAuth login, you consent to the data practices described in this statement.</p>
+            
+            <h6>Information Collection</h6>
+            
+            <p>When you use the Google OAuth login service on Sci-Hive, we may collect and process the following personal information from your Google account:</p>
+            <ul>
+                <li>Your name</li>
+                <li>Your email address</li>
+                <li>Profile picture</li>
+            </ul>
+            <p>This information is collected solely for the purpose of authenticating your identity and providing access to Sci-Hive's services.</p>
+            
+            <h6>Use of Information</h6>
+            
+            <p>The personal information collected through Google OAuth login may be used for the following purposes:</p>
+            <ul>
+                <li>Authenticating your identity to provide access to Sci-Hive's services.</li>
+                <li>Communicating with you regarding your account and any updates to our services.</li>
+                <li>Improving and personalizing your experience on the Site.</li>
+                <li>Conducting data analysis and research to enhance our services.</li>
+            </ul>
+            
+            <h6>Data Security</h6>
+            
+            <p>Sci-Hive takes appropriate measures to protect the security of your personal information. We use industry-standard encryption technologies and follow best practices to safeguard your data against unauthorized access, alteration, disclosure, or destruction.</p>
+            
+            <h6>Data Sharing</h6>
+            
+            <p>We do not sell, trade, or rent your personal information to third parties. However, we may share your information with trusted third-party service providers who assist us in operating the Site or conducting our business, provided that they agree to keep this information confidential and use it only for the purposes outlined in this Privacy Policy.</p>
+            
+            <h6>Third-Party Links</h6>
+            
+            <p>The Site may contain links to third-party websites or services that are not owned or controlled by Sci-Hive. We are not responsible for the privacy practices or content of these third-party sites. We encourage you to review the privacy policies of any third-party sites you visit.</p>
+            
+            <h6>Changes to this Privacy Policy</h6>
+            
+            <p>Sci-Hive reserves the right to update or modify this Privacy Policy at any time. Any changes will be effective immediately upon posting on this page. We encourage you to review this Privacy Policy periodically for any updates.</p>
+                
+        </div>
+    
+    </div>
+    
+{% endblock content %}
