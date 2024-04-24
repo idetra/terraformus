@@ -1,5 +1,7 @@
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Avg
 from django.shortcuts import render, redirect
 
 
@@ -18,6 +20,37 @@ def home(request):
                }
 
     return render(request, 'index.html', context)
+
+
+def solutions(request):
+    # page_number = request.GET.get('page', '1')
+    # number_of_rows_per_page = request.GET.get('rows_per_page', '10')
+    #
+    # if not (number_of_rows_per_page.isdigit() and int(number_of_rows_per_page) > 0):
+    #     number_of_rows_per_page = '10'
+    #
+    q = request.GET.get('q', '')
+    # request.session['q'] = q
+    # search_fields = ['title', 'description', 'slug', 'content', 'author__first_name', 'author__last_name']
+    #
+    # query = Q()
+    # for field in search_fields:
+    #     query |= Q(**{f'{field}__icontains': q})
+    #
+    # data_points_query = DataPoint.objects.filter(query, banned=False).annotate(
+    #     avg_rating=Avg('rating__rate')).order_by('-avg_rating')
+    #
+    # paginator = Paginator(data_points_query, number_of_rows_per_page)
+    # data_points = paginator.get_page(page_number)
+
+    context = {
+        # 'possible_rows_per_page': [10, 50, 100],
+        # 'data_points': data_points,
+        'q': q
+    }
+
+    return render(request, 'solutions.html', context)
+
 
 @login_required
 def profile(request):
@@ -62,6 +95,12 @@ def delete_account(request):
         return redirect('home')
     else:
         return render(request, 'account/delete_account.html')
+
+
+def about(request):
+    q = request.session.get('q', '')
+    context = {'q': q}
+    return render(request, 'about.html', context)
 
 
 def privacy_policy(request):

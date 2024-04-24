@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-8">
+            <h5>Datapoint {{ datapoint.title }}</h5>
+            {{ form.non_field_errors }}
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ field.errors }}
+                {{ form.as_p|safe }}
+            
+                <h5>Edit previous data points</h5>
+                {% for form in connects_to_formset %}
+                    <div class="connectsToFormset">
+                        {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
+                {{ connects_to_formset.management_form }}
+                <br><br><br>
+                <hr>
+                <h5>References</h5>
+                {% for form in reference_formset %}
+                    <div class="referenceFormset">
+                        {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
+                {{ reference_formset.management_form }}
+
+                <br><br><br>
+                <hr>
+                <button class="btn btn-outline-dark" type="submit">Save</button>
+            </form>       
+        
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block javascript %}
+
+    
+    <script type="text/javascript">
+        $(function() {
+            let connectsOptions = {
+                prefix: "{{ connects_to_formset.prefix }}",
+                formCssClass: "connectsToFormset",
+                deleteCssClass: "delete-connects_to_formset",
+                addCssClass: "add-connects_to_formset",
+                added: updateConnectsNumForms,
+                removed: updateConnectsNumForms,
+                addText: 'Add another',
+                deleteText: 'Remove item above'
+            }
+    
+            $('.connectsToFormset').formset(connectsOptions);
+    
+            let referenceOptions = {
+                prefix: "{{ reference_formset.prefix }}",
+                formCssClass: "referenceFormset",
+                deleteCssClass: "delete-referenceFormset",
+                addCssClass: "add-referenceFormset",
+                added: updateReferenceNumForms,
+                removed: updateReferenceNumForms,
+                addText: 'Add another',
+                deleteText: 'Remove item above'
+            }
+    
+            $('.referenceFormset').formset(referenceOptions);
+    
+            function updateConnectsNumForms() {
+                let totalForms = $("#id_" + connectsOptions.prefix + "-TOTAL_FORMS");
+                let numForms = $('.' + connectsOptions.formCssClass).length;
+                totalForms.val(numForms);
+            }
+    
+            function updateReferenceNumForms() {
+                let totalForms = $("#id_" + referenceOptions.prefix + "-TOTAL_FORMS");
+                let numForms = $('.' + referenceOptions.formCssClass).length;
+                totalForms.val(numForms);
+            }
+        })
+    </script>
+    
+{% endblock javascript %}

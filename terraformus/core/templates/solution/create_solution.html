@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-8">
+            <h5>New Datapoint</h5>
+            {{ form.non_field_errors }}
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ field.errors }}
+                {{ form.as_p|safe }}
+            
+                <h5>Add previous data points</h5>
+
+                {% for form in connects_to_formset %}
+                    <div id="connectsToFormset">
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
+                {{ connects_to_formset.management_form }}
+                <br><br><br>
+                <hr>
+                <h5>References</h5>
+
+                {% for form in reference_formset %}
+                    <div id="referenceFormset">
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
+                {{ reference_formset.management_form }}
+            
+                <br><br><br>
+                <hr>
+                <button class="btn btn-outline-dark" type="submit">Save</button>
+            </form>       
+        
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block javascript %}
+    
+    <script type="text/javascript">
+        $(function() {
+            $('#connectsToFormset').formset({
+                prefix: '{{ connects_to_formset.prefix }}',
+                formCssClass: 'dynamic-connects_to_formset',
+                addText: 'Add another',
+                deleteText: 'Remove item above'
+            });
+            $('#referenceFormset').formset({
+                prefix: '{{ reference_formset.prefix }}',
+                formCssClass: 'dynamic-reference_formset',
+                addText: 'Add another',
+                deleteText: 'Remove item above'
+            });
+        })
+        
+    </script>
+    
+{% endblock javascript %}
+
