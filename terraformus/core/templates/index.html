@@ -14,4 +14,11 @@
         </div>
     </div>
     
+    <form method="post" action="">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-outline-dark" type="submit">Save</button>
+    </form>
+
+    
 {% endblock content %}

@@ -5,6 +5,20 @@ from django.contrib.auth.models import User
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Invisible
 
+from terraformus.core.models import Solution
+
+
+class SolutionForm(forms.ModelForm):
+    # type = forms.MultipleChoiceField(
+    #     required=True,
+    #     widget=forms.CheckboxSelectMultiple,
+    #     choices=type_choice,
+    # )
+
+    class Meta:
+        model = Solution
+        fields = '__all__'
+
 
 # User related forms----------------------------------------------------------------------------------------------------
 

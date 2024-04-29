@@ -4,9 +4,22 @@ from django.core.paginator import Paginator
 from django.db.models import Avg
 from django.shortcuts import render, redirect
 
+from terraformus.core.forms import SolutionForm
+
 
 def home(request):
     q = request.session.get('q', '')
+
+    if request.method == "POST":
+        form = SolutionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        else:
+            print(form.errors)
+
+    form = SolutionForm()
+
     # if 'dismiss_alert' in request.GET and request.GET.get('dismiss_alert') == 'true':
     #     request.session['dismiss_alert'] = True
     #     return redirect('/')
@@ -15,7 +28,9 @@ def home(request):
     # home_page = HomePageControl.objects.get(active=True)
     # endorsement = Endorsement.objects.all()
     # scientific_sources = ScientificSource.objects.all()
-    context = {'q': q, #'home_page': home_page, 'endorsement': endorsement, 'scientific_sources': scientific_sources,
+    context = {'q': q,
+               'form': form
+               #'home_page': home_page, 'endorsement': endorsement, 'scientific_sources': scientific_sources,
                # 'dismiss_alert': dismiss_alert
                }
 
