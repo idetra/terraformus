@@ -10,6 +10,20 @@ urlpatterns = [
     path('account/delete_account/', views.delete_account, name='delete_account'),
     # solutions
     path('solutions/', views.solutions, name='solutions'),
+    path('solution/<uuid:uuid>/<str:slug>', views.solution, name='solution'),
+    path('create_solution/', views.create_solution, name='create_solution'),
+    path('edit_solution/<str:slug>', views.edit_solution, name='edit_solution'),
+    path('delete_solution/<str:slug>', views.delete_solution, name='delete_solution'),
+    # strategies
+    path('strategies/', views.strategies, name='strategies'),
+    path('strategy/<uuid:uuid>/<str:slug>', views.strategy, name='strategy'),
+    path('create_strategy/', views.create_strategy, name='create_strategy'),
+    path('edit_strategy/<str:slug>', views.edit_strategy, name='edit_strategy'),
+    path('delete_strategy/<str:slug>', views.delete_strategy, name='delete_strategy'),
+    # extras
+    path('rate/<str:slug>', views.rate, name='rate'),
+    path('report/<str:slug>', views.report, name='report'),
+    path('rating_reply/<int:pk>', views.rating_reply, name='rating_reply'),
     # users
     path('profile/', views.profile, name='profile'),
     path('author/<str:name>', views.author, name='author'),

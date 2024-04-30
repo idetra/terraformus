@@ -7,6 +7,17 @@ from terraformus.core.services.choices import cost_types, life_cycle_types, reso
 from terraformus.core.services import help_text as ht
 
 
+# User -----------------------------------------------------------------------------------------------------------------
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    biography = models.TextField(max_length=5000, null=True, blank=True)
+
+    def __str__(self):
+        return self.user.username
+
+
 class Solution(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

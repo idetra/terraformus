@@ -9,12 +9,12 @@
                 Terra Formus
             </a>
 
-            <a class="btn btn-outline-dark mx-2" href="{% url 'about' %}">About</a> 
+            <a class="btn btn-flat-primary mx-2" href="{% url 'about' %}">About</a> 
         </div>
 
         <form class="form-inline" action="/solutions" method="get">
             <input class="form-control mx-2" type="search" name="q" value="{{ q }}" aria-label="Search">
-            <button class="btn btn-dark mx-2" type="submit">Search</button>
+            <button class="btn btn-primary mx-2" type="submit">Search</button>
         </form>
 
         <div class="form-inline">
@@ -25,14 +25,15 @@
                 </a>
             {% endif %}
 
-            <a class="btn btn-outline-dark mx-2" href="{% url 'solutions' %}">Solutions</a>
+{#            <a class="btn btn-flat-primary mx-2" href="{% url 'solutions' %}">Solutions</a>#}
+{#            <a class="btn btn-flat-primary mx-2" href="{% url 'strategies' %}">Strategies</a>#}
     
             {% if not user.is_authenticated %}
-                <a class="btn btn-outline-dark" href="{% url 'account_login' %}">Login / Register</a>
+                <a class="btn btn-flat-dark" href="{% url 'account_login' %}">Login / Register</a>
             {% else %}
                 <div class="">
-                    <a class="btn btn-outline-dark mx-2" href="{% url 'profile' %}">Profile</a>
-                    <a class="btn btn-outline-dark mx-2" href="{% url 'account_logout' %}">Logout</a>
+                    <a class="btn btn-flat-dark mx-2" href="{% url 'profile' %}">Profile</a>
+                    <a class="btn btn-flat-dark mx-2" href="{% url 'account_logout' %}">Logout</a>
                 </div>
             {% endif %}
 

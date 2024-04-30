@@ -5,15 +5,10 @@ from django.contrib.auth.models import User
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Invisible
 
-from terraformus.core.models import Solution
+from terraformus.core.models import Solution, Profile
 
 
 class SolutionForm(forms.ModelForm):
-    # type = forms.MultipleChoiceField(
-    #     required=True,
-    #     widget=forms.CheckboxSelectMultiple,
-    #     choices=type_choice,
-    # )
 
     class Meta:
         model = Solution
@@ -31,24 +26,19 @@ class CustomSignupForm(SignupForm):
     def signup(self, request, user):
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
-        # user = super(CustomSignupForm, self).save(request)
         user.save()
         return user
 
-    # def save(self, request, user):
-    #     user = super(CustomSignupForm, self).save(request)
-    #     return user
 
+class ProfileForm(forms.ModelForm):
+    biography = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
+        required=False
+    )
 
-# class ProfileForm(forms.ModelForm):
-#     biography = forms.CharField(
-#         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
-#         required=False
-#     )
-#
-#     class Meta:
-#         model = Profile
-#         fields = ['biography']
+    class Meta:
+        model = Profile
+        fields = ['biography']
 
 
 class UserUpdateForm(UserChangeForm):
