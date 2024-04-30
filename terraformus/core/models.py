@@ -127,7 +127,8 @@ class Reference(models.Model):
 
 
 class Document(models.Model):
-    solution = models.ForeignKey('Solution', on_delete=models.CASCADE)
+    solution = models.ForeignKey('Solution', on_delete=models.CASCADE, null=True, blank=True)
+    strategy = models.ForeignKey('Strategy', on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=255)
     url = models.URLField(help_text=ht.document_ht['url'])
 
