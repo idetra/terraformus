@@ -24,9 +24,6 @@
                     <span class="material-icons red">lock_open</span>
                 </a>
             {% endif %}
-
-{#            <a class="btn btn-flat-primary mx-2" href="{% url 'solutions' %}">Solutions</a>#}
-{#            <a class="btn btn-flat-primary mx-2" href="{% url 'strategies' %}">Strategies</a>#}
     
             {% if not user.is_authenticated %}
                 <a class="btn btn-flat-dark" href="{% url 'account_login' %}">Login / Register</a>

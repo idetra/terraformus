@@ -2,66 +2,31 @@ import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
-from terraformus.core.services.choices import cost_types, life_cycle_types, resource_types
+from terraformus.core.services.choices import cost_types, life_cycle_types, resource_types, external_asset
 from terraformus.core.services import help_text as ht
 
 
-# User -----------------------------------------------------------------------------------------------------------------
-
-
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    biography = models.TextField(max_length=5000, null=True, blank=True)
-
-    def __str__(self):
-        return self.user.username
+# Solutions ------------------------------------------------------------------------------------------------------------
 
 
 class Solution(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255, help_text=ht.solution_ht['title'])
+    title = models.CharField(max_length=255, unique=True, help_text=ht.solution_ht['title'])
     subtitle = models.CharField(max_length=255, help_text=ht.solution_ht['subtitle'])
     goal = models.TextField(help_text=ht.solution_ht['goal'])
-    type = models.OneToOneField('SolutionType', on_delete=models.CASCADE, help_text=ht.solution_ht['type'])
-    population_target = models.OneToOneField('SolutionPopulationTarget', on_delete=models.CASCADE, help_text=ht.solution_ht['population_target'])
-    dimension_target = models.OneToOneField('SolutionDimensionTarget', on_delete=models.CASCADE, help_text=ht.solution_ht['dimension_target'])
-    un_target = models.OneToOneField('SolutionUNTarget', on_delete=models.CASCADE, help_text=ht.solution_ht['un_target'])
-    sector = models.OneToOneField('SolutionSector', on_delete=models.CASCADE, help_text=ht.solution_ht['sector'])
-    cost_type = models.PositiveSmallIntegerField(choices=cost_types, default=cost_types[0], help_text=ht.solution_ht['cost_type'])
-    update = models.TextField(help_text=ht.solution_ht['update'])
-    upgrade = models.TextField(help_text=ht.solution_ht['upgrade'])
-    scale_up = models.TextField(help_text=ht.solution_ht['scale_up'])
-    depends_on = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='dependencies', help_text=ht.solution_ht['depends_on'])
-    derives_from = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='derived_solutions', help_text=ht.solution_ht['derives_from'])
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    edited_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.title
-
-
-class SolutionType(models.Model):
+    # type -------------------------------------------------------------------------------------------------------------
     automation = models.BooleanField(default=False, help_text=ht.sol_type_ht['automation'])
     infrastructure = models.BooleanField(default=False, help_text=ht.sol_type_ht['infrastructure'])
-
-    def __str__(self):
-        return f"Solution Type for solution {self.solution.title}"
-
-
-class SolutionPopulationTarget(models.Model):
+    # population target ------------------------------------------------------------------------------------------------
     extreme_poverty = models.BooleanField(default=False, help_text=ht.sol_population_target_ht['extreme_poverty'])
     lower_class = models.BooleanField(default=False, help_text=ht.sol_population_target_ht['lower_class'])
     middle_class = models.BooleanField(default=False, help_text=ht.sol_population_target_ht['middle_class'])
     upper_class = models.BooleanField(default=False, help_text=ht.sol_population_target_ht['upper_class'])
-
-    def __str__(self):
-        return f"Population Target for solution {self.solution.title}"
-
-
-class SolutionDimensionTarget(models.Model):
+    # dimension_target -------------------------------------------------------------------------------------------------
     individual = models.BooleanField(default=False, help_text=ht.sol_dimension_target_ht['individual'])
     apartment = models.BooleanField(default=False, help_text=ht.sol_dimension_target_ht['apartment'])
     house = models.BooleanField(default=False, help_text=ht.sol_dimension_target_ht['house'])
@@ -76,12 +41,7 @@ class SolutionDimensionTarget(models.Model):
     country = models.BooleanField(default=False, help_text=ht.sol_dimension_target_ht['country'])
     continent = models.BooleanField(default=False, help_text=ht.sol_dimension_target_ht['continent'])
     planet = models.BooleanField(default=False, help_text=ht.sol_dimension_target_ht['planet'])
-
-    def __str__(self):
-        return f"Dimension Target for solution {self.solution.title}"
-
-
-class SolutionUNTarget(models.Model):
+    # un_target --------------------------------------------------------------------------------------------------------
     no_poverty = models.BooleanField(default=False, help_text=ht.sol_un_target_ht['no_poverty'])
     zero_hunger = models.BooleanField(default=False, help_text=ht.sol_un_target_ht['zero_hunger'])
     good_health_and_well_being = models.BooleanField(default=False, help_text=ht.sol_un_target_ht['good_health_and_well_being'])
@@ -99,12 +59,7 @@ class SolutionUNTarget(models.Model):
     life_on_land = models.BooleanField(default=False, help_text=ht.sol_un_target_ht['life_on_land'])
     peace_justice_and_strong_institutions = models.BooleanField(default=False, help_text=ht.sol_un_target_ht['peace_justice_and_strong_institutions'])
     partnerships_for_the_goals = models.BooleanField(default=False, help_text=ht.sol_un_target_ht['partnerships_for_the_goals'])
-
-    def __str__(self):
-        return f"UN Target for solution {self.solution.title}"
-
-
-class SolutionSector(models.Model):
+    # sector -----------------------------------------------------------------------------------------------------------
     housing = models.BooleanField(default=False, help_text=ht.sol_sector_ht['housing'])
     food = models.BooleanField(default=False, help_text=ht.sol_sector_ht['food'])
     energy = models.BooleanField(default=False, help_text=ht.sol_sector_ht['energy'])
@@ -116,37 +71,31 @@ class SolutionSector(models.Model):
     security = models.BooleanField(default=False, help_text=ht.sol_sector_ht['security'])
     governance = models.BooleanField(default=False, help_text=ht.sol_sector_ht['governance'])
 
-    def __str__(self):
-        return f"Sector for solution {self.solution.title}"
+    cost_type = models.PositiveSmallIntegerField(choices=cost_types, default=cost_types[0], help_text=ht.solution_ht['cost_type'])
+    update = models.TextField(help_text=ht.solution_ht['update'])
+    upgrade = models.TextField(help_text=ht.solution_ht['upgrade'])
+    scale_up = models.TextField(help_text=ht.solution_ht['scale_up'])
+    depends_on = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='dependencies', help_text=ht.solution_ht['depends_on'])
+    derives_from = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='derived_solutions', help_text=ht.solution_ht['derives_from'])
 
-
-class WorkingExample(models.Model):
-    solution = models.ForeignKey('Solution', on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    url = models.URLField(help_text=ht.working_example_ht['url'])
-
-    def __str__(self):
-        return self.title
-
-class Reference(models.Model):
-    solution = models.ForeignKey('Solution', on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    url = models.URLField(help_text=ht.reference_ht['url'])
+    created_at = models.DateTimeField(auto_now_add=True)
+    edited_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
 
 
-class Document(models.Model):
+class ExternalAsset(models.Model):
     solution = models.ForeignKey('Solution', on_delete=models.CASCADE, null=True, blank=True)
     strategy = models.ForeignKey('Strategy', on_delete=models.CASCADE, null=True, blank=True)
+    type = models.CharField(max_length=255, choices=external_asset, default=external_asset['do'])
     title = models.CharField(max_length=255)
-    url = models.URLField(help_text=ht.document_ht['url'])
+    url = models.URLField(help_text=ht.ext_asset_ht['url'])
 
     def __str__(self):
         return self.title
 
-
+# this one is added through a button with its own crud/view
 class LifeCycle(models.Model):
     solution = models.ForeignKey('Solution', on_delete=models.CASCADE)
     type = models.CharField(max_length=2, choices=life_cycle_types,default=life_cycle_types['bu'])
@@ -156,7 +105,7 @@ class LifeCycle(models.Model):
     def __str__(self):
         return f"Life Cycle for solution {self.solution.title}"
 
-
+# these two (input and waste) can also be on an inline dynamic form
 class LifeCycleInput(models.Model):
     lifecycle = models.ForeignKey('LifeCycle', on_delete=models.CASCADE)
     resource_name = models.CharField(max_length=255, help_text=ht.life_cycle_input_ht['resource_name'])
@@ -207,3 +156,24 @@ class StrategySolution(models.Model):
 
     def __str__(self):
         return self.solution.title
+
+
+# User -----------------------------------------------------------------------------------------------------------------
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    biography = models.TextField(max_length=5000, null=True, blank=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()

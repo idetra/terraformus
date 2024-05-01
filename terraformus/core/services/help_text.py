@@ -89,7 +89,7 @@ reference_ht = {
     'url': 'help text placeholder',
 }
 
-document_ht = {
+ext_asset_ht = {
     'solution': 'help text placeholder',
     'title': 'help text placeholder',
     'url': 'help text placeholder',

@@ -4,36 +4,25 @@
 
 {% block content %}
 
-    <div class="row justify-content-center mt-4">
+    <div class="row justify-content-center my-5">
         <div class="col-8">
-            <h5>New Datapoint</h5>
+            <h5>New Solution</h5>
             {{ form.non_field_errors }}
             <form method="post" action="">
                 {% csrf_token %}
                 {{ field.errors }}
-                {{ form.as_p|safe }}
+                {{ form.as_p }}
             
-                <h5>Add previous data points</h5>
+                <h5>Add Depends on</h5>
 
-                {% for form in connects_to_formset %}
-                    <div id="connectsToFormset">
+                {% for form in depends_on_formset %}
+                    <div id="dependsOnFormset">
                         {{ form.as_p }}
                     </div>
                 {% endfor %}
-                {{ connects_to_formset.management_form }}
-                <br><br><br>
-                <hr>
-                <h5>References</h5>
-
-                {% for form in reference_formset %}
-                    <div id="referenceFormset">
-                        {{ form.as_p }}
-                    </div>
-                {% endfor %}
-                {{ reference_formset.management_form }}
             
-                <br><br><br>
-                <hr>
+                {{ depends_on_formset.management_form }}
+                
                 <button class="btn btn-outline-dark" type="submit">Save</button>
             </form>       
         
@@ -46,15 +35,9 @@
     
     <script type="text/javascript">
         $(function() {
-            $('#connectsToFormset').formset({
-                prefix: '{{ connects_to_formset.prefix }}',
-                formCssClass: 'dynamic-connects_to_formset',
-                addText: 'Add another',
-                deleteText: 'Remove item above'
-            });
-            $('#referenceFormset').formset({
-                prefix: '{{ reference_formset.prefix }}',
-                formCssClass: 'dynamic-reference_formset',
+            $('#dependsOnFormset').formset({
+                prefix: '{{ depends_on_formset.prefix }}',
+                formCssClass: 'dynamic-depends_on_formset',
                 addText: 'Add another',
                 deleteText: 'Remove item above'
             });

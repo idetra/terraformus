@@ -17,3 +17,9 @@ life_cycle_types = {
     'op': 'Operation',
     'en': 'End of life'
 }
+
+external_asset = {
+    'we': 'Working example',
+    're': 'Reference',
+    'do': 'Document',
+}

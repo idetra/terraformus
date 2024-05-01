@@ -2,9 +2,11 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Avg
+from django.forms import formset_factory
+
 from django.shortcuts import render, redirect, get_object_or_404
 
-from terraformus.core.forms import SolutionForm
+from terraformus.core.forms import SolutionForm, DependsOnForm
 from terraformus.core.models import Solution, Strategy
 
 
@@ -89,36 +91,28 @@ def solution(request, uuid, slug):
 @login_required
 def create_solution(request):
     q = request.session.get('q', '')
-    # ReferenceFormSet = formset_factory(ReferenceForm, extra=1)  # noqa
-    # ConnectsToFormSet = formset_factory(ConnectsToForm, extra=1)  # noqa
-    #
-    # if request.method == 'POST':
-    #     form = DataPointForm(request.POST, prefix='data_point')
-    #     reference_formset = ReferenceFormSet(request.POST, prefix='reference')
-    #     connects_to_formset = ConnectsToFormSet(request.POST, prefix='connects_to')
-    #     if form.is_valid() and connects_to_formset.is_valid() and reference_formset.is_valid():
-    #         data_point = form.save(commit=False)
-    #         data_point.author = request.user
-    #         data_point.save()
-    #         for connects_to_form in connects_to_formset:
-    #             connects_to_datapoint = connects_to_form.cleaned_data.get('title')
-    #             if connects_to_datapoint:
-    #                 Connection.objects.create(from_datapoint=data_point, to_datapoint=connects_to_datapoint)
-    #         for reference_form in reference_formset:
-    #             if reference_form.cleaned_data:
-    #                 reference = reference_form.save(commit=False)
-    #                 reference.content = data_point
-    #                 reference.save()
-    #         return redirect('datapoint', slug=data_point.slug)
-    # else:
-    #     form = DataPointForm(prefix='data_point')
-    #     reference_formset = ReferenceFormSet(prefix='reference')
-    #     connects_to_formset = ConnectsToFormSet(prefix='connects_to')
+    DependsOnFormSet = formset_factory(DependsOnForm, extra=1)  # noqa
 
-    context = {
-        # 'form': form, 'reference_formset': reference_formset, 'connects_to_formset': connects_to_formset,
-        'q': q
-    }
+    if request.method == 'POST':
+        form = SolutionForm(request.POST)
+        depends_on_formset = DependsOnFormSet(request.POST, prefix='connects_to')
+        if form.is_valid() and depends_on_formset.is_valid():
+            solution_form = form.save(commit=False)
+            solution_form.user = request.user
+            solution_form.save()
+            for depends_on_form in depends_on_formset:
+                depends_on_solution = depends_on_form.cleaned_data.get('title')
+                if depends_on_solution:
+                    depends_on_solution_setup, created = Solution.objects.get_or_create(title=depends_on_solution, user=request.user)
+                    solution_form.depends_on.add(depends_on_solution_setup)
+                    solution_form.save()
+            return redirect('home')
+
+    else:
+        form = SolutionForm(prefix='connects_to')
+        depends_on_formset = DependsOnFormSet(prefix='connects_to')
+
+    context = {'q': q, 'form': form, 'depends_on_formset': depends_on_formset}
 
     return render(request, 'solution/create_solution.html', context)
 

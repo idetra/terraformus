@@ -17,9 +17,6 @@
                 <li class="nav-item justify-content-center" role="presentation">
                     <button aria-controls="profile" aria-selected="false" class="nav-link" data-toggle="tab" data-target="#profile" id="profile-tab" type="button" role="tab">Strategies</button>
                 </li>
-{#                <li class="nav-item justify-content-center" role="presentation">#}
-{#                    <button aria-controls="contact" aria-selected="false" class="nav-link" data-toggle="tab" data-target="#contact" id="contact-tab" type="button" role="tab">How to participate</button>#}
-{#                </li>#}
             </ul>
             <div class="tab-content" id="justifiedTabContent">
                 <div aria-labelledby="home-tab" class="tab-pane fade show active" id="home" role="tabpanel">
@@ -28,19 +25,8 @@
                 <div aria-labelledby="profile-tab" class="tab-pane fade" id="profile" role="tabpanel">
                     {% include 'strategies_table.html' %}
                 </div>
-{#                <div aria-labelledby="contact-tab" class="tab-pane fade" id="contact" role="tabpanel">#}
-{#                    <p>Again more info here</p>#}
-{#                </div>#}
             </div>
         </div>
     </div>
-
-    
-    {#    <form method="post" action="">#}
-    {#    {% csrf_token %}#}
-    {#    {{ form.as_p }}#}
-    {#    <button class="btn btn-outline-dark" type="submit">Save</button>#}
-    {#    </form>#}
-
 
 {% endblock content %}

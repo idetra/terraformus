@@ -2,6 +2,7 @@ from allauth.account.forms import SignupForm, ResetPasswordForm
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Invisible
 
@@ -9,10 +10,38 @@ from terraformus.core.models import Solution, Profile
 
 
 class SolutionForm(forms.ModelForm):
+    derives_from = forms.CharField(required=False)
 
     class Meta:
         model = Solution
         fields = '__all__'
+        exclude = ['user', 'depends_on']
+
+    def clean_derives_from(self):
+        derives_from_title = self.cleaned_data['derives_from']
+        if derives_from_title:
+            try:
+                derives_from_instance = Solution.objects.get(title=derives_from_title)
+            except Solution.DoesNotExist:
+                raise forms.ValidationError("Solution with this title does not exist")
+            return derives_from_instance
+        return None
+
+
+class DependsOnForm(forms.Form):
+    title = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control custom-reference-width',
+               'placeholder': 'Exact match (case sensitive)'}),
+        max_length=255, required=False)
+
+    def clean_title(self):
+        title = self.cleaned_data.get('title')
+        if title:
+            try:
+                return Solution.objects.get(title=title)
+            except Solution.DoesNotExist:
+                raise ValidationError('No Solution with this title exists')
+        return None
 
 
 # User related forms----------------------------------------------------------------------------------------------------
