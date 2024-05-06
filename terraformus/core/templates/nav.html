@@ -19,6 +19,8 @@
 
         <div class="form-inline">
 
+            <a class="btn btn-flat-primary mx-2" href="{% url 'my_proposals' %}">My Proposals</a> 
+        
             {% if user.is_authenticated and user.is_superuser %}
                 <a class="btn btn-icon btn-sm mx-2 bg-light-1" href="{% url 'admin:index' %}">
                     <span class="material-icons red">lock_open</span>

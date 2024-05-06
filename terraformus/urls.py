@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 from terraformus.core import views
 
 urlpatterns = [
+    # all auth
     path('accounts/', include('allauth.urls')),
     path('account/delete_account/', views.delete_account, name='delete_account'),
     # solutions
@@ -27,6 +28,7 @@ urlpatterns = [
     # users
     path('profile/', views.profile, name='profile'),
     path('author/<str:name>', views.author, name='author'),
+    path('my_proposals', views.my_proposals, name='my_proposals'),
     # system
     path('about/', views.about, name='about'),
     path('privacy_policy/', views.privacy_policy, name='privacy_policy'),

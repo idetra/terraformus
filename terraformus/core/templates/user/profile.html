@@ -31,23 +31,5 @@
     <br>
     <br>
 
-    <div class="row justify-content-center">
-        <div class="col-8">
-            <p class="text-center text-white bg-dark">DATA POINTS</p>
-            {% for data_point in data_points %}
-
-                <div class="d-flex justify-content-between">
-                    <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'datapoint' data_point.slug %}">
-                        {{ data_point.title|truncatechars:90 }}
-                    </a>
-                    <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'edit_datapoint' data_point.slug %}">
-                        <span class="material-icons md-18 mr-2">edit</span> Edit
-                    </a>
-                </div>
-                <p>{{ data_point.description }}</p>
-
-            {% endfor %}
-        </div>
-    </div>
 
 {% endblock content %}

@@ -1,0 +1,115 @@
+<div class="my-2"></div>
+
+<table class="table table-bordered table-sm table-striped">
+    <thead>
+        <tr>
+            <th rowspan="3">Title</th>
+            <th rowspan="3">External Assets <a class="chip chip-action chip-sm" type="button" href=""><i class='material-icons'>add_circle_outline</i>Add</a></th>
+            <th colspan="6">Life Cycle <a class="chip chip-action chip-sm" type="button" href=""><i class='material-icons'>add_circle_outline</i>Add</a></th>
+        </tr>
+        <tr>
+            <th rowspan="2">Build</th>
+            <th rowspan="2">Operation</th>
+            <th rowspan="2">End of Life</th>
+        </tr>
+    </thead>
+    <tbody class="text-left">
+            
+            {% for item in all_solutions %}
+                <tr>
+                
+                    <th class="align-text-top" scope="row"><a class="" href="">{{ item.title|truncatewords:7 }}</a></th>
+                    
+                    <td class="align-text-top">
+                        {% for external_asset in item.externalasset_set.all %}
+                            <div class="mb-n3"><a class="" href=""><span class="mr-1 badge badge-pill badge-primary">{{ external_asset.type }}</span>{{ external_asset.title|truncatewords:7 }}</a></div>
+                            <br>
+                        {% endfor %}
+                        {% if not item.has_doc_assets %}
+                            <div class="alert alert-warning mt-3" role="alert">
+                              No external documents found. Please add at least one
+                            </div>
+                        {% endif %}
+                        {% if not item.has_ex_assets %}
+                            <div class="alert alert-danger mt-3" role="alert">
+                              No functional examples found. Please add at least one
+                            </div>
+                        {% endif %}
+                        {% if not item.has_ref_assets %}
+                            <div class="alert alert-danger mt-3" role="alert">
+                              No 3rd party references found. Please add at least one
+                            </div>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="align-text-top">
+                    {% for build in item.lifecycle_set.all %}
+                        {% if build.type == 'b' %}
+                            <a class="" href="">{{ build.title }}</a>
+                            <br>{{ build.total_duration }}<br>
+                            {% for lci in build.lifecycleinput_set.all %}
+                                <div class="mb-n3"><span class="mr-1 badge badge-pill badge-dark">I</span>{{ lci.resource_name }}</div>
+                                <br>
+                            {% endfor %}
+                            {% for lci in build.lifecyclewaste_set.all %}
+                                <div class="mb-n3"><span class="mr-1 badge badge-pill badge-dark">W</span>{{ lci.waste_type}}</div>
+                                <br>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if not item.has_build_lifecycle %}
+                            <div class="alert alert-danger mt-3" role="alert">
+                              Add at least one build cycle
+                            </div>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="align-text-top">
+                    {% for build in item.lifecycle_set.all %}
+                        {% if build.type == 'o' %}
+                            <a class="" href="">{{ build.title }}</a>
+                            <br>{{ build.total_duration }}<br>
+                            {% for lci in build.lifecycleinput_set.all %}
+                                <div class="mb-n3"><span class="mr-1 badge badge-pill badge-dark">I</span>{{ lci.resource_name }}</div>
+                                <br>
+                            {% endfor %}
+                            {% for lci in build.lifecyclewaste_set.all %}
+                                <div class="mb-n3"><span class="mr-1 badge badge-pill badge-dark">W</span>{{ lci.waste_type}}</div>
+                                <br>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if not item.has_operation_lifecycle %}
+                            <div class="alert alert-danger mt-3" role="alert">
+                              Add at least one operation cycle
+                            </div>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="align-text-top">
+                    {% for build in item.lifecycle_set.all %}
+                        {% if build.type == 'e' %}
+                            <a class="" href="">{{ build.title }}</a>
+                            <br>{{ build.total_duration }}<br>
+                            {% for lci in build.lifecycleinput_set.all %}
+                                <div class="mb-n3"><span class="mr-1 badge badge-pill badge-dark">I</span>{{ lci.resource_name }}</div>
+                                <br>
+                            {% endfor %}
+                            {% for lci in build.lifecyclewaste_set.all %}
+                                <div class="mb-n3"><span class="mr-1 badge badge-pill badge-dark">W</span>{{ lci.waste_type}}</div>
+                                <br>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if not item.has_end_of_life_lifecycle %}
+                            <div class="alert alert-danger mt-3" role="alert">
+                              Add at least one end-of-life cycle
+                            </div>
+                        {% endif %}
+                    </td>
+                
+                </tr>
+            {% endfor %}
+    
+    </tbody>
+</table>

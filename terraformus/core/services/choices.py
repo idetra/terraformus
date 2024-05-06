@@ -13,13 +13,13 @@ resource_types = {
 }
 
 life_cycle_types = {
-    'bu': 'Build',
-    'op': 'Operation',
-    'en': 'End of life'
+    'b': 'Build',
+    'o': 'Operation',
+    'e': 'End of life'
 }
 
 external_asset = {
-    'we': 'Working example',
-    're': 'Reference',
-    'do': 'Document',
+    'ex.': 'Working example',
+    'ref': 'Reference',
+    'doc': 'Document',
 }

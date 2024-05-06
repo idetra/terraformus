@@ -6,36 +6,14 @@ from django.forms import formset_factory
 
 from django.shortcuts import render, redirect, get_object_or_404
 
-from terraformus.core.forms import SolutionForm, DependsOnForm
-from terraformus.core.models import Solution, Strategy
+from terraformus.core.forms import SolutionForm, DependsOnForm, ProfileForm, UserUpdateForm
+from terraformus.core.models import Solution, Strategy, ExternalAsset
 
 
 def home(request):
     q = request.session.get('q', '')
 
-    if request.method == "POST":
-        form = SolutionForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-        else:
-            print(form.errors)
-
-    form = SolutionForm()
-
-    # if 'dismiss_alert' in request.GET and request.GET.get('dismiss_alert') == 'true':
-    #     request.session['dismiss_alert'] = True
-    #     return redirect('/')
-    #
-    # dismiss_alert = request.session.get('dismiss_alert', False)
-    # home_page = HomePageControl.objects.get(active=True)
-    # endorsement = Endorsement.objects.all()
-    # scientific_sources = ScientificSource.objects.all()
-    context = {'q': q,
-               'form': form
-               #'home_page': home_page, 'endorsement': endorsement, 'scientific_sources': scientific_sources,
-               # 'dismiss_alert': dismiss_alert
-               }
+    context = {'q': q}
 
     return render(request, 'index.html', context)
 
@@ -106,7 +84,7 @@ def create_solution(request):
                     depends_on_solution_setup, created = Solution.objects.get_or_create(title=depends_on_solution, user=request.user)
                     solution_form.depends_on.add(depends_on_solution_setup)
                     solution_form.save()
-            return redirect('home')
+            return redirect('my_proposals')
 
     else:
         form = SolutionForm(prefix='connects_to')
@@ -283,6 +261,50 @@ def delete_strategy(request, slug):
     return redirect('home')
 
 
+# EXTERNAL ASSETS & LIFE CYCLES -----------------------------------------------------------------------------------------
+
+
+@login_required
+def create_external_asset(request):
+
+    context = {}
+    return render(request, '', context)
+
+
+@login_required
+def edit_external_asset(request):
+
+    context = {}
+    return render(request, '', context)
+
+
+@login_required
+def delete_external_asset(request):
+
+    context = {}
+    return render(request, '', context)
+
+
+@login_required
+def create_life_cycle(request):
+
+    context = {}
+    return render(request, '', context)
+
+
+@login_required
+def edit_life_cycle(request):
+
+    context = {}
+    return render(request, '', context)
+
+
+@login_required
+def delete_life_cycle(request):
+
+    context = {}
+    return render(request, '', context)
+
 # RATING/REPORT --------------------------------------------------------------------------------------------------------
 
 
@@ -371,24 +393,42 @@ def report(request, slug):
 def profile(request):
     q = request.session.get('q', '')
     user = request.user
-    # user_profile = user.profile
-    # data_points = DataPoint.objects.filter(author__username=user.username)
+    user_profile = user.profile
 
-    # if request.method == 'POST':
-    #     profile_form = ProfileForm(request.POST, instance=user_profile)
-    #     user_form = UserUpdateForm(request.POST, instance=user)
-    #     if profile_form.is_valid() and user_form.is_valid():
-    #         profile_form.save()
-    #         user_form.save()
-    #         return redirect('home')
-    # else:
-    #     profile_form = ProfileForm(instance=user_profile)
-    #     user_form = UserUpdateForm(instance=user)
+    if request.method == 'POST':
+        profile_form = ProfileForm(request.POST, instance=user_profile)
+        user_form = UserUpdateForm(request.POST, instance=user)
+        if profile_form.is_valid() and user_form.is_valid():
+            profile_form.save()
+            user_form.save()
+            return redirect('home')
+    else:
+        profile_form = ProfileForm(instance=user_profile)
+        user_form = UserUpdateForm(instance=user)
 
-    context = {
-        # 'profile_form': profile_form, 'user_form': user_form, 'data_points': data_points,
-        'q': q}
+    context = {'profile_form': profile_form, 'user_form': user_form,'q': q}
+
     return render(request, 'user/profile.html', context)
+
+
+@login_required
+def my_proposals(request):
+    q = request.session.get('q', '')
+    user = request.user
+
+    all_solutions = Solution.objects.filter(user=user)
+    all_strategies = Strategy.objects.filter(user=user)
+
+    for item in all_solutions:
+        item.has_ex_assets = item.externalasset_set.filter(type='ex.').exists()
+        item.has_ref_assets = item.externalasset_set.filter(type='ref').exists()
+        item.has_doc_assets = item.externalasset_set.filter(type='doc').exists()
+        item.has_build_lifecycle = item.lifecycle_set.filter(type='b').exists()
+        item.has_operation_lifecycle = item.lifecycle_set.filter(type='o').exists()
+        item.has_end_of_life_lifecycle = item.lifecycle_set.filter(type='e').exists()
+
+    context = { 'q': q, 'all_solutions': all_solutions, 'all_strategies': all_strategies}
+    return render(request, 'user/my_proposals.html', context)
 
 
 def author(request, name):

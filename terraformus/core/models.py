@@ -88,7 +88,7 @@ class Solution(models.Model):
 class ExternalAsset(models.Model):
     solution = models.ForeignKey('Solution', on_delete=models.CASCADE, null=True, blank=True)
     strategy = models.ForeignKey('Strategy', on_delete=models.CASCADE, null=True, blank=True)
-    type = models.CharField(max_length=255, choices=external_asset, default=external_asset['do'])
+    type = models.CharField(max_length=3, choices=external_asset, default=external_asset['doc'])
     title = models.CharField(max_length=255)
     url = models.URLField(help_text=ht.ext_asset_ht['url'])
 
@@ -98,12 +98,13 @@ class ExternalAsset(models.Model):
 # this one is added through a button with its own crud/view
 class LifeCycle(models.Model):
     solution = models.ForeignKey('Solution', on_delete=models.CASCADE)
-    type = models.CharField(max_length=2, choices=life_cycle_types,default=life_cycle_types['bu'])
+    type = models.CharField(max_length=2, choices=life_cycle_types,default=life_cycle_types['b'])
+    title = models.CharField(max_length=255)
     total_duration = models.TextField(help_text=ht.life_cycle_ht['total_duration'])
     description = models.TextField(help_text=ht.life_cycle_ht['description'])
 
     def __str__(self):
-        return f"Life Cycle for solution {self.solution.title}"
+        return f"{self.get_type_display()} - {self.title} - {self.solution.title}"
 
 # these two (input and waste) can also be on an inline dynamic form
 class LifeCycleInput(models.Model):
