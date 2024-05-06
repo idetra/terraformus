@@ -4,8 +4,8 @@
     <thead>
         <tr>
             <th rowspan="3">Title</th>
-            <th rowspan="3">External Assets <a class="chip chip-action chip-sm" type="button" href=""><i class='material-icons'>add_circle_outline</i>Add</a></th>
-            <th colspan="6">Life Cycle <a class="chip chip-action chip-sm" type="button" href=""><i class='material-icons'>add_circle_outline</i>Add</a></th>
+            <th rowspan="3">External Assets</th>
+            <th colspan="6">Life Cycle</th>
         </tr>
         <tr>
             <th rowspan="2">Build</th>
@@ -14,15 +14,21 @@
         </tr>
     </thead>
     <tbody class="text-left">
-            
+
             {% for item in all_solutions %}
                 <tr>
-                
-                    <th class="align-text-top" scope="row"><a class="" href="">{{ item.title|truncatewords:7 }}</a></th>
-                    
+
+                    <th class="align-text-top" scope="row">
+                        <a class="" href="">{{ item.title|truncatewords:7 }}</a>
+                        <br>
+                        <a class="chip chip-action chip-sm" type="button" href="{% url 'create_external_asset' 'solution' item.pk %}"><i class='material-icons'>add_circle_outline</i>Add External Asset</a>
+                        <br>
+                        <a class="chip chip-action chip-sm" type="button" href="{% url 'create_life_cycle' item.pk %}"><i class='material-icons'>add_circle_outline</i>Add Life Cycle</a>
+                    </th>
+
                     <td class="align-text-top">
                         {% for external_asset in item.externalasset_set.all %}
-                            <div class="mb-n3"><a class="" href=""><span class="mr-1 badge badge-pill badge-primary">{{ external_asset.type }}</span>{{ external_asset.title|truncatewords:7 }}</a></div>
+                            <div class="mb-n3"><a class="" href="{% url 'edit_external_asset' 'solution' external_asset.id %}"><span class="mr-1 badge badge-pill badge-primary">{{ external_asset.type }}</span>{{ external_asset.title|truncatewords:7 }}</a></div>
                             <br>
                         {% endfor %}
                         {% if not item.has_doc_assets %}
@@ -41,7 +47,7 @@
                             </div>
                         {% endif %}
                     </td>
-                    
+
                     <td class="align-text-top">
                     {% for build in item.lifecycle_set.all %}
                         {% if build.type == 'b' %}
@@ -63,7 +69,7 @@
                             </div>
                         {% endif %}
                     </td>
-                    
+
                     <td class="align-text-top">
                     {% for build in item.lifecycle_set.all %}
                         {% if build.type == 'o' %}
@@ -85,7 +91,7 @@
                             </div>
                         {% endif %}
                     </td>
-                    
+
                     <td class="align-text-top">
                     {% for build in item.lifecycle_set.all %}
                         {% if build.type == 'e' %}
@@ -107,9 +113,9 @@
                             </div>
                         {% endif %}
                     </td>
-                
+
                 </tr>
             {% endfor %}
-    
+
     </tbody>
 </table>

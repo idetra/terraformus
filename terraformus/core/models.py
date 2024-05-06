@@ -98,8 +98,8 @@ class ExternalAsset(models.Model):
 # this one is added through a button with its own crud/view
 class LifeCycle(models.Model):
     solution = models.ForeignKey('Solution', on_delete=models.CASCADE)
-    type = models.CharField(max_length=2, choices=life_cycle_types,default=life_cycle_types['b'])
     title = models.CharField(max_length=255)
+    type = models.CharField(max_length=2, choices=life_cycle_types,default=life_cycle_types['b'])
     total_duration = models.TextField(help_text=ht.life_cycle_ht['total_duration'])
     description = models.TextField(help_text=ht.life_cycle_ht['description'])
 

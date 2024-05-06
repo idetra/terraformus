@@ -6,7 +6,10 @@ from django.core.exceptions import ValidationError
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Invisible
 
-from terraformus.core.models import Solution, Profile
+from terraformus.core.models import Solution, Profile, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste
+
+
+# SOLUTIONS & STRATEGIES -----------------------------------------------------------------------------------------------
 
 
 class SolutionForm(forms.ModelForm):
@@ -42,6 +45,35 @@ class DependsOnForm(forms.Form):
             except Solution.DoesNotExist:
                 raise ValidationError('No Solution with this title exists')
         return None
+
+
+# EXTERNAL ASSETS & LIFE CYCLES ----------------------------------------------------------------------------------------
+
+
+class ExternalAssetForm(forms.ModelForm):
+    class Meta:
+        model = ExternalAsset
+        fields = '__all__'
+        exclude = ['user', 'solution', 'strategy']
+
+
+class LifeCycleForm(forms.ModelForm):
+    class Meta:
+        model = LifeCycle
+        fields = '__all__'
+        exclude = ['solution',]
+
+
+class InLineLifeCycleInputForm(forms.ModelForm):
+    class Meta:
+        model = LifeCycleInput
+        fields = '__all__'
+
+
+class InLineLifeCycleWasteForm(forms.ModelForm):
+    class Meta:
+        model = LifeCycleWaste
+        fields = '__all__'
 
 
 # User related forms----------------------------------------------------------------------------------------------------

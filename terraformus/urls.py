@@ -21,6 +21,12 @@ urlpatterns = [
     path('create_strategy/', views.create_strategy, name='create_strategy'),
     path('edit_strategy/<str:slug>', views.edit_strategy, name='edit_strategy'),
     path('delete_strategy/<str:slug>', views.delete_strategy, name='delete_strategy'),
+    path('create_external_asset/<str:model_name>/<str:pk>', views.create_external_asset, name='create_external_asset'),
+    path('edit_external_asset/<str:model_name>/<str:pk>', views.edit_external_asset, name='edit_external_asset'),
+    path('delete_external_asset/<str:model_name>/<str:pk>', views.delete_external_asset, name='delete_external_asset'),
+    path('create_life_cycle/<str:pk>', views.create_life_cycle, name='create_life_cycle'),
+    path('edit_life_cycle/<str:pk>', views.edit_life_cycle, name='edit_life_cycle'),
+    path('delete_life_cycle/<str:pk>', views.delete_life_cycle, name='delete_life_cycle'),
     # extras
     path('rate/<str:slug>', views.rate, name='rate'),
     path('report/<str:slug>', views.report, name='report'),

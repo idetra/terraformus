@@ -1,13 +1,16 @@
+from django.apps import apps
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Avg
-from django.forms import formset_factory
+from django.forms import formset_factory, inlineformset_factory
 
 from django.shortcuts import render, redirect, get_object_or_404
 
-from terraformus.core.forms import SolutionForm, DependsOnForm, ProfileForm, UserUpdateForm
-from terraformus.core.models import Solution, Strategy, ExternalAsset
+from terraformus.core.forms import SolutionForm, DependsOnForm, ProfileForm, UserUpdateForm, ExternalAssetForm, \
+    InLineLifeCycleInputForm, LifeCycleForm
+from terraformus.core.models import Solution, Strategy, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste
 
 
 def home(request):
@@ -265,45 +268,106 @@ def delete_strategy(request, slug):
 
 
 @login_required
-def create_external_asset(request):
+def create_external_asset(request, model_name, pk):
+    user = request.user
+    if model_name.lower() == 'solution':
+        proposal_instance = get_object_or_404(Solution, pk=pk, user=user)
+    elif model_name.lower() == 'strategy':
+        proposal_instance = get_object_or_404(Strategy, pk=pk, user=user)
+    else:
+        raise Exception("Invalid model_name")
 
-    context = {}
-    return render(request, '', context)
+    if request.method == 'POST':
+        form = ExternalAssetForm(request.POST)
+        if form.is_valid():
+            ext_form = form.save(commit=False)
+            setattr(ext_form, model_name.lower(), proposal_instance)
+            ext_form.save()
+            return redirect('my_proposals')
+    else:
+        form = ExternalAssetForm()
+
+    context = {'form':form}
+    return render(request, 'solution/create_external_asset.html', context)
 
 
 @login_required
-def edit_external_asset(request):
+def edit_external_asset(request, model_name, pk):
+    user = request.user
+    if model_name.lower() == 'solution':
+        external_asset = get_object_or_404(ExternalAsset, pk=pk, solution__user=user)
+    elif model_name.lower() == 'strategy':
+        external_asset = get_object_or_404(ExternalAsset, pk=pk, strategy__user=user)
+    else:
+        raise Exception("Invalid model_name")
+    if request.method == "POST":
+        form = ExternalAssetForm(request.POST, instance=external_asset)
+        if form.is_valid():
+            form.save()
+            return redirect('my_proposals')
+    else:
+        form = ExternalAssetForm(instance=external_asset)
 
-    context = {}
-    return render(request, '', context)
+    context = {'form': form, 'model_name': model_name}
+    return render(request, 'solution/edit_external_asset.html', context)
+
 
 
 @login_required
-def delete_external_asset(request):
-
-    context = {}
-    return render(request, '', context)
+def delete_external_asset(request, model_name, pk):
+    user = request.user
+    if model_name.lower() == 'solution':
+        external_asset = get_object_or_404(ExternalAsset, pk=pk, solution__user=user)
+    elif model_name.lower() == 'strategy':
+        external_asset = get_object_or_404(ExternalAsset, pk=pk, strategy__user=user)
+    else:
+        raise Exception("Invalid model_name")
+    external_asset.delete()
+    return redirect('my_proposals')
 
 
 @login_required
-def create_life_cycle(request):
+def create_life_cycle(request, pk):
+    user = request.user
+    valid_life_cycle = get_object_or_404(Solution, pk=pk, author=user)
+    InputFormSet = inlineformset_factory(LifeCycle, LifeCycleInput, InLineLifeCycleInputForm, can_delete=True, extra=1)
+    WasteFormSet = inlineformset_factory(Solution, LifeCycleWaste, InLineLifeCycleInputForm, can_delete=True, extra=1)
 
-    context = {}
-    return render(request, '', context)
+    if request.method == 'POST':
+        form = LifeCycleForm(request.POST, prefix='life_cycle', instance=valid_life_cycle)
+        input_formset = InputFormSet(request.POST, prefix='life_cycle_input', instance=valid_life_cycle)
+        waste_formset = WasteFormSet(request.POST, prefix='life_cycle_waste', instance=valid_life_cycle)
+        if form.is_valid() and waste_formset.is_valid() and input_formset.is_valid():
+            life_cycle = form.save()
+            input_formset.instance = life_cycle
+            input_formset.save()
+
+            waste_formset.instance = life_cycle
+            waste_formset.save()
+
+            return redirect('my_proposals')
+    else:
+        form = LifeCycleForm(prefix='life_cycle', instance=valid_life_cycle)
+        input_formset = InputFormSet(prefix='life_cycle_input', instance=valid_life_cycle)
+        waste_formset = WasteFormSet(prefix='life_cycle_waste', instance=valid_life_cycle)
+
+    context = {'form': form, 'input_formset': input_formset, 'waste_formset': waste_formset}
+    return render(request, 'solution/create_life_cycle.html', context)
 
 
 @login_required
 def edit_life_cycle(request):
 
     context = {}
-    return render(request, '', context)
+    return render(request, 'solution/edit_life_cycle.html', context)
 
 
 @login_required
-def delete_life_cycle(request):
-
-    context = {}
-    return render(request, '', context)
+def delete_life_cycle(request, pk):
+    user = request.user
+    life_cycle = LifeCycle.objects.get(pk=pk, solution__user=user)
+    life_cycle.delete()
+    return redirect('my_proposals')
 
 # RATING/REPORT --------------------------------------------------------------------------------------------------------
 
