@@ -6,23 +6,35 @@
 
     <div class="row justify-content-center my-5">
         <div class="col-8">
-            <h5>New Solution</h5>
+            <h5>New Life Cycle</h5>
             {{ form.non_field_errors }}
             <form method="post" action="">
                 {% csrf_token %}
                 {{ field.errors }}
                 {{ form.as_p }}
             
-                <h5>Add Depends on</h5>
+                <h5>Add Input</h5>
 
-                {% for form in depends_on_formset %}
-                    <div id="dependsOnFormset">
+                {% for form in input_form %}
+                    <div id="inputForm">
                         {{ form.as_p }}
                     </div>
                 {% endfor %}
             
-                {{ depends_on_formset.management_form }}
+                {{ input_form.management_form }}
                 <div class="my-5"></div>
+            
+                <h5>Add Waste</h5>
+
+                {% for form in waste_form %}
+                    <div id="wasteForm">
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
+            
+                {{ waste_form.management_form }}
+                <div class="my-5"></div>
+            
                 <button class="btn btn-outline-dark" type="submit">Save</button>
             </form>       
         
@@ -35,9 +47,16 @@
     
     <script type="text/javascript">
         $(function() {
-            $('#dependsOnFormset').formset({
-                prefix: '{{ depends_on_formset.prefix }}',
-                formCssClass: 'dynamic-depends_on_formset',
+            $('#inputForm').formset({
+                prefix: '{{ input_form.prefix }}',
+                formCssClass: 'dynamic-create_input_form',
+                addText: 'Add another',
+                deleteText: 'Remove item above'
+            });
+            
+            $('#wasteForm').formset({
+                prefix: '{{ waste_form.prefix }}',
+                formCssClass: 'dynamic-create_waste_form',
                 addText: 'Add another',
                 deleteText: 'Remove item above'
             });

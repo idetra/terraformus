@@ -9,7 +9,7 @@ from django.forms import formset_factory, inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from terraformus.core.forms import SolutionForm, DependsOnForm, ProfileForm, UserUpdateForm, ExternalAssetForm, \
-    InLineLifeCycleInputForm, LifeCycleForm
+    InLineLifeCycleInputForm, LifeCycleForm, InLineLifeCycleWasteForm
 from terraformus.core.models import Solution, Strategy, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste
 
 
@@ -329,36 +329,71 @@ def delete_external_asset(request, model_name, pk):
 @login_required
 def create_life_cycle(request, pk):
     user = request.user
-    valid_life_cycle = get_object_or_404(Solution, pk=pk, author=user)
-    InputFormSet = inlineformset_factory(LifeCycle, LifeCycleInput, InLineLifeCycleInputForm, can_delete=True, extra=1)
-    WasteFormSet = inlineformset_factory(Solution, LifeCycleWaste, InLineLifeCycleInputForm, can_delete=True, extra=1)
+    valid_solution = Solution.objects.get(pk=pk, user=user)
+    lc_input_form_factory = inlineformset_factory(LifeCycle, LifeCycleInput, form=InLineLifeCycleInputForm, extra=1)
+    lc_waste_form_factory = inlineformset_factory(LifeCycle, LifeCycleWaste, form=InLineLifeCycleWasteForm, extra=1)
 
     if request.method == 'POST':
-        form = LifeCycleForm(request.POST, prefix='life_cycle', instance=valid_life_cycle)
-        input_formset = InputFormSet(request.POST, prefix='life_cycle_input', instance=valid_life_cycle)
-        waste_formset = WasteFormSet(request.POST, prefix='life_cycle_waste', instance=valid_life_cycle)
-        if form.is_valid() and waste_formset.is_valid() and input_formset.is_valid():
-            life_cycle = form.save()
-            input_formset.instance = life_cycle
-            input_formset.save()
+        form = LifeCycleForm(request.POST, prefix='life_cycle')
+        input_form = lc_input_form_factory(request.POST, prefix='life_cycle_input')
+        waste_form = lc_waste_form_factory(request.POST, prefix='life_cycle_waste')
+        if form.is_valid() and waste_form.is_valid() and input_form.is_valid():
+            lc_form = form.save(commit=False)
+            lc_form.solution = valid_solution
+            lc_form.save()
 
-            waste_formset.instance = life_cycle
-            waste_formset.save()
+            for form in input_form:
+                if form.has_changed():
+                    input_instance = form.save(commit=False)
+                    input_instance.lifecycle = lc_form
+                    input_instance.save()
+
+            for form in waste_form:
+                if form.has_changed():
+                    waste_instance = form.save(commit=False)
+                    waste_instance.lifecycle = lc_form
+                    waste_instance.save()
+
 
             return redirect('my_proposals')
     else:
-        form = LifeCycleForm(prefix='life_cycle', instance=valid_life_cycle)
-        input_formset = InputFormSet(prefix='life_cycle_input', instance=valid_life_cycle)
-        waste_formset = WasteFormSet(prefix='life_cycle_waste', instance=valid_life_cycle)
+        form = LifeCycleForm(prefix='life_cycle')
+        input_form = lc_input_form_factory(prefix='life_cycle_input')
+        waste_form = lc_waste_form_factory(prefix='life_cycle_waste')
 
-    context = {'form': form, 'input_formset': input_formset, 'waste_formset': waste_formset}
+    context = {'form': form, 'input_form': input_form, 'waste_form': waste_form}
     return render(request, 'solution/create_life_cycle.html', context)
 
 
 @login_required
-def edit_life_cycle(request):
+def edit_life_cycle(request, pk):
+    user = request.user
+    life_cycle = LifeCycle.objects.get(pk=pk, solution__user=user)
+    lc_input_form_factory = inlineformset_factory(LifeCycle, LifeCycleInput, form=InLineLifeCycleInputForm, extra=1, can_delete=True)
+    lc_waste_form_factory = inlineformset_factory(LifeCycle, LifeCycleWaste, form=InLineLifeCycleWasteForm, extra=1, can_delete=True)
 
-    context = {}
+    if request.method == 'POST':
+        form = LifeCycleForm(request.POST, instance=life_cycle, prefix='life_cycle')
+        input_form = lc_input_form_factory(request.POST, instance=life_cycle, prefix='life_cycle_input')
+        waste_form = lc_waste_form_factory(request.POST, instance=life_cycle, prefix='life_cycle_waste')
+
+        if form.is_valid() and waste_form.is_valid() and input_form.is_valid():
+            lc = form.save()
+
+            input_form.instance = lc
+            input_form.save()
+
+            waste_form.instance = lc
+            waste_form.save()
+
+            return redirect('my_proposals')
+
+    else:
+        form = LifeCycleForm(instance=life_cycle, prefix='life_cycle')
+        input_form = lc_input_form_factory(instance=life_cycle, prefix='life_cycle_input')
+        waste_form = lc_waste_form_factory(instance=life_cycle, prefix='life_cycle_waste')
+
+    context = {'form': form, 'input_form': input_form, 'waste_form': waste_form}
     return render(request, 'solution/edit_life_cycle.html', context)
 
 

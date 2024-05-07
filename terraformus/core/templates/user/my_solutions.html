@@ -51,7 +51,7 @@
                     <td class="align-text-top">
                     {% for build in item.lifecycle_set.all %}
                         {% if build.type == 'b' %}
-                            <a class="" href="">{{ build.title }}</a>
+                            <a class="" href="{% url 'edit_life_cycle' build.pk %}">{{ build.title }}</a>
                             <br>{{ build.total_duration }}<br>
                             {% for lci in build.lifecycleinput_set.all %}
                                 <div class="mb-n3"><span class="mr-1 badge badge-pill badge-dark">I</span>{{ lci.resource_name }}</div>
@@ -73,7 +73,7 @@
                     <td class="align-text-top">
                     {% for build in item.lifecycle_set.all %}
                         {% if build.type == 'o' %}
-                            <a class="" href="">{{ build.title }}</a>
+                            <a class="" href="{% url 'edit_life_cycle' build.pk %}">{{ build.title }}</a>
                             <br>{{ build.total_duration }}<br>
                             {% for lci in build.lifecycleinput_set.all %}
                                 <div class="mb-n3"><span class="mr-1 badge badge-pill badge-dark">I</span>{{ lci.resource_name }}</div>
@@ -95,7 +95,7 @@
                     <td class="align-text-top">
                     {% for build in item.lifecycle_set.all %}
                         {% if build.type == 'e' %}
-                            <a class="" href="">{{ build.title }}</a>
+                            <a class="" href="{% url 'edit_life_cycle' build.pk %}">{{ build.title }}</a>
                             <br>{{ build.total_duration }}<br>
                             {% for lci in build.lifecycleinput_set.all %}
                                 <div class="mb-n3"><span class="mr-1 badge badge-pill badge-dark">I</span>{{ lci.resource_name }}</div>
