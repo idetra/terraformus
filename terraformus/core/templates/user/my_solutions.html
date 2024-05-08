@@ -19,7 +19,9 @@
                 <tr>
 
                     <th class="align-text-top" scope="row">
-                        <a class="" href="">{{ item.title|truncatewords:7 }}</a>
+                        <a class="" href="{% url 'edit_solution' item.slug %}">{{ item.title|truncatewords:7 }}</a>
+                        <br>
+                        <a class="chip chip-action chip-sm" type="button" href="{% url 'solution' item.uuid item.slug %}"><i class='material-icons'>visibility</i>View solution</a>
                         <br>
                         <a class="chip chip-action chip-sm" type="button" href="{% url 'create_external_asset' 'solution' item.pk %}"><i class='material-icons'>add_circle_outline</i>Add External Asset</a>
                         <br>

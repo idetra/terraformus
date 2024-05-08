@@ -7,19 +7,19 @@
 
     <div class="row bg-white">
         <div class="col col-12">
-            {% for data_point in data_points %}
+            {% for solution in solutions_result %}
                 <div class="row justify-content-center">
                     <div class="col col-lg-6">
-                        <a href="{% url 'datapoint' data_point.uuid data_point.slug %}">
+                        <a href="{% url 'solution' solution.uuid solution.slug %}">
                             <div class="card border-0">
                                 <div class="card-body m-0 p-2">
                                     <h6 class="card-title m-0 p-0" style="font-size: 16px;">
-                                        <span class="chip chip-xs rating">{{ data_point.average_rating }}</span> {{ data_point.title }}
+                                        <span class="chip chip-xs rating">{{ solution.average_rating }}</span> {{ solution.title }}
                                     </h6>
-                                    <p class="card-text description">{{ data_point.description }}<br>
-                                        <span class="author-name">Author: {{ data_point.author.get_full_name }}</span><br>
-                                        <small><span class="created">created: {{ data_point.created_at }}</span> -
-                                        <span class="last-edited">edited: {{ data_point.last_edited }}</span></small>
+                                    <p class="card-text description">{{ solution.subtitle }}<br>
+                                        <span class="author-name">Author: {{ solution.user.get_full_name }}</span><br>
+                                        <small><span class="created">created: {{ solution.created_at }}</span> -
+                                        <span class="last-edited">edited: {{ solution.last_edited }}</span></small>
                                     </p>
                                 </div>
                             </div>
@@ -37,43 +37,43 @@
             <div class="col-6">
                 <ul class="pagination">
 
-                    <li class="page-item {% if not data_points.has_previous %}disabled{% endif %}">
-                        <a class="page-link" href="{% main_url_two_params 'page' 1 'rows_per_page' data_points.paginator.per_page request.GET.urlencode %}" aria-label="First">
+                    <li class="page-item {% if not solutions_result.has_previous %}disabled{% endif %}">
+                        <a class="page-link" href="{% main_url_two_params 'page' 1 'rows_per_page' solutions_result.paginator.per_page request.GET.urlencode %}" aria-label="First">
                             <span aria-hidden="true">&laquo; 1</span>
                         </a>
                     </li>
 
-                    <li class="page-item {% if not data_points.has_previous %}disabled{% endif %}">
-                        <a class="page-link" {% if data_points.has_previous %}href="{% main_url_two_params 'page' data_points.previous_page_number 'rows_per_page' data_points.paginator.per_page request.GET.urlencode %}"{% endif %}>Previous</a>
+                    <li class="page-item {% if not solutions_result.has_previous %}disabled{% endif %}">
+                        <a class="page-link" {% if solutions_result.has_previous %}href="{% main_url_two_params 'page' solutions_result.previous_page_number 'rows_per_page' solutions_result.paginator.per_page request.GET.urlencode %}"{% endif %}>Previous</a>
                     </li>
 
 
-                    {% for page_number in data_points.paginator.page_range %}
-                        {% if data_points.number == page_number %}
+                    {% for page_number in solutions_result.paginator.page_range %}
+                        {% if solutions_result.number == page_number %}
                             <li class="page-item active">
                                 <span class="page-link">{{ page_number|floatformat:'g' }}<span class="sr-only">(current)</span></span>
                             </li>
-                        {% elif page_number > data_points.number|add:'-3' and page_number < data_points.number|add:'3' %}
-                            <li class="page-item"><a class="page-link" href="{% main_url_two_params 'page' page_number 'rows_per_page' data_points.paginator.per_page request.GET.urlencode %}">{{ page_number|floatformat:'g' }}</a></li>
+                        {% elif page_number > solutions_result.number|add:'-3' and page_number < solutions_result.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="{% main_url_two_params 'page' page_number 'rows_per_page' solutions_result.paginator.per_page request.GET.urlencode %}">{{ page_number|floatformat:'g' }}</a></li>
                         {% endif %}
                     {% endfor %}
 
 
-                    <li class="page-item {% if not data_points.has_next %}disabled{% endif %}">
-                        <a class="page-link" {% if data_points.has_next %}href="{% main_url_two_params 'page' data_points.next_page_number 'rows_per_page' data_points.paginator.per_page request.GET.urlencode %}"{% endif %}>Next</a>
+                    <li class="page-item {% if not solutions_result.has_next %}disabled{% endif %}">
+                        <a class="page-link" {% if solutions_result.has_next %}href="{% main_url_two_params 'page' solutions_result.next_page_number 'rows_per_page' solutions_result.paginator.per_page request.GET.urlencode %}"{% endif %}>Next</a>
                     </li>
 
-                    <li class="page-item {% if not data_points.has_next %}disabled{% endif %}">
-                        <a class="page-link" href="{% main_url_two_params 'page' data_points.paginator.num_pages 'rows_per_page' data_points.paginator.per_page request.GET.urlencode %}" aria-label="Last">
-                            <span aria-hidden="true">{{ data_points.paginator.num_pages|floatformat:'g' }} &raquo;</span>
+                    <li class="page-item {% if not solutions_result.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{% main_url_two_params 'page' solutions_result.paginator.num_pages 'rows_per_page' solutions_result.paginator.per_page request.GET.urlencode %}" aria-label="Last">
+                            <span aria-hidden="true">{{ solutions_result.paginator.num_pages|floatformat:'g' }} &raquo;</span>
                         </a>
                     </li>
 
                  <li class="page-item p-1 ml-5">Rows per page
                         <div class="btn-group btn-group-sm ml-2" role="group" aria-label="Rows per page">
                             {% for item in possible_rows_per_page %}
-                                <a class="btn btn-sm btn-outline-dark mintec-blue text-color-white {% if item == data_points.paginator.per_page %}disabled{% endif %}"
-                                   href="{% main_url_two_params 'page' data_points.number 'rows_per_page' item request.GET.urlencode %}">{{ item }}</a>
+                                <a class="btn btn-sm btn-outline-dark mintec-blue text-color-white {% if item == solutions_result.paginator.per_page %}disabled{% endif %}"
+                                   href="{% main_url_two_params 'page' solutions_result.number 'rows_per_page' item request.GET.urlencode %}">{{ item }}</a>
                             {% endfor %}
                         </div>
                     </li>

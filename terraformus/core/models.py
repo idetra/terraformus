@@ -1,12 +1,39 @@
 import uuid
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Avg
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.text import slugify
 
 from terraformus.core.services.choices import cost_types, life_cycle_types, resource_types, external_asset
-from terraformus.core.services import help_text as ht
+from terraformus.core.services import help_text as ht, generators
+
+
+class User(AbstractUser):
+
+    def delete(self, *args, **kwargs):
+        """
+        Save all data on a new generated anonymous user
+        """
+        superuser = generators.create_anonymous_user()
+
+        self.solution_set.all().update(user=superuser)
+        self.strategy_set.all().update(user=superuser)
+        self.rating_set.all().update(author=superuser)
+        self.ratingreply_set.all().update(author=superuser)
+        self.report_set.all().update(author=superuser)
+
+        super().delete(*args, **kwargs)  # Delete the actual user
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    biography = models.TextField(max_length=5000, null=True, blank=True)
+
+    def __str__(self):
+        return self.user.username
 
 
 # Solutions ------------------------------------------------------------------------------------------------------------
@@ -16,6 +43,7 @@ class Solution(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, unique=True, help_text=ht.solution_ht['title'])
+    slug = models.SlugField(max_length=255, unique=True)
     subtitle = models.CharField(max_length=255, help_text=ht.solution_ht['subtitle'])
     goal = models.TextField(help_text=ht.solution_ht['goal'])
     # type -------------------------------------------------------------------------------------------------------------
@@ -80,12 +108,23 @@ class Solution(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(auto_now=True)
+    banned = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
 
+    def average_rating(self):
+        """returns the average rating for each content"""
+        return Rating.objects.filter(solution=self).aggregate(avg_rating=Avg('rate'))["avg_rating"] or 0
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        return super().save(*args, **kwargs)
+
 
 class ExternalAsset(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     solution = models.ForeignKey('Solution', on_delete=models.CASCADE, null=True, blank=True)
     strategy = models.ForeignKey('Strategy', on_delete=models.CASCADE, null=True, blank=True)
     type = models.CharField(max_length=3, choices=external_asset, default=external_asset['doc'])
@@ -97,6 +136,7 @@ class ExternalAsset(models.Model):
 
 # this one is added through a button with its own crud/view
 class LifeCycle(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     solution = models.ForeignKey('Solution', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     type = models.CharField(max_length=2, choices=life_cycle_types,default=life_cycle_types['b'])
@@ -143,12 +183,26 @@ class Strategy(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, help_text=ht.strategy_ht['title'])
+    slug = models.SlugField(max_length=255, unique=True)
     goal = models.TextField(help_text=ht.strategy_ht['goal'])
     definitions = models.TextField(help_text=ht.strategy_ht['definitions'])
     solutions = models.ManyToManyField('StrategySolution', help_text=ht.strategy_ht['solutions'])
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    edited_at = models.DateTimeField(auto_now=True)
+    banned = models.BooleanField(default=False)
+
     def __str__(self):
         return self.title
+
+    def average_rating(self):
+        """returns the average rating for each content"""
+        return Rating.objects.filter(content=self).aggregate(avg_rating=Avg('rate'))["avg_rating"] or 0
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        return super().save(*args, **kwargs)
 
 
 class StrategySolution(models.Model):
@@ -159,15 +213,47 @@ class StrategySolution(models.Model):
         return self.solution.title
 
 
-# User -----------------------------------------------------------------------------------------------------------------
+# Rating, Rating reply & Report ----------------------------------------------------------------------------------------
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    biography = models.TextField(max_length=5000, null=True, blank=True)
+class Rating(models.Model):
+    STAR_RATING = tuple((i, str(i)) for i in range(1, 11))
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    solution = models.ForeignKey('Solution', on_delete=models.CASCADE, null=True, blank=True)
+    strategy = models.ForeignKey('Strategy', on_delete=models.CASCADE, null=True, blank=True)
+    rate = models.PositiveSmallIntegerField(choices=STAR_RATING, default=1)
+    comment = models.TextField()
+    last_edited = models.DateField(auto_now=True)
 
     def __str__(self):
-        return self.user.username
+        return f"{self.author}"
+
+
+class RatingReply(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.OneToOneField(Rating, on_delete=models.CASCADE, related_name='rating_reply')
+    comment = models.TextField()
+    last_edited = models.DateField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = "Rating Replies"
+
+    def __str__(self):
+        return f"{self.author}"
+
+
+class Report(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    solution = models.ForeignKey('Solution', on_delete=models.CASCADE, null=True, blank=True)
+    strategy = models.ForeignKey('Strategy', on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.author}"
+
+
+# User -----------------------------------------------------------------------------------------------------------------
 
 
 @receiver(post_save, sender=User)

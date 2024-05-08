@@ -3,14 +3,14 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
-from django.db.models import Avg
+from django.db.models import Avg, Q
 from django.forms import formset_factory, inlineformset_factory
 
 from django.shortcuts import render, redirect, get_object_or_404
 
 from terraformus.core.forms import SolutionForm, DependsOnForm, ProfileForm, UserUpdateForm, ExternalAssetForm, \
     InLineLifeCycleInputForm, LifeCycleForm, InLineLifeCycleWasteForm
-from terraformus.core.models import Solution, Strategy, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste
+from terraformus.core.models import Solution, Strategy, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste, Rating
 
 
 def home(request):
@@ -24,29 +24,27 @@ def home(request):
 # SOLUTIONS ------------------------------------------------------------------------------------------------------------
 
 def solutions(request):
-    # page_number = request.GET.get('page', '1')
-    # number_of_rows_per_page = request.GET.get('rows_per_page', '10')
-    #
-    # if not (number_of_rows_per_page.isdigit() and int(number_of_rows_per_page) > 0):
-    #     number_of_rows_per_page = '10'
-    #
+    page_number = request.GET.get('page', '1')
+    number_of_rows_per_page = request.GET.get('rows_per_page', '10')
+
+    if not (number_of_rows_per_page.isdigit() and int(number_of_rows_per_page) > 0):
+        number_of_rows_per_page = '10'
+
     q = request.GET.get('q', '')
-    # request.session['q'] = q
-    # search_fields = ['title', 'description', 'slug', 'content', 'author__first_name', 'author__last_name']
-    #
-    # query = Q()
-    # for field in search_fields:
-    #     query |= Q(**{f'{field}__icontains': q})
-    #
-    # data_points_query = DataPoint.objects.filter(query, banned=False).annotate(
-    #     avg_rating=Avg('rating__rate')).order_by('-avg_rating')
-    #
-    # paginator = Paginator(data_points_query, number_of_rows_per_page)
-    # data_points = paginator.get_page(page_number)
+    request.session['q'] = q
+    search_fields = ['title', 'subtitle', 'slug', 'goal', 'user__first_name', 'user__last_name', 'uuid']
+
+    query = Q()
+    for field in search_fields:
+        query |= Q(**{f'{field}__icontains': q})
+
+    solutions_query = Solution.objects.filter(query, banned=False).annotate(avg_rating=Avg('rating__rate')).order_by('-avg_rating')
+    paginator = Paginator(solutions_query, number_of_rows_per_page)
+    solutions_result = paginator.get_page(page_number)
 
     context = {
-        # 'possible_rows_per_page': [10, 50, 100],
-        # 'data_points': data_points,
+        'possible_rows_per_page': [10, 50, 100],
+        'solutions_result': solutions_result,
         'q': q
     }
 
@@ -56,15 +54,13 @@ def solutions(request):
 def solution(request, uuid, slug):
     """ for slug to show on url, it is necessary to receive here even if it's not used in the view """
     q = request.session.get('q', '')
-    # data_point = get_object_or_404(DataPoint, uuid=uuid)
-    # rating = Rating.objects.select_related('rating_reply').filter(content=data_point)
-    #
-    # if data_point.banned:
-    #     return render(request, 'datapoint/banned.html', {'q': q})
+    solution_view = get_object_or_404(Solution, uuid=uuid)
+    rating = Rating.objects.select_related('rating_reply').filter(solution=solution_view)
 
-    context = {'q': q,
-        # "data_point": data_point,  'rating': rating
-               }
+    if solution_view.banned:
+        return render(request, 'banned.html', {'q': q})
+
+    context = {'q': q, "solution_view": solution_view,  'rating': rating}
 
     return render(request, 'solution/solution.html', context)
 
@@ -90,7 +86,7 @@ def create_solution(request):
             return redirect('my_proposals')
 
     else:
-        form = SolutionForm(prefix='connects_to')
+        form = SolutionForm()
         depends_on_formset = DependsOnFormSet(prefix='connects_to')
 
     context = {'q': q, 'form': form, 'depends_on_formset': depends_on_formset}
@@ -102,38 +98,42 @@ def create_solution(request):
 def edit_solution(request, slug):
     q = request.session.get('q', '')
     user = request.user
-    # valid_datapoint = get_object_or_404(Solution, slug=slug, author=user)
-    # ReferenceFormSet = inlineformset_factory(DataPoint, Reference, ReferenceForm, can_delete=True, extra=1)  # noqa
-    # ConnectsToFormSet = inlineformset_factory(DataPoint, Connection, InlineConnectsToForm, fk_name='from_datapoint', can_delete=True, extra=1)  # noqa
-    # if request.method == 'POST':
-    #     form = DataPointForm(request.POST, prefix='data_point', instance=valid_datapoint)
-    #     reference_formset = ReferenceFormSet(request.POST, prefix='reference', instance=valid_datapoint)
-    #     connects_to_formset = ConnectsToFormSet(request.POST, prefix='connects_to', instance=valid_datapoint)
-    #     if form.is_valid() and connects_to_formset.is_valid() and reference_formset.is_valid():
-    #         data_point = form.save()
-    #         reference_formset.instance = data_point
-    #         reference_formset.save()
-    #
-    #         connects_to_formset.instance = data_point
-    #         connects_to_formset.save()
-    #
-    #         return redirect('datapoint', slug=data_point.slug)
-    # else:
-    #     form = DataPointForm(prefix='data_point', instance=valid_datapoint)
-    #     reference_formset = ReferenceFormSet(prefix='reference', instance=valid_datapoint)
-    #     connects_to_formset = ConnectsToFormSet(prefix='connects_to', instance=valid_datapoint)
+    solution_view = get_object_or_404(Solution, user=user, slug=slug)
+    depends_on_form_factory = formset_factory(DependsOnForm, extra=1, can_delete=True)
 
-    context = {
-        # 'form': form, 'reference_formset': reference_formset, 'connects_to_formset': connects_to_formset,
-        'q': q}
+    if request.method == 'POST':
+        print('post request: ', request.POST)
+        form = SolutionForm(request.POST, instance=solution_view, prefix='form')
+        depends_on_form = depends_on_form_factory(request.POST, prefix='connects_to')
+
+        if form.is_valid() and depends_on_form.is_valid():
+            solution_form = form.save()
+
+            # Process forms marked for deletion
+            for single_depends_on_form in depends_on_form:
+                depends_on_solution = single_depends_on_form.cleaned_data.get('title') # title is unique, so the rest works
+                if depends_on_solution:  # only proceed if a Solution was found
+                    if single_depends_on_form.cleaned_data.get('DELETE'):  # Check if marked for deletion
+                        solution_form.depends_on.remove(depends_on_solution)
+                    else:  # if not marked for deletion, process normally
+                        solution_form.depends_on.add(depends_on_solution)
+            return redirect('my_proposals')
+
+    else:
+        form = SolutionForm(instance=solution_view, prefix='form')
+        depends_on_form = depends_on_form_factory(
+            prefix='connects_to', initial=[{'title': dep.title} for dep in solution_view.depends_on.all()])
+
+    context = {'q': q, 'form': form, 'depends_on_form': depends_on_form}
 
     return render(request, 'solution/edit_solution.html', context)
+
 
 
 @login_required
 def delete_solution(request, slug):
     user = request.user
-    data_point = Solution.objects.get(slug=slug, author=user)
+    data_point = Solution.objects.get(slug=slug, user=user)
     data_point.delete()
     return redirect('home')
 
@@ -353,8 +353,6 @@ def create_life_cycle(request, pk):
                     waste_instance = form.save(commit=False)
                     waste_instance.lifecycle = lc_form
                     waste_instance.save()
-
-
             return redirect('my_proposals')
     else:
         form = LifeCycleForm(prefix='life_cycle')
@@ -379,13 +377,10 @@ def edit_life_cycle(request, pk):
 
         if form.is_valid() and waste_form.is_valid() and input_form.is_valid():
             lc = form.save()
-
             input_form.instance = lc
             input_form.save()
-
             waste_form.instance = lc
             waste_form.save()
-
             return redirect('my_proposals')
 
     else:

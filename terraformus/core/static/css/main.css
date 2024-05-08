@@ -6,21 +6,125 @@
     color: #FF0000;
 }
 
-
-.navdrawer-open-persistent {
-    /*margin-left: 257px;*/
-    /*transform: translatex(257px);*/
-
-}
+/*nav drawer*/
 
 .navdrawer-open-persistent .main-content {
-    transform: translatex(257px);
+    transform: translatex(256px);
 
 }
 
 .main-content {
-    transition: transform 0.3s linear;
+    transition: transform 0.100s ease-out;
 }
+
+/*material icon*/
+
+.material-icon-center {
+    vertical-align: -0.1888em !important;
+}
+
+/*base url*/
+
+.question-color {
+    color: #007bff;
+}
+
+/*a {*/
+/*    color: #000000;*/
+/*}*/
+
+/*a:hover {*/
+/*    color: #858585;*/
+/*}*/
+
+/*a:active {*/
+/*    color: #000000;*/
+/*}*/
+
+/*datapoints query results*/
+
+.card {
+    box-shadow: none !important;
+}
+
+
+/*tooltip*/
+
+.tooltip-inner {
+    white-space: pre;
+    max-width: none;
+}
+
+/*.tooltip-inner {*/
+/*    white-space: pre-wrap;*/
+/*}*/
+
+/*rate field length*/
+
+.custom-select-width {
+    width: 50px;
+}
+
+/*name field length*/
+
+.custom-name-width {
+    width: 200px !important;
+}
+
+
+/*reference field lenght*/
+
+.custom-reference-width {
+    width: 600px !important;
+}
+
+
+/*selection*/
+/*::selection{*/
+/*    color:white;*/
+/*    background-color: #bebebe;*/
+/*}*/
+
+/*selected page on paginator*/
+/*.page-item.active .page-link {*/
+/*    background-color: #8400ff !important;*/
+/*}*/
+
+/*add and remove data points buttons*/
+.delete-row{
+    margin-bottom: 20px !important;
+    /*background: red!important;*/
+}
+
+.add-row{
+    margin-bottom: 20px !important;
+    /*background: red!important;*/
+}
+
+.delete-referenceFormset{
+    margin-bottom: 20px !important;
+}
+
+.add-referenceFormset{
+    margin-bottom: 20px !important;
+}
+
+.delete-connects_to_formset{
+    margin-bottom: 20px !important;
+}
+
+.add-connects_to_formset{
+    margin-bottom: 20px !important;
+}
+
+/*footer cookie target*/
+.show-hide-cookie {
+    display: none;
+}
+
+/*.main-content {*/
+/*    transition: transform 0.3s linear;*/
+/*}*/
 
 /*table {*/
 /*    table-layout: fixed;*/

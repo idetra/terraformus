@@ -18,7 +18,12 @@ class SolutionForm(forms.ModelForm):
     class Meta:
         model = Solution
         fields = '__all__'
-        exclude = ['user', 'depends_on']
+        exclude = ['user', 'depends_on', 'slug', 'banned']
+
+    def __init__(self, *args, **kwargs):
+        super(SolutionForm, self).__init__(*args, **kwargs)
+        if self.instance.pk and self.instance.derives_from:
+            self.initial['derives_from'] = self.instance.derives_from.title
 
     def clean_derives_from(self):
         derives_from_title = self.cleaned_data['derives_from']

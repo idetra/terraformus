@@ -12,82 +12,53 @@
         
             <p class="text-center text-white bg-dark">RATING</p>
 
-            <span class="chip chip-xs rating">{{ data_point.average_rating }}</span>
-            <a class="btn btn-xs btn-outline-dark px-n5" data-toggle="modal" data-target="#datapoint_ratings_{{ data_point.id }}">View all</a>
-            {% if user.is_authenticated and data_point.author != request.user%}
-                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'rate' data_point.slug %}">Rate</a>
-                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'report' data_point.slug %}">Report</a>
+            <span class="chip chip-xs rating">{{ solution_view.average_rating }}</span>
+            <a class="btn btn-xs btn-outline-dark px-n5" data-toggle="modal" data-target="#datapoint_ratings_{{ solution_view.id }}">View all</a>
+            {% if user.is_authenticated and solution_view.user != request.user%}
+                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'rate' solution_view.slug %}">Rate</a>
+                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'report' solution_view.slug %}">Report</a>
             {% endif %}
 
             <br>
             <br>
-
-            <p class="text-center text-white bg-dark">PREVIOUS</p>
-            {% for item in data_point.connects_to.all %}
-                {% if item.author == data_point.author %}
-                    <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-start mb-1" href="{% url 'datapoint' item.uuid item.slug %}">
-
-{#                    <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-start mb-1" href="{% url 'datapoint' item.slug %}" data-toggle="tooltip" data-placement="right" title="{{ item.title }}">#}
-                        {{ item.title|truncatechars:35 }}
-                    </a>
-                {% endif %}
-            {% endfor %}
-
-            <br>
-
-            {% for item in data_point.connects_to.all %}
-                {% if item.author != data_point.author %}
-                    <a class="btn btn-xs btn-outline-warning bg-light d-flex justify-content-start mb-1" href="{% url 'datapoint' item.uuid item.slug %}">
-                        {{ item.title|truncatechars:35 }}
-                    </a>
-                {% endif %}
-            {% endfor %}
+        
 
         </div>
 
         <div class="col-md-6">
         
-            {% if message %}
-                <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
-                    {{ message }}
-                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-            {% endif %}
-        
-            <h6 class="selectable-text">{{ data_point.title }}</h6>
-            <p>{{ data_point.description }}</p>
-{#            Unique ID: <span class="selectable-text bg-light">{{ data_point.unique_id }}</span>#}
-            <p class="text-left">Author: <a href="{% url 'author' data_point.author.username %}">
-                <b>{{ data_point.author.get_full_name}}</b></a>
+            <h6 class="selectable-text">{{ solution_view.title }}</h6>
+            <p>{{ solution_view.description }}</p>
+{#            Unique ID: <span class="selectable-text bg-light">{{ solution_view.unique_id }}</span>#}
+            <p class="text-left">Author: <a href="{% url 'author' solution_view.user.username %}">
+                <b>{{ solution_view.user.get_full_name}}</b></a>
             <br>
-                <small>Created: {{ data_point.created_at }} | Edited: {{ data_point.last_edited }}</small>
+                <small>Created: {{ solution_view.created_at }} | Edited: {{ solution_view.last_edited }}</small>
             </p>
 
-            {% if data_point.author == request.user %}
+            {% if solution_view.user == request.user %}
                 <div class="row mb-3">
                     <div class="col text-center">
 
-                        <a class="btn btn-xs btn-outline-dark bg-light mr-5" href="{% url 'edit_datapoint' data_point.slug %}">
+                        <a class="btn btn-xs btn-outline-dark bg-light mr-5" href="{% url 'edit_solution' solution_view.slug %}">
                             <span class="material-icons md-18 mr-2">edit</span> Edit
                         </a>
 
-                        <a class="btn btn-xs btn-danger ml-5" data-toggle="modal" data-target="#delete_datapoint_{{ data_point.slug }}">
+                        <a class="btn btn-xs btn-danger ml-5" data-toggle="modal" data-target="#delete_datapoint_{{ solution_view.slug }}">
                             <span class="material-icons md-18 mr-2">delete</span> Delete
                         </a>
 
                         <!-- Delete Modal -->
-                        <div class="modal fade" id="delete_datapoint_{{ data_point.slug }}" tabindex="-1" aria-labelledby="delete_datapoint" aria-hidden="true">
+                        <div class="modal fade" id="delete_datapoint_{{ solution_view.slug }}" tabindex="-1" aria-labelledby="delete_datapoint" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-body text-left">
                                         <p>Are you sure you want to delete the data point</p>
-                                        <p>"{{ data_point.title }}" ?</p>
+                                        <p>"{{ solution_view.title }}" ?</p>
                                         <p>This may lead to discontinuity:</p>
                                         <p>- All connections that depend on this data point will be severed</p>
                                         <p>- That includes all connections made by other users</p>
-                                        <a class="btn btn-outline-danger" href="{% url 'delete_datapoint' data_point.slug %}">Yes, delete</a>
+                                        <a class="btn btn-outline-danger" href="{% url 'delete_solution' solution_view.slug %}">Yes, delete</a>
                                     </div>
                                 </div>
                             </div>
@@ -96,47 +67,15 @@
                 </div>
             {% endif %}
 
-            {{ data_point.content|safe }}
+            {{ solution_view }}
+        
             <br>
         
         </div>
 
         <div class="col-md-3">
 
-            <p class="text-center text-white bg-dark">REFERENCES</p>
-            {% for ref in data_point.reference_set.all|dictsortreversed:"scientific" %}
-                <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-between mb-1" target="_blank" href="{{ ref.url }}">
-{#                <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-between mb-1" target="_blank" href="{{ ref.url }}" data-toggle="tooltip" data-placement="left" title="{{ ref.title }}">#}
-                    {% if ref.scientific %}
-                    <span class="badge badge-warning badge-before">Sci</span>
-                    {% endif %}
-                    {{ ref.title|truncatechars:30 }} <span class="material-icons">open_in_new</span>
-                </a>
-            {% endfor %}
-
-            <br>
-
-            <p class="text-center text-white bg-dark">NEXT</p>
-            {% for item in data_point.to_connections.all %}
-                {% if item.from_datapoint.author == data_point.author %}
-                    <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-start mb-1" href="{% url 'datapoint' item.from_datapoint.uuid item.from_datapoint.slug %}">
-
-{#                    <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-start mb-1" href="{% url 'datapoint' item.from_datapoint.slug %}" data-toggle="tooltip" data-placement="left" title="{{ item.from_datapoint.title }}">#}
-                        {{ item.from_datapoint.title|truncatechars:35 }}
-                    </a>
-                {% endif %}
-            {% endfor %}
-
-            <br>
-
-            {% for item in data_point.to_connections.all %}
-                {% if item.from_datapoint.author != data_point.author %}
-                    <a class="btn btn-xs btn-outline-warning bg-light d-flex justify-content-start mb-1" href="{% url 'datapoint' item.from_datapoint.uuid item.from_datapoint.slug %}">
-                        {{ item.from_datapoint.title|truncatechars:35 }}
-                    </a>
-                {% endif %}
-            {% endfor %}
-
+            
         </div>
 
     </div>
@@ -144,17 +83,17 @@
 
 
     <!-- View all ratings Modal -->
-    <div class="modal fade" id="datapoint_ratings_{{ data_point.id }}" tabindex="-1" aria-labelledby="datapoint_ratings" aria-hidden="true">
+    <div class="modal fade" id="datapoint_ratings_{{ solution_view.id }}" tabindex="-1" aria-labelledby="datapoint_ratings" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg">
             <div class="modal-content">
                 <div class="modal-body">
 
                     {% for item in rating %}
 
-                        <a href="{% url 'author' item.author.username %}">{{ item.author.get_full_name }}</a> rated {{ item.rate }}<br>
+                        <a href="{% url 'author' item.user.username %}">{{ item.user.get_full_name }}</a> rated {{ item.rate }}<br>
                         Comment:<br>{{ item.comment }}<br><br>
                         <small>Last edited: {{ item.last_edited }}</small>
-                        {% if data_point.author == request.user %}
+                        {% if solution_view.user == request.user %}
                             <br>
                             <a class="btn btn-xs btn-outline-dark bg-light mr-5" href="{% url 'rating_reply' item.id %}">
                                 Reply
