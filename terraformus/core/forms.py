@@ -6,7 +6,8 @@ from django.core.exceptions import ValidationError
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Invisible
 
-from terraformus.core.models import Solution, Profile, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste
+from terraformus.core.models import Solution, Profile, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste, \
+    Strategy, StrategySolution
 
 
 # SOLUTIONS & STRATEGIES -----------------------------------------------------------------------------------------------
@@ -50,6 +51,30 @@ class DependsOnForm(forms.Form):
             except Solution.DoesNotExist:
                 raise ValidationError('No Solution with this title exists')
         return None
+
+
+class StrategyForm(forms.ModelForm):
+    class Meta:
+        model = Strategy
+        fields = ['title', 'goal', 'definitions']
+
+
+class StrategySolutionForm(forms.Form):
+    solution_title = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control custom-reference-width',
+               'placeholder': 'Exact match (case sensitive)'}),
+        max_length=255, required=False)
+    notes = forms.CharField(widget=forms.Textarea, required=False)
+
+    def clean_solution_title(self):
+        solution_title = self.cleaned_data.get('solution_title')
+        if solution_title:
+            try:
+                return Solution.objects.get(title=solution_title)
+            except Solution.DoesNotExist:
+                raise ValidationError('No Solution with this title exists')
+        return None
+
 
 
 # EXTERNAL ASSETS & LIFE CYCLES ----------------------------------------------------------------------------------------

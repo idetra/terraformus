@@ -22,8 +22,8 @@ urlpatterns = [
     path('strategies/', views.strategies, name='strategies'),
     path('strategy/<uuid:uuid>/<str:slug>', views.strategy, name='strategy'),
     path('create_strategy/', views.create_strategy, name='create_strategy'),
-    path('edit_strategy/<str:slug>', views.edit_strategy, name='edit_strategy'),
-    path('delete_strategy/<str:slug>', views.delete_strategy, name='delete_strategy'),
+    path('edit_strategy/<str:uuid>', views.edit_strategy, name='edit_strategy'),
+    path('delete_strategy/<str:uuid>', views.delete_strategy, name='delete_strategy'),
     # solutions & strategies
     path('create_external_asset/<str:model_name>/<str:pk>', views.create_external_asset, name='create_external_asset'),
     path('edit_external_asset/<str:model_name>/<str:pk>', views.edit_external_asset, name='edit_external_asset'),

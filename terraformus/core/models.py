@@ -118,8 +118,7 @@ class Solution(models.Model):
         return Rating.objects.filter(solution=self).aggregate(avg_rating=Avg('rate'))["avg_rating"] or 0
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.title)
+        self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
 
 
@@ -182,7 +181,7 @@ class LifeCycleWaste(models.Model):
 class Strategy(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255, help_text=ht.strategy_ht['title'])
+    title = models.CharField(max_length=255, unique=True, help_text=ht.strategy_ht['title'])
     slug = models.SlugField(max_length=255, unique=True)
     goal = models.TextField(help_text=ht.strategy_ht['goal'])
     definitions = models.TextField(help_text=ht.strategy_ht['definitions'])
@@ -200,9 +199,11 @@ class Strategy(models.Model):
         return Rating.objects.filter(content=self).aggregate(avg_rating=Avg('rate'))["avg_rating"] or 0
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.title)
+        self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name_plural = 'Strategies'
 
 
 class StrategySolution(models.Model):

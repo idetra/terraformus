@@ -9,8 +9,9 @@ from django.forms import formset_factory, inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from terraformus.core.forms import SolutionForm, DependsOnForm, ProfileForm, UserUpdateForm, ExternalAssetForm, \
-    InLineLifeCycleInputForm, LifeCycleForm, InLineLifeCycleWasteForm
-from terraformus.core.models import Solution, Strategy, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste, Rating
+    InLineLifeCycleInputForm, LifeCycleForm, InLineLifeCycleWasteForm, StrategyForm, StrategySolutionForm
+from terraformus.core.models import Solution, Strategy, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste, \
+    Rating, StrategySolution
 
 
 def home(request):
@@ -187,81 +188,90 @@ def strategy(request, uuid, slug):
     return render(request, 'strategy/strategy.html', context)
 
 
+from django.contrib import messages
+from .forms import StrategyForm
+
+
 @login_required
 def create_strategy(request):
     q = request.session.get('q', '')
-    # ReferenceFormSet = formset_factory(ReferenceForm, extra=1)  # noqa
-    # ConnectsToFormSet = formset_factory(ConnectsToForm, extra=1)  # noqa
-    #
-    # if request.method == 'POST':
-    #     form = DataPointForm(request.POST, prefix='data_point')
-    #     reference_formset = ReferenceFormSet(request.POST, prefix='reference')
-    #     connects_to_formset = ConnectsToFormSet(request.POST, prefix='connects_to')
-    #     if form.is_valid() and connects_to_formset.is_valid() and reference_formset.is_valid():
-    #         data_point = form.save(commit=False)
-    #         data_point.author = request.user
-    #         data_point.save()
-    #         for connects_to_form in connects_to_formset:
-    #             connects_to_datapoint = connects_to_form.cleaned_data.get('title')
-    #             if connects_to_datapoint:
-    #                 Connection.objects.create(from_datapoint=data_point, to_datapoint=connects_to_datapoint)
-    #         for reference_form in reference_formset:
-    #             if reference_form.cleaned_data:
-    #                 reference = reference_form.save(commit=False)
-    #                 reference.content = data_point
-    #                 reference.save()
-    #         return redirect('datapoint', slug=data_point.slug)
-    # else:
-    #     form = DataPointForm(prefix='data_point')
-    #     reference_formset = ReferenceFormSet(prefix='reference')
-    #     connects_to_formset = ConnectsToFormSet(prefix='connects_to')
+    StrategySolutionFormSet = formset_factory(StrategySolutionForm, extra=1)  # noqa
 
-    context = {
-        # 'form': form, 'reference_formset': reference_formset, 'connects_to_formset': connects_to_formset,
-        'q': q
-    }
+    if request.method == 'POST':
+        form = StrategyForm(request.POST)
+        strategy_solution_formset = StrategySolutionFormSet(request.POST, prefix='strategy_solution')
+        if form.is_valid() and strategy_solution_formset.is_valid():
+            strategy_form = form.save(commit=False)
+            strategy_form.user = request.user
+            strategy_form.save()
+
+            for solution_form in strategy_solution_formset:
+                solution_instance = solution_form.cleaned_data.get('solution_title')
+                notes = solution_form.cleaned_data.get('notes')
+
+                if solution_instance:
+                    strategy_solution_instance, created = StrategySolution.objects.get_or_create(
+                        solution=solution_instance, defaults={'notes': notes})
+
+                    strategy_form.solutions.add(strategy_solution_instance)
+
+            return redirect('my_proposals')
+
+    else:
+        form = StrategyForm()
+        strategy_solution_formset = StrategySolutionFormSet(prefix='strategy_solution')
+
+    context = {'q': q, 'form': form, 'strategy_solution_formset': strategy_solution_formset}
 
     return render(request, 'strategy/create_strategy.html', context)
 
 
 @login_required
-def edit_strategy(request, slug):
+def edit_strategy(request, uuid):
     q = request.session.get('q', '')
     user = request.user
-    # valid_datapoint = get_object_or_404(Solution, slug=slug, author=user)
-    # ReferenceFormSet = inlineformset_factory(DataPoint, Reference, ReferenceForm, can_delete=True, extra=1)  # noqa
-    # ConnectsToFormSet = inlineformset_factory(DataPoint, Connection, InlineConnectsToForm, fk_name='from_datapoint', can_delete=True, extra=1)  # noqa
-    # if request.method == 'POST':
-    #     form = DataPointForm(request.POST, prefix='data_point', instance=valid_datapoint)
-    #     reference_formset = ReferenceFormSet(request.POST, prefix='reference', instance=valid_datapoint)
-    #     connects_to_formset = ConnectsToFormSet(request.POST, prefix='connects_to', instance=valid_datapoint)
-    #     if form.is_valid() and connects_to_formset.is_valid() and reference_formset.is_valid():
-    #         data_point = form.save()
-    #         reference_formset.instance = data_point
-    #         reference_formset.save()
-    #
-    #         connects_to_formset.instance = data_point
-    #         connects_to_formset.save()
-    #
-    #         return redirect('datapoint', slug=data_point.slug)
-    # else:
-    #     form = DataPointForm(prefix='data_point', instance=valid_datapoint)
-    #     reference_formset = ReferenceFormSet(prefix='reference', instance=valid_datapoint)
-    #     connects_to_formset = ConnectsToFormSet(prefix='connects_to', instance=valid_datapoint)
+    strategy_view = get_object_or_404(Strategy, user=user, uuid=uuid)
+    StrategySolutionFormSet = formset_factory(StrategySolutionForm, extra=1, can_delete=True)  # noqa
 
-    context = {
-        # 'form': form, 'reference_formset': reference_formset, 'connects_to_formset': connects_to_formset,
-        'q': q}
+    if request.method == 'POST':
+        form = StrategyForm(request.POST, instance=strategy_view, prefix='form')
+        strategy_solution_formset = StrategySolutionFormSet(request.POST, prefix='strategy_solution')
+
+        if form.is_valid() and strategy_solution_formset.is_valid():
+            strategy_form = form.save()
+
+            for strategy_solution_form in strategy_solution_formset:
+                strategy_solution = strategy_solution_form.cleaned_data.get('solution_title')
+                if strategy_solution:
+                    notes = strategy_solution_form.cleaned_data.get('notes')
+                    if strategy_solution_form.cleaned_data.get('DELETE'):
+                        strategy_solution_obj = StrategySolution.objects.get(solution=strategy_solution)
+                        strategy_form.solutions.remove(strategy_solution_obj)
+                    else:
+                        strategy_solution_obj, created = StrategySolution.objects.get_or_create(
+                            solution=strategy_solution, defaults={'notes': notes})
+
+                        strategy_form.solutions.add(strategy_solution_obj)
+            return redirect('my_proposals')
+
+    else:
+        form = StrategyForm(instance=strategy_view, prefix='form')
+        strategy_solution_formset = StrategySolutionFormSet(
+            prefix='strategy_solution',
+            initial=[{'solution_title': sol.solution.title, 'notes': sol.notes} for sol in strategy_view.solutions.all()])
+
+    context = {'q': q, 'form': form, 'strategy_solution_formset': strategy_solution_formset}
 
     return render(request, 'strategy/edit_strategy.html', context)
 
 
+
 @login_required
-def delete_strategy(request, slug):
+def delete_strategy(request, uuid):
     user = request.user
-    data_point = Strategy.objects.get(slug=slug, author=user)
-    data_point.delete()
-    return redirect('home')
+    deletable_strategy = Strategy.objects.get(uuid=uuid, user=user)
+    deletable_strategy.delete()
+    return redirect('my_proposals')
 
 
 # EXTERNAL ASSETS & LIFE CYCLES -----------------------------------------------------------------------------------------

@@ -4,36 +4,25 @@
 
 {% block content %}
 
-    <div class="row justify-content-center mt-4">
+    <div class="row justify-content-center my-5">
         <div class="col-8">
-            <h5>New Datapoint</h5>
+            <h5>New Strategy</h5>
             {{ form.non_field_errors }}
             <form method="post" action="">
                 {% csrf_token %}
                 {{ field.errors }}
-                {{ form.as_p|safe }}
+                {{ form.as_p }}
             
-                <h5>Add previous data points</h5>
+                <h5>Add Solutions</h5>
 
-                {% for form in connects_to_formset %}
-                    <div id="connectsToFormset">
+                {% for form in strategy_solution_formset %}
+                    <div id="solutionFormset">
                         {{ form.as_p }}
                     </div>
                 {% endfor %}
-                {{ connects_to_formset.management_form }}
-                <br><br><br>
-                <hr>
-                <h5>References</h5>
-
-                {% for form in reference_formset %}
-                    <div id="referenceFormset">
-                        {{ form.as_p }}
-                    </div>
-                {% endfor %}
-                {{ reference_formset.management_form }}
             
-                <br><br><br>
-                <hr>
+                {{ strategy_solution_formset.management_form }}
+                <div class="my-5"></div>
                 <button class="btn btn-outline-dark" type="submit">Save</button>
             </form>       
         
@@ -46,15 +35,9 @@
     
     <script type="text/javascript">
         $(function() {
-            $('#connectsToFormset').formset({
-                prefix: '{{ connects_to_formset.prefix }}',
-                formCssClass: 'dynamic-connects_to_formset',
-                addText: 'Add another',
-                deleteText: 'Remove item above'
-            });
-            $('#referenceFormset').formset({
-                prefix: '{{ reference_formset.prefix }}',
-                formCssClass: 'dynamic-reference_formset',
+            $('#solutionFormset').formset({
+                prefix: '{{ strategy_solution_formset.prefix }}',
+                formCssClass: 'dynamic-strategy_solution_formset',
                 addText: 'Add another',
                 deleteText: 'Remove item above'
             });

@@ -1,1 +1,15 @@
-my strategies
+{% for strategy in all_strategies %}
+
+    <a href="{% url 'edit_strategy' strategy.uuid %}">{{ strategy }}</a>
+    <br>
+    Solutions:<br>
+    {% for item in strategy.solutions.all %}
+    
+        {{ item }}<br>
+        
+    {% endfor %}
+    
+    
+    <br><br><hr>
+
+{% endfor %}
