@@ -86,7 +86,7 @@ def create_solution(request):
                     depends_on_solution_setup, created = Solution.objects.get_or_create(title=depends_on_solution, user=request.user)
                     solution_form.depends_on.add(depends_on_solution_setup)
                     solution_form.save()
-            return redirect('my_proposals')
+            return redirect('my_solutions')
 
     else:
         form = SolutionForm()
@@ -119,7 +119,7 @@ def edit_solution(request, uuid):
                         solution_form.depends_on.remove(depends_on_solution)
                     else:  # if not marked for deletion, process normally
                         solution_form.depends_on.add(depends_on_solution)
-            return redirect('my_proposals')
+            return redirect('my_solutions')
 
     else:
         form = SolutionForm(instance=solution_view, prefix='form')
@@ -136,7 +136,7 @@ def delete_solution(request, uuid):
     user = request.user
     deletable_solution = Solution.objects.get(uuid=uuid, user=user)
     deletable_solution.delete()
-    return redirect('my_proposals')
+    return redirect('my_solutions')
 
 
 # STRATEGIES -----------------------------------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ def create_strategy(request):
 
                     strategy_form.solutions.add(strategy_solution_instance)
 
-            return redirect('my_proposals')
+            return redirect('my_strategies')
 
     else:
         form = StrategyForm()
@@ -250,7 +250,7 @@ def edit_strategy(request, uuid):
                             solution=strategy_solution, defaults={'notes': notes})
 
                         strategy_form.solutions.add(strategy_solution_obj)
-            return redirect('my_proposals')
+            return redirect('my_strategies')
 
     else:
         form = StrategyForm(instance=strategy_view, prefix='form')
@@ -269,7 +269,7 @@ def delete_strategy(request, uuid):
     user = request.user
     deletable_strategy = Strategy.objects.get(uuid=uuid, user=user)
     deletable_strategy.delete()
-    return redirect('my_proposals')
+    return redirect('my_strategies')
 
 
 # EXTERNAL ASSETS & LIFE CYCLES -----------------------------------------------------------------------------------------
@@ -281,8 +281,10 @@ def create_external_asset(request, model_name, uuid):
     user = request.user
     if model_name.lower() == 'solution':
         proposal_instance = get_object_or_404(Solution, uuid=uuid, user=user)
+        redirect_url = 'my_solutions'
     elif model_name.lower() == 'strategy':
         proposal_instance = get_object_or_404(Strategy, uuid=uuid, user=user)
+        redirect_url = 'my_strategies'
     else:
         raise Exception("Invalid model_name")
 
@@ -292,7 +294,7 @@ def create_external_asset(request, model_name, uuid):
             ext_form = form.save(commit=False)
             setattr(ext_form, model_name.lower(), proposal_instance)
             ext_form.save()
-            return redirect('my_proposals')
+            return redirect(redirect_url)
     else:
         form = ExternalAssetForm()
 
@@ -302,19 +304,21 @@ def create_external_asset(request, model_name, uuid):
 
 @login_required
 def edit_external_asset(request, model_name, uuid):
-    q = request.session.get('q', '')
+    q = request.session.get('q', '')  # noqa
     user = request.user
     if model_name.lower() == 'solution':
         external_asset = get_object_or_404(ExternalAsset, uuid=uuid, solution__user=user)
+        redirect_url = 'my_solutions'
     elif model_name.lower() == 'strategy':
         external_asset = get_object_or_404(ExternalAsset, uuid=uuid, strategy__user=user)
+        redirect_url = 'my_strategies'
     else:
         raise Exception("Invalid model_name")
     if request.method == "POST":
         form = ExternalAssetForm(request.POST, instance=external_asset)
         if form.is_valid():
             form.save()
-            return redirect('my_proposals')
+            return redirect(redirect_url)
     else:
         form = ExternalAssetForm(instance=external_asset)
 
@@ -325,15 +329,17 @@ def edit_external_asset(request, model_name, uuid):
 
 @login_required
 def delete_external_asset(request, model_name, uuid):
-    user = request.user
+    user = request.user  # noqa
     if model_name.lower() == 'solution':
         external_asset = get_object_or_404(ExternalAsset, uuid=uuid, solution__user=user)
+        redirect_url = 'my_solutions'
     elif model_name.lower() == 'strategy':
         external_asset = get_object_or_404(ExternalAsset, uuid=uuid, strategy__user=user)
+        redirect_url = 'my_strategies'
     else:
         raise Exception("Invalid model_name")
     external_asset.delete()
-    return redirect('my_proposals')
+    return redirect(redirect_url)
 
 
 @login_required
@@ -364,7 +370,7 @@ def create_life_cycle(request, uuid):
                     waste_instance = form.save(commit=False)
                     waste_instance.lifecycle = lc_form
                     waste_instance.save()
-            return redirect('my_proposals')
+            return redirect('my_solutions')
     else:
         form = LifeCycleForm(prefix='life_cycle')
         input_form = lc_input_form_factory(prefix='life_cycle_input')
@@ -393,7 +399,7 @@ def edit_life_cycle(request, uuid):
             input_form.save()
             waste_form.instance = lc
             waste_form.save()
-            return redirect('my_proposals')
+            return redirect('my_solutions')
 
     else:
         form = LifeCycleForm(instance=life_cycle, prefix='life_cycle')
@@ -409,7 +415,7 @@ def delete_life_cycle(request, uuid):
     user = request.user
     deletable_life_cycle = LifeCycle.objects.get(uuid=uuid, solution__user=user)
     deletable_life_cycle.delete()
-    return redirect('my_proposals')
+    return redirect('my_solutions')
 
 # RATING/REPORT --------------------------------------------------------------------------------------------------------
 
@@ -518,12 +524,11 @@ def profile(request):
 
 
 @login_required
-def my_proposals(request):
+def my_solutions(request):
     q = request.session.get('q', '')
     user = request.user
 
     all_solutions = Solution.objects.filter(user=user)
-    all_strategies = Strategy.objects.filter(user=user)
 
     for item in all_solutions:
         item.has_ex_assets = item.externalasset_set.filter(type='ex.').exists()
@@ -533,8 +538,19 @@ def my_proposals(request):
         item.has_operation_lifecycle = item.lifecycle_set.filter(type='o').exists()
         item.has_end_of_life_lifecycle = item.lifecycle_set.filter(type='e').exists()
 
-    context = { 'q': q, 'all_solutions': all_solutions, 'all_strategies': all_strategies}
-    return render(request, 'user/my_proposals.html', context)
+    context = { 'q': q, 'all_solutions': all_solutions}
+    return render(request, 'user/my_solutions.html', context)
+
+
+@login_required
+def my_strategies(request):
+    q = request.session.get('q', '')
+    user = request.user
+
+    all_strategies = Strategy.objects.filter(user=user)
+
+    context = { 'q': q, 'all_strategies': all_strategies}
+    return render(request, 'user/my_strategies.html', context)
 
 
 def author(request, name):

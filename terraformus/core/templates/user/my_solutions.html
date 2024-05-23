@@ -1,4 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
 <div class="my-2"></div>
+
+    <div class="row mt-2">
+        <div class="col">
+            <a class="btn btn-primary btn-xs" href="{% url 'create_solution' %}">New Solution</a>
+        </div>
+    </div>
 
 <table class="table table-bordered table-sm table-striped">
     <thead>
@@ -121,3 +133,5 @@
 
     </tbody>
 </table>
+
+{% endblock content %}

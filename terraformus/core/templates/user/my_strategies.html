@@ -1,3 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="my-2"></div>
+
+    <div class="row mt-2">
+        <div class="col">
+            <a class="btn btn-primary btn-xs" href="{% url 'create_strategy' %}">New Strategy</a>
+        </div>
+    </div>
+
 {% for strategy in all_strategies %}
 
     <a href="{% url 'edit_strategy' strategy.uuid %}">{{ strategy }}</a>
@@ -13,3 +27,5 @@
     <br><br><hr>
 
 {% endfor %}
+
+{% endblock content %}
