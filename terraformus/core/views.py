@@ -96,10 +96,10 @@ def create_solution(request):
 
 
 @login_required
-def edit_solution(request, slug):
+def edit_solution(request, uuid):
     q = request.session.get('q', '')
     user = request.user
-    solution_view = get_object_or_404(Solution, user=user, slug=slug)
+    solution_view = get_object_or_404(Solution, user=user, uuid=uuid)
     depends_on_form_factory = formset_factory(DependsOnForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
@@ -132,10 +132,10 @@ def edit_solution(request, slug):
 
 
 @login_required
-def delete_solution(request, slug):
+def delete_solution(request, uuid):
     user = request.user
-    data_point = Solution.objects.get(slug=slug, user=user)
-    data_point.delete()
+    deletable_solution = Solution.objects.get(uuid=uuid, user=user)
+    deletable_solution.delete()
     return redirect('home')
 
 
@@ -278,12 +278,12 @@ def delete_strategy(request, uuid):
 
 
 @login_required
-def create_external_asset(request, model_name, pk):
+def create_external_asset(request, model_name, uuid):
     user = request.user
     if model_name.lower() == 'solution':
-        proposal_instance = get_object_or_404(Solution, pk=pk, user=user)
+        proposal_instance = get_object_or_404(Solution, uuid=uuid, user=user)
     elif model_name.lower() == 'strategy':
-        proposal_instance = get_object_or_404(Strategy, pk=pk, user=user)
+        proposal_instance = get_object_or_404(Strategy, uuid=uuid, user=user)
     else:
         raise Exception("Invalid model_name")
 
@@ -302,12 +302,12 @@ def create_external_asset(request, model_name, pk):
 
 
 @login_required
-def edit_external_asset(request, model_name, pk):
+def edit_external_asset(request, model_name, uuid):
     user = request.user
     if model_name.lower() == 'solution':
-        external_asset = get_object_or_404(ExternalAsset, pk=pk, solution__user=user)
+        external_asset = get_object_or_404(ExternalAsset, uuid=uuid, solution__user=user)
     elif model_name.lower() == 'strategy':
-        external_asset = get_object_or_404(ExternalAsset, pk=pk, strategy__user=user)
+        external_asset = get_object_or_404(ExternalAsset, uuid=uuid, strategy__user=user)
     else:
         raise Exception("Invalid model_name")
     if request.method == "POST":
@@ -324,12 +324,12 @@ def edit_external_asset(request, model_name, pk):
 
 
 @login_required
-def delete_external_asset(request, model_name, pk):
+def delete_external_asset(request, model_name, uuid):
     user = request.user
     if model_name.lower() == 'solution':
-        external_asset = get_object_or_404(ExternalAsset, pk=pk, solution__user=user)
+        external_asset = get_object_or_404(ExternalAsset, uuid=uuid, solution__user=user)
     elif model_name.lower() == 'strategy':
-        external_asset = get_object_or_404(ExternalAsset, pk=pk, strategy__user=user)
+        external_asset = get_object_or_404(ExternalAsset, uuid=uuid, strategy__user=user)
     else:
         raise Exception("Invalid model_name")
     external_asset.delete()
@@ -337,9 +337,9 @@ def delete_external_asset(request, model_name, pk):
 
 
 @login_required
-def create_life_cycle(request, pk):
+def create_life_cycle(request, uuid):
     user = request.user
-    valid_solution = Solution.objects.get(pk=pk, user=user)
+    valid_solution = Solution.objects.get(uuid=uuid, user=user)
     lc_input_form_factory = inlineformset_factory(LifeCycle, LifeCycleInput, form=InLineLifeCycleInputForm, extra=1)
     lc_waste_form_factory = inlineformset_factory(LifeCycle, LifeCycleWaste, form=InLineLifeCycleWasteForm, extra=1)
 
@@ -374,9 +374,9 @@ def create_life_cycle(request, pk):
 
 
 @login_required
-def edit_life_cycle(request, pk):
+def edit_life_cycle(request, uuid):
     user = request.user
-    life_cycle = LifeCycle.objects.get(pk=pk, solution__user=user)
+    life_cycle = LifeCycle.objects.get(uuid=uuid, solution__user=user)
     lc_input_form_factory = inlineformset_factory(LifeCycle, LifeCycleInput, form=InLineLifeCycleInputForm, extra=1, can_delete=True)
     lc_waste_form_factory = inlineformset_factory(LifeCycle, LifeCycleWaste, form=InLineLifeCycleWasteForm, extra=1, can_delete=True)
 
@@ -403,10 +403,10 @@ def edit_life_cycle(request, pk):
 
 
 @login_required
-def delete_life_cycle(request, pk):
+def delete_life_cycle(request, uuid):
     user = request.user
-    life_cycle = LifeCycle.objects.get(pk=pk, solution__user=user)
-    life_cycle.delete()
+    deletable_life_cycle = LifeCycle.objects.get(uuid=uuid, solution__user=user)
+    deletable_life_cycle.delete()
     return redirect('my_proposals')
 
 # RATING/REPORT --------------------------------------------------------------------------------------------------------
