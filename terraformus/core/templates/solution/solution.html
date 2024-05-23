@@ -40,7 +40,7 @@
                 <div class="row mb-3">
                     <div class="col text-center">
 
-                        <a class="btn btn-xs btn-outline-dark bg-light mr-5" href="{% url 'edit_solution' solution_view.slug %}">
+                        <a class="btn btn-xs btn-outline-dark bg-light mr-5" href="{% url 'edit_solution' solution_view.uuid %}">
                             <span class="material-icons md-18 mr-2">edit</span> Edit
                         </a>
 
@@ -58,7 +58,7 @@
                                         <p>This may lead to discontinuity:</p>
                                         <p>- All connections that depend on this data point will be severed</p>
                                         <p>- That includes all connections made by other users</p>
-                                        <a class="btn btn-outline-danger" href="{% url 'delete_solution' solution_view.slug %}">Yes, delete</a>
+                                        <a class="btn btn-outline-danger" href="{% url 'delete_solution' solution_view.uuid %}">Yes, delete</a>
                                     </div>
                                 </div>
                             </div>

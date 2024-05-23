@@ -53,7 +53,9 @@ def solutions(request):
 
 
 def solution(request, uuid, slug):
-    """ for slug to show on url, it is necessary to receive here even if it's not used in the view """
+    """
+    for slug to show on url, it is necessary to receive here even if it's not used in the view
+    """
     q = request.session.get('q', '')
     solution_view = get_object_or_404(Solution, uuid=uuid)
     rating = Rating.objects.select_related('rating_reply').filter(solution=solution_view)
@@ -103,7 +105,6 @@ def edit_solution(request, uuid):
     depends_on_form_factory = formset_factory(DependsOnForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
-        print('post request: ', request.POST)
         form = SolutionForm(request.POST, instance=solution_view, prefix='form')
         depends_on_form = depends_on_form_factory(request.POST, prefix='connects_to')
 
@@ -130,13 +131,12 @@ def edit_solution(request, uuid):
     return render(request, 'solution/edit_solution.html', context)
 
 
-
 @login_required
 def delete_solution(request, uuid):
     user = request.user
     deletable_solution = Solution.objects.get(uuid=uuid, user=user)
     deletable_solution.delete()
-    return redirect('home')
+    return redirect('my_proposals')
 
 
 # STRATEGIES -----------------------------------------------------------------------------------------------------------
@@ -173,7 +173,9 @@ def strategies(request):
 
 
 def strategy(request, uuid, slug):
-    """ for slug to show on url, it is necessary to receive here even if it's not used in the view """
+    """
+    for slug to show on url, it is necessary to receive here even if it's not used in the view
+    """
     q = request.session.get('q', '')
     # data_point = get_object_or_404(DataPoint, uuid=uuid)
     # rating = Rating.objects.select_related('rating_reply').filter(content=data_point)
@@ -186,10 +188,6 @@ def strategy(request, uuid, slug):
                }
 
     return render(request, 'strategy/strategy.html', context)
-
-
-from django.contrib import messages
-from .forms import StrategyForm
 
 
 @login_required
@@ -279,6 +277,7 @@ def delete_strategy(request, uuid):
 
 @login_required
 def create_external_asset(request, model_name, uuid):
+    q = request.session.get('q', '')
     user = request.user
     if model_name.lower() == 'solution':
         proposal_instance = get_object_or_404(Solution, uuid=uuid, user=user)
@@ -297,12 +296,13 @@ def create_external_asset(request, model_name, uuid):
     else:
         form = ExternalAssetForm()
 
-    context = {'form':form}
+    context = {'q': q, 'form':form}
     return render(request, 'solution/create_external_asset.html', context)
 
 
 @login_required
 def edit_external_asset(request, model_name, uuid):
+    q = request.session.get('q', '')
     user = request.user
     if model_name.lower() == 'solution':
         external_asset = get_object_or_404(ExternalAsset, uuid=uuid, solution__user=user)
@@ -318,7 +318,7 @@ def edit_external_asset(request, model_name, uuid):
     else:
         form = ExternalAssetForm(instance=external_asset)
 
-    context = {'form': form, 'model_name': model_name}
+    context = {'q': q, 'form': form, 'model_name': model_name}
     return render(request, 'solution/edit_external_asset.html', context)
 
 
@@ -338,6 +338,7 @@ def delete_external_asset(request, model_name, uuid):
 
 @login_required
 def create_life_cycle(request, uuid):
+    q = request.session.get('q', '')
     user = request.user
     valid_solution = Solution.objects.get(uuid=uuid, user=user)
     lc_input_form_factory = inlineformset_factory(LifeCycle, LifeCycleInput, form=InLineLifeCycleInputForm, extra=1)
@@ -369,12 +370,13 @@ def create_life_cycle(request, uuid):
         input_form = lc_input_form_factory(prefix='life_cycle_input')
         waste_form = lc_waste_form_factory(prefix='life_cycle_waste')
 
-    context = {'form': form, 'input_form': input_form, 'waste_form': waste_form}
+    context = {'q': q, 'form': form, 'input_form': input_form, 'waste_form': waste_form}
     return render(request, 'solution/create_life_cycle.html', context)
 
 
 @login_required
 def edit_life_cycle(request, uuid):
+    q = request.session.get('q', '')
     user = request.user
     life_cycle = LifeCycle.objects.get(uuid=uuid, solution__user=user)
     lc_input_form_factory = inlineformset_factory(LifeCycle, LifeCycleInput, form=InLineLifeCycleInputForm, extra=1, can_delete=True)
@@ -398,7 +400,7 @@ def edit_life_cycle(request, uuid):
         input_form = lc_input_form_factory(instance=life_cycle, prefix='life_cycle_input')
         waste_form = lc_waste_form_factory(instance=life_cycle, prefix='life_cycle_waste')
 
-    context = {'form': form, 'input_form': input_form, 'waste_form': waste_form}
+    context = {'q': q, 'form': form, 'input_form': input_form, 'waste_form': waste_form}
     return render(request, 'solution/edit_life_cycle.html', context)
 
 

@@ -133,8 +133,11 @@ class ExternalAsset(models.Model):
     def __str__(self):
         return self.title
 
-# this one is added through a button with its own crud/view
+
 class LifeCycle(models.Model):
+    """
+    Added through a button with its own crud/view
+    """
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     solution = models.ForeignKey('Solution', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
@@ -145,8 +148,11 @@ class LifeCycle(models.Model):
     def __str__(self):
         return f"{self.get_type_display()} - {self.title} - {self.solution.title}"
 
-# these two (input and waste) can also be on an inline dynamic form
+
 class LifeCycleInput(models.Model):
+    """
+    crud in inline form of LifeCycle
+    """
     lifecycle = models.ForeignKey('LifeCycle', on_delete=models.CASCADE)
     resource_name = models.CharField(max_length=255, help_text=ht.life_cycle_input_ht['resource_name'])
     resource_type = models.CharField(max_length=2, choices=resource_types, help_text=ht.life_cycle_input_ht['resource_type'])
@@ -160,6 +166,9 @@ class LifeCycleInput(models.Model):
 
 
 class LifeCycleWaste(models.Model):
+    """
+    crud in inline form of LifeCycle
+    """
     lifecycle = models.ForeignKey('LifeCycle', on_delete=models.CASCADE)
     waste_type = models.TextField(help_text=ht.life_cycle_waste_ht['waste_type'])
     reusable = models.BooleanField(default=False, help_text=ht.life_cycle_waste_ht['reusable'])
@@ -220,7 +229,7 @@ class StrategySolution(models.Model):
 class Rating(models.Model):
     STAR_RATING = tuple((i, str(i)) for i in range(1, 11))
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     solution = models.ForeignKey('Solution', on_delete=models.CASCADE, null=True, blank=True)
     strategy = models.ForeignKey('Strategy', on_delete=models.CASCADE, null=True, blank=True)
     rate = models.PositiveSmallIntegerField(choices=STAR_RATING, default=1)
@@ -228,11 +237,11 @@ class Rating(models.Model):
     last_edited = models.DateField(auto_now=True)
 
     def __str__(self):
-        return f"{self.author}"
+        return f"{self.user}"
 
 
 class RatingReply(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.OneToOneField(Rating, on_delete=models.CASCADE, related_name='rating_reply')
     comment = models.TextField()
     last_edited = models.DateField(auto_now=True)
@@ -241,17 +250,17 @@ class RatingReply(models.Model):
         verbose_name_plural = "Rating Replies"
 
     def __str__(self):
-        return f"{self.author}"
+        return f"{self.user}"
 
 
 class Report(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     solution = models.ForeignKey('Solution', on_delete=models.CASCADE, null=True, blank=True)
     strategy = models.ForeignKey('Strategy', on_delete=models.CASCADE, null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.author}"
+        return f"{self.user}"
 
 
 # User -----------------------------------------------------------------------------------------------------------------
