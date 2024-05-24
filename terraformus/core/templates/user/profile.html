@@ -8,15 +8,28 @@
         <div class="col-8">
             <form method="post">
                 {% csrf_token %}
-                {{ user_form.as_p }}
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        {{ user_form.username.label_tag }}
+                        {{ user_form.username }}
+                    </div>
+                    <div class="form-group col-md-4">
+                        {{ user_form.first_name.label_tag }}
+                        {{ user_form.first_name }}
+                    </div>
+                    <div class="form-group col-md-4">
+                        {{ user_form.last_name.label_tag }}
+                        {{ user_form.last_name }}
+                    </div>
+                </div>
+{#                {{ user_form.as_p }}#}
                 {{ profile_form.as_p }}
                 <button class="btn btn-outline-dark" type="submit">Update</button>
             </form>
         </div>
     
     </div>
-
-
+    
     <br>
     <br>
 

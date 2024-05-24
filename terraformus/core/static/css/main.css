@@ -133,3 +133,11 @@
 /*td {*/
 /*    word-wrap: break-word;*/
 /*}*/
+
+.big-th {
+    font-size: 18px;
+}
+
+.big-title {
+    font-size: 15px;
+}
