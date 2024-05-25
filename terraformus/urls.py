@@ -35,7 +35,6 @@ urlpatterns = [
     # users
     path('profile/', views.profile, name='profile'),
     path('author/<str:name>', views.author, name='author'),
-    # path('my_proposals', views.my_proposals, name='my_proposals'),
     path('my_solutions', views.my_solutions, name='my_solutions'),
     path('my_strategies', views.my_strategies, name='my_strategies'),
     # system

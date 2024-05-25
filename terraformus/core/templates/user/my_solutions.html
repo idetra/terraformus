@@ -5,15 +5,20 @@
 {% block content %}
 
     <div class="my-2"></div>
-
-    <table class="table table-bordered table-sm table-striped text-center">
+    
+    <div class="row my-2">
+        <div class="col">
+            <a class="chip chip-action chip-outline chip-filter chip-xs border-dark" type="button" href="{% url 'create_solution' %}"><i class='material-icons mr-2'>add_circle_outline</i>Create New Solution</a>
+{#            <a class="btn btn-primary btn-xs" href="{% url 'create_solution' %}">Create New Solution</a>#}
+        </div>
+    </div>
+    
+    {% if all_solutions %}
+    
+        <table class="table table-bordered table-sm table-striped text-center">
         <thead>
             <tr>
-                <th class="big-th" rowspan="3">
-                    <a class="btn btn-dark btn-float btn-sm mr-2" type="button" href="{% url 'create_solution' %}">
-                        <i class='material-icons'>add_circle_outline</i></a>
-                    Solution
-                </th>
+                <th class="big-th" rowspan="3">Solution</th>
                 <th class="big-th" rowspan="3">External Assets</th>
                 <th class="big-th" colspan="6">Life Cycle</th>
             </tr>
@@ -120,7 +125,7 @@
                                     <div class="mb-n3"><span class="mr-1 badge badge-pill badge-dark">W</span>{{ lci.waste_type}}</div>
                                     <br>
                                 {% endfor %}
-                                <div class="mt-2"></div>
+                                <div class="mt-2">
                             {% endif %}
                         {% endfor %}
                         {% if not item.has_end_of_life_lifecycle %}
@@ -136,4 +141,6 @@
         </tbody>
     </table>
 
+    {% endif %}
+    
 {% endblock content %}

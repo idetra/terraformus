@@ -6,26 +6,46 @@
 
 <div class="my-2"></div>
 
-    <div class="row mt-2">
+    <div class="row my-2">
         <div class="col">
-            <a class="btn btn-primary btn-xs" href="{% url 'create_strategy' %}">New Strategy</a>
+            <a class="chip chip-action chip-outline chip-filter chip-xs border-dark" type="button" href="{% url 'create_strategy' %}"><i class='material-icons mr-2'>add_circle_outline</i>Create New Strategy</a>
+{#            <a class="btn btn-primary btn-xs" href="{% url 'create_strategy' %}">Create New Strategy</a>#}
         </div>
     </div>
-
-{% for strategy in all_strategies %}
-
-    <a href="{% url 'edit_strategy' strategy.uuid %}">{{ strategy }}</a>
-    <br>
-    Solutions:<br>
-    {% for item in strategy.solutions.all %}
     
-        {{ item }}<br>
-        
-    {% endfor %}
+    {% if all_strategies %}
     
+        <table class="table table-bordered table-sm table-striped text-center">
+        <thead>
+            <tr>
+                <th class="big-th" rowspan="3">
+                    Strategy
+                </th>
+                <th class="big-th" rowspan="3">Solutions</th>
+            </tr>
+        </thead>
+        <tbody class="text-left">
     
-    <br><br><hr>
-
-{% endfor %}
-
+            {% for item in all_strategies %}
+                <tr>
+                    <th class="align-text-top py-2" scope="row">
+                        <a href="{% url 'edit_strategy' item.uuid %}">{{ item }}</a>
+                        <br>
+                        <a class="chip chip-action chip-outline chip-filter chip-xs border-dark mt-3" type="button" href="{% url 'solution' item.uuid item.slug %}"><i class='material-icons mr-2'>visibility</i>View strategy</a>
+                    </th>
+                
+                    <td class="align-text-top">
+                        {% for solution in item.solutions.all %}
+                        
+                            {{ solution }}<br>
+                            
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+        </tbody>
+    </table>
+                
+    {% endif %}
+    
 {% endblock content %}
