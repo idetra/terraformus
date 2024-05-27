@@ -4,19 +4,19 @@
 
 {% block content %}
 
-    <div class="my-2"></div>
-    
-    <div class="row my-2">
-        <div class="col">
-            <a class="chip chip-action chip-outline chip-filter chip-xs border-dark" type="button" href="{% url 'create_solution' %}"><i class='material-icons mr-2'>add_circle_outline</i>Create New Solution</a>
-{#            <a class="btn btn-primary btn-xs" href="{% url 'create_solution' %}">Create New Solution</a>#}
-        </div>
-    </div>
-    
     {% if all_solutions %}
-    
+
+        <div class="my-2"></div>
+
+        <div class="row my-2">
+            <div class="col">
+                <a class="chip chip-action chip-outline chip-filter chip-xs border-dark bg-primary text-light" type="button" href="{% url 'create_solution' %}"><i class='material-icons mr-2 text-light'>add_circle_outline</i>Create New Solution</a>
+                {#            <a class="btn btn-primary btn-xs" href="{% url 'create_solution' %}">Create New Solution</a>#}
+            </div>
+        </div>
+
         <table class="table table-bordered table-sm table-striped text-center">
-        <thead>
+            <thead>
             <tr>
                 <th class="big-th" rowspan="3">Solution</th>
                 <th class="big-th" rowspan="3">External Assets</th>
@@ -27,46 +27,46 @@
                 <th class="big-th" rowspan="2">Operation</th>
                 <th class="big-th" rowspan="2">End of Life</th>
             </tr>
-        </thead>
-        <tbody class="text-left">
+            </thead>
+            <tbody class="text-left">
 
-                {% for item in all_solutions %}
-                    <tr>
+            {% for item in all_solutions %}
+                <tr>
 
-                        <th class="align-text-top py-2" scope="row">
-                            <a class="big-title" href="{% url 'edit_solution' item.uuid %}">{{ item.title|truncatewords:7 }}</a>
-                            <br>
-                            <a class="chip chip-action chip-outline chip-filter chip-xs border-dark mt-3" type="button" href="{% url 'solution' item.uuid item.slug %}"><i class='material-icons mr-2'>visibility</i> View solution</a>
-                            <br>
-                            <a class="chip chip-action chip-outline chip-filter chip-xs border-dark" type="button" href="{% url 'create_external_asset' 'solution' item.uuid %}"><i class='material-icons mr-2'>add_circle_outline</i>Add External Asset</a>
-                            <br>
-                            <a class="chip chip-action chip-outline chip-filter chip-xs border-dark" type="button" href="{% url 'create_life_cycle' item.uuid %}"><i class='material-icons mr-2'>add_circle_outline</i>Add Life Cycle</a>
-                        </th>
+                    <th class="align-text-top py-2" scope="row">
+                        <a class="big-title" href="{% url 'edit_solution' item.uuid %}">{{ item.title|truncatewords:7 }}</a>
+                        <br>
+                        <a class="chip chip-action chip-outline chip-filter chip-xs border-dark mt-3" type="button" href="{% url 'solution' item.uuid item.slug %}"><i class='material-icons mr-2'>visibility</i> View solution</a>
+                        <br>
+                        <a class="chip chip-action chip-outline chip-filter chip-xs border-dark" type="button" href="{% url 'create_external_asset' 'solution' item.uuid %}"><i class='material-icons mr-2'>add_circle_outline</i>Add External Asset</a>
+                        <br>
+                        <a class="chip chip-action chip-outline chip-filter chip-xs border-dark" type="button" href="{% url 'create_life_cycle' item.uuid %}"><i class='material-icons mr-2'>add_circle_outline</i>Add Life Cycle</a>
+                    </th>
 
-                        <td class="align-text-top">
-                            {% for external_asset in item.externalasset_set.all %}
-                                <div class="mb-n3"><a class="" href="{% url 'edit_external_asset' 'solution' external_asset.uuid %}">
-                                    <span class="mr-1 badge badge-pill badge-primary">{{ external_asset.type }}</span><span class="big-title">{{ external_asset.title|truncatewords:7 }}</span></a></div>
-                                <br>
-                            {% endfor %}
-                            {% if not item.has_doc_assets %}
-                                <span class="badge badge-pill badge-warning my-1">
+                    <td class="align-text-top">
+                        {% for external_asset in item.externalasset_set.all %}
+                            <div class="mb-n3"><a class="" href="{% url 'edit_external_asset' 'solution' external_asset.uuid %}">
+                                <span class="mr-1 badge badge-pill badge-primary">{{ external_asset.type }}</span><span class="big-title">{{ external_asset.title|truncatewords:7 }}</span></a></div>
+                            <br>
+                        {% endfor %}
+                        {% if not item.has_doc_assets %}
+                            <span class="badge badge-pill badge-warning my-1">
                                   Add at least one external asset 'document'
                                 </span><br>
-                            {% endif %}
-                            {% if not item.has_ex_assets %}
-                                <span class="badge badge-pill badge-danger my-1">
+                        {% endif %}
+                        {% if not item.has_ex_assets %}
+                            <span class="badge badge-pill badge-danger my-1">
                                   Add at least one external asset 'functional example'
                                 </span><br>
-                            {% endif %}
-                            {% if not item.has_ref_assets %}
-                                <span class="badge badge-pill badge-danger my-1">
+                        {% endif %}
+                        {% if not item.has_ref_assets %}
+                            <span class="badge badge-pill badge-danger my-1">
                                     Add at least one external asset '3rd party ref.'
                                 </span><br>
-                            {% endif %}
-                        </td>
+                        {% endif %}
+                    </td>
 
-                        <td class="align-text-top">
+                    <td class="align-text-top">
                         {% for build in item.lifecycle_set.all %}
                             {% if build.type == 'b' %}
                                 <a class="big-title" href="{% url 'edit_life_cycle' build.uuid %}">{{ build.title }}</a>
@@ -83,13 +83,13 @@
                             {% endif %}
                         {% endfor %}
                         {% if not item.has_build_lifecycle %}
-                                <span class="badge badge-pill badge-danger my-1">
+                            <span class="badge badge-pill badge-danger my-1">
                                   Add at least one 'build' cycle
                                 </span>
-                            {% endif %}
-                        </td>
+                        {% endif %}
+                    </td>
 
-                        <td class="align-text-top">
+                    <td class="align-text-top">
                         {% for build in item.lifecycle_set.all %}
                             {% if build.type == 'o' %}
                                 <a class="big-title" href="{% url 'edit_life_cycle' build.uuid %}">{{ build.title }}</a>
@@ -106,13 +106,13 @@
                             {% endif %}
                         {% endfor %}
                         {% if not item.has_operation_lifecycle %}
-                                <span class="badge badge-pill badge-danger my-1">
+                            <span class="badge badge-pill badge-danger my-1">
                                   Add at least one 'operation' cycle
                                 </span>
-                            {% endif %}
-                        </td>
+                        {% endif %}
+                    </td>
 
-                        <td class="align-text-top">
+                    <td class="align-text-top">
                         {% for build in item.lifecycle_set.all %}
                             {% if build.type == 'e' %}
                                 <a class="big-title" href="{% url 'edit_life_cycle' build.uuid %}">{{ build.title }}</a>
@@ -125,22 +125,28 @@
                                     <div class="mb-n3"><span class="mr-1 badge badge-pill badge-dark">W</span>{{ lci.waste_type}}</div>
                                     <br>
                                 {% endfor %}
-                                <div class="mt-2">
+                                <div class="mt-2"></div>
                             {% endif %}
                         {% endfor %}
                         {% if not item.has_end_of_life_lifecycle %}
-                                <span class="badge badge-pill badge-danger my-1">
+                            <span class="badge badge-pill badge-danger my-1">
                                   Add at least one 'end of life' cycle
                                 </span>
-                            {% endif %}
-                        </td>
+                        {% endif %}
+                    </td>
 
-                    </tr>
-                {% endfor %}
+                </tr>
+            {% endfor %}
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+
+    {% else %}
+
+        <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+            <a class="chip chip-action chip-outline chip-filter chip-xs border-dark bg-primary text-light" type="button" href="{% url 'create_solution' %}"><i class='material-icons mr-2 text-light'>add_circle_outline</i>Create New Solution</a>
+        </div>
 
     {% endif %}
-    
+
 {% endblock content %}

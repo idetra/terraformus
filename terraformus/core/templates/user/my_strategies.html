@@ -4,28 +4,31 @@
 
 {% block content %}
 
-<div class="my-2"></div>
 
-    <div class="row my-2">
-        <div class="col">
-            <a class="chip chip-action chip-outline chip-filter chip-xs border-dark" type="button" href="{% url 'create_strategy' %}"><i class='material-icons mr-2'>add_circle_outline</i>Create New Strategy</a>
-{#            <a class="btn btn-primary btn-xs" href="{% url 'create_strategy' %}">Create New Strategy</a>#}
-        </div>
-    </div>
-    
     {% if all_strategies %}
-    
+
+
+        <div class="my-2"></div>
+
+        <div class="row my-2">
+            <div class="col">
+                <a class="chip chip-action chip-outline chip-filter chip-xs border-dark  bg-primary text-light" type="button" href="{% url 'create_strategy' %}"><i class='material-icons mr-2 text-light'>add_circle_outline</i>Create New Strategy</a>
+                {#            <a class="btn btn-primary btn-xs" href="{% url 'create_strategy' %}">Create New Strategy</a>#}
+            </div>
+        </div>
+
+
         <table class="table table-bordered table-sm table-striped text-center">
-        <thead>
+            <thead>
             <tr>
                 <th class="big-th" rowspan="3">
                     Strategy
                 </th>
                 <th class="big-th" rowspan="3">Solutions</th>
             </tr>
-        </thead>
-        <tbody class="text-left">
-    
+            </thead>
+            <tbody class="text-left">
+
             {% for item in all_strategies %}
                 <tr>
                     <th class="align-text-top py-2" scope="row">
@@ -33,19 +36,25 @@
                         <br>
                         <a class="chip chip-action chip-outline chip-filter chip-xs border-dark mt-3" type="button" href="{% url 'solution' item.uuid item.slug %}"><i class='material-icons mr-2'>visibility</i>View strategy</a>
                     </th>
-                
+
                     <td class="align-text-top">
                         {% for solution in item.solutions.all %}
-                        
+
                             {{ solution }}<br>
-                            
+
                         {% endfor %}
                     </td>
                 </tr>
-                {% endfor %}
-        </tbody>
-    </table>
-                
+            {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+        
+        <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+            <a class="chip chip-action chip-outline chip-filter chip-xs border-dark bg-primary text-light" type="button" href="{% url 'create_strategy' %}"><i class='material-icons mr-2 text-light'>add_circle_outline</i>Create New Strategy</a>
+        </div>
+        
     {% endif %}
-    
+
 {% endblock content %}
