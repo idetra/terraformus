@@ -90,7 +90,7 @@ reference_ht = {
 }
 
 ext_asset_ht = {
-    'solution': 'help text placeholder',
+    'type': 'help text placeholder',
     'title': 'help text placeholder',
     'url': 'help text placeholder',
 }

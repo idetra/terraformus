@@ -7,12 +7,52 @@
     <div class="row justify-content-center my-5">
         <div class="col-8">
             <h5>New External Asset</h5>
+            <div class="my-4"></div>
             {{ form.non_field_errors }}
             <form method="post" action="">
                 {% csrf_token %}
-                {{ field.errors }}
-                {{ form.as_p }}
-                <button class="btn btn-outline-dark" type="submit">Save</button>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        {{ form.type.label_tag }}
+                        {{ form.type }}
+                        <small class="form-text text-muted">{{ form.type.help_text }}</small>
+                        {% if form.type.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.type.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-md-9">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                        <small class="form-text text-muted">{{ form.title.help_text }}</small>
+                        {% if form.title.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.title.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-md-9">
+                        {{ form.url.label_tag }}
+                        {{ form.url }}
+                        <small class="form-text text-muted">{{ form.url.help_text }}</small>
+                        {% if form.url.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.url.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <button class="btn btn-primary mt-5" type="submit">Save</button>
+            
             </form>       
         
         </div>

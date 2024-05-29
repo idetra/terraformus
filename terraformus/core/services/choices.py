@@ -19,7 +19,7 @@ life_cycle_types = {
 }
 
 external_asset = {
-    'ex.': 'Working example',
-    'ref': 'Reference',
     'doc': 'Document',
+    'ref': 'Reference',
+    'ex.': 'Working example',
 }

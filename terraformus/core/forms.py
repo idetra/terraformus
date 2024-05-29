@@ -113,6 +113,15 @@ class ExternalAssetForm(forms.ModelForm):
         fields = '__all__'
         exclude = ['user', 'solution', 'strategy']
 
+    def __init__(self, *args, **kwargs):
+        super(ExternalAssetForm, self).__init__(*args, **kwargs)
+
+        # Defining the widgets here to preserve help_text from models
+
+        self.fields['type'].widget = forms.Select(choices=choices.external_asset.items(), attrs={'class': 'form-control'})
+        self.fields['title'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['url'].widget = forms.TextInput(attrs={'class': 'form-control'})
+
 
 class LifeCycleForm(forms.ModelForm):
     class Meta:

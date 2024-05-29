@@ -126,8 +126,8 @@ class ExternalAsset(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     solution = models.ForeignKey('Solution', on_delete=models.CASCADE, null=True, blank=True)
     strategy = models.ForeignKey('Strategy', on_delete=models.CASCADE, null=True, blank=True)
-    type = models.CharField(max_length=3, choices=external_asset, default=external_asset['doc'])
-    title = models.CharField(max_length=255)
+    type = models.CharField(max_length=3, choices=external_asset, default=external_asset['doc'], help_text=ht.ext_asset_ht['type'])
+    title = models.CharField(max_length=255, help_text=ht.ext_asset_ht['title'])
     url = models.URLField(help_text=ht.ext_asset_ht['url'])
 
     def __str__(self):
