@@ -1,19 +1,155 @@
 {% extends "base.html" %}
 {% load static %}
 {% load i18n %}
+{% load core_template_tags %}
 
 {% block content %}
 
     <div class="row justify-content-center my-5">
-        <div class="col-8">
+        <div class="col-md-8">
             <h5>New Solution</h5>
+            <div class="my-4"></div>
             {{ form.non_field_errors }}
             <form method="post" action="">
-                {% csrf_token %}
-                {{ field.errors }}
-                {{ form.as_p }}
             
-                <h5>Add Depends on</h5>
+                {% csrf_token %}
+            
+                <div class="form-row">
+                    <div class="form-group col-md-9">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                        <small class="form-text text-muted">{{ form.title.help_text }}</small>
+                        {% if form.title.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.title.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {{ form.subtitle.label_tag }}
+                        {{ form.subtitle }}
+                        <small class="form-text text-muted">{{ form.subtitle.help_text }}</small>
+                        {% if form.subtitle.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.subtitle.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {{ form.goal.label_tag }}
+                        {{ form.goal }}
+                        <small class="form-text text-muted">{{ form.goal.help_text }}</small>
+                        {% if form.goal.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.goal.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                {% for category, items in solutions_booleans.items %}
+                    <h6 class="form-row-title">{{ category|capfirst }}</h6>
+                    <div class="form-row">
+                        {% with i=0 %}
+                            {% for field in form %}
+                                {% if field.name in items %}
+                                    <div class="form-group col-md-3">
+                                        <div class="form-check">
+                                            {{ field }}
+                                            <label class="form-check-label" for="{{ field.auto_id }}">
+                                                {{ field.label }}
+                                            </label>
+                                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                                            {% if field.errors %}
+                                                <div class="invalid-feedback">
+                                                    {{ field.errors }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% with i=i|add:1 %}
+                                        {% if i|divisibleby:4 and not forloop.last %}
+                                            </div><div class="form-row">
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endwith %}
+                    </div>
+                {% endfor %}
+            
+                <div class="form-row">
+                    <div class="form-group col-md-9">
+                        {{ form.cost_type.label_tag }}
+                        {{ form.cost_type }}
+                        <small class="form-text text-muted">{{ form.cost_type.help_text }}</small>
+                        {% if form.cost_type.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.cost_type.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {{ form.update.label_tag }}
+                        {{ form.update }}
+                        <small class="form-text text-muted">{{ form.update.help_text }}</small>
+                        {% if form.update.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.update.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {{ form.upgrade.label_tag }}
+                        {{ form.upgrade }}
+                        <small class="form-text text-muted">{{ form.upgrade.help_text }}</small>
+                        {% if form.upgrade.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.upgrade.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {{ form.scale_up.label_tag }}
+                        {{ form.scale_up }}
+                        <small class="form-text text-muted">{{ form.scale_up.help_text }}</small>
+                        {% if form.scale_up.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.scale_up.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {{ form.derives_from.label_tag }}
+                        {{ form.derives_from }}
+                        <small class="form-text text-muted">{{ form.derives_from.help_text }}</small>
+                        {% if form.derives_from.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.derives_from.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <h5 class="mt-2">Dependencies</h5>
 
                 {% for form in depends_on_formset %}
                     <div id="dependsOnFormset">
@@ -23,7 +159,7 @@
             
                 {{ depends_on_formset.management_form }}
                 <div class="my-5"></div>
-                <button class="btn btn-outline-dark" type="submit">Save</button>
+                <button class="btn btn-primary" type="submit">Save</button>
             </form>       
         
         </div>
@@ -38,8 +174,8 @@
             $('#dependsOnFormset').formset({
                 prefix: '{{ depends_on_formset.prefix }}',
                 formCssClass: 'dynamic-depends_on_formset',
-                addText: 'Add another',
-                deleteText: 'Remove item above'
+                addText: 'Add another dependency',
+                deleteText: 'Remove the dependency above'
             });
         })
         

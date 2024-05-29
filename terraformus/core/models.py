@@ -46,7 +46,7 @@ class Solution(models.Model):
     slug = models.SlugField(max_length=255, unique=True)
     subtitle = models.CharField(max_length=255, help_text=ht.solution_ht['subtitle'])
     goal = models.TextField(help_text=ht.solution_ht['goal'])
-    # type -------------------------------------------------------------------------------------------------------------
+    # solution_type ----------------------------------------------------------------------------------------------------
     automation = models.BooleanField(default=False, help_text=ht.sol_type_ht['automation'])
     infrastructure = models.BooleanField(default=False, help_text=ht.sol_type_ht['infrastructure'])
     # population target ------------------------------------------------------------------------------------------------

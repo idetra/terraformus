@@ -12,6 +12,7 @@ from terraformus.core.forms import SolutionForm, DependsOnForm, ProfileForm, Use
     InLineLifeCycleInputForm, LifeCycleForm, InLineLifeCycleWasteForm, StrategyForm, StrategySolutionForm
 from terraformus.core.models import Solution, Strategy, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste, \
     Rating, StrategySolution
+from terraformus.core.services import aux_lists
 
 
 def home(request):
@@ -92,7 +93,8 @@ def create_solution(request):
         form = SolutionForm()
         depends_on_formset = DependsOnFormSet(prefix='connects_to')
 
-    context = {'q': q, 'form': form, 'depends_on_formset': depends_on_formset}
+    context = {'q': q, 'form': form, 'depends_on_formset': depends_on_formset,
+               'solutions_booleans': aux_lists.solutions_booleans}
 
     return render(request, 'solution/create_solution.html', context)
 
@@ -126,7 +128,8 @@ def edit_solution(request, uuid):
         depends_on_form = depends_on_form_factory(
             prefix='connects_to', initial=[{'title': dep.title} for dep in solution_view.depends_on.all()])
 
-    context = {'q': q, 'form': form, 'depends_on_form': depends_on_form}
+    context = {'q': q, 'form': form, 'depends_on_form': depends_on_form,
+               'solutions_booleans': aux_lists.solutions_booleans}
 
     return render(request, 'solution/edit_solution.html', context)
 

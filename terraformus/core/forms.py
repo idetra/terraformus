@@ -3,18 +3,20 @@ from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Invisible
 
 from terraformus.core.models import Solution, Profile, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste, \
-    Strategy, StrategySolution
+    Strategy
+from terraformus.core.services import aux_lists, choices
 
 
 # SOLUTIONS & STRATEGIES -----------------------------------------------------------------------------------------------
 
 
 class SolutionForm(forms.ModelForm):
-    derives_from = forms.CharField(required=False)
+    derives_from = forms.CharField(required=False, help_text=Solution._meta.get_field('derives_from').help_text)
 
     class Meta:
         model = Solution
@@ -26,6 +28,24 @@ class SolutionForm(forms.ModelForm):
         if self.instance.pk and self.instance.derives_from:
             self.initial['derives_from'] = self.instance.derives_from.title
 
+        # Defining the widgets here to preserve help_text from models
+
+        self.fields['title'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['subtitle'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['goal'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
+
+        self.fields['cost_type'].widget = forms.Select(choices=choices.cost_types.items(), attrs={'class': 'form-control'})
+        self.fields['update'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
+        self.fields['upgrade'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
+        self.fields['scale_up'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
+
+        self.fields['derives_from'].widget = forms.TextInput(attrs={'class': 'form-control',
+                                                                    'placeholder': 'Solution title (exact match, case sensitive)'})
+
+        for key in aux_lists.solutions_booleans:
+            for field in aux_lists.solutions_booleans[key]:
+                self.fields[field].widget = forms.CheckboxInput(attrs={'class': 'form-check-input'})
+
     def clean_derives_from(self):
         derives_from_title = self.cleaned_data['derives_from']
         if derives_from_title:
@@ -36,12 +56,19 @@ class SolutionForm(forms.ModelForm):
             return derives_from_instance
         return None
 
+    def clean_cost_type(self):
+        cost_type = self.cleaned_data.get('cost_type')
+        if cost_type is not None and cost_type < 0:
+            raise forms.ValidationError('This field cannot be negative.')
+        return cost_type
+
 
 class DependsOnForm(forms.Form):
     title = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control custom-reference-width',
-               'placeholder': 'Exact match (case sensitive)'}),
-        max_length=255, required=False)
+               'placeholder': 'Solution title (exact match, case sensitive)'}),
+                max_length=255, required=False,
+                help_text=mark_safe('<small class="form-text text-muted">If your solution depends on other solution(s), add it above - add more than one using the links below</small>'))
 
     def clean_title(self):
         title = self.cleaned_data.get('title')

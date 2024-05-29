@@ -1,9 +1,9 @@
 cost_types = {
-    0: '0',
-    1: '$',
-    2: '$$',
-    3: '$$$',
-    4: '$$$$',
+    0: '0 - Requires time, effort and/or scrap material',
+    1: '$ - Up to USD 1.000 ',
+    2: '$$ - Between USD 1.000 and USD 50.000',
+    3: '$$$ - Between USD 50.000 and USD 500.000',
+    4: '$$$$ - Over USD 500.000'
 }
 
 resource_types = {

@@ -6,8 +6,10 @@ register = template.Library()
 
 @register.simple_tag
 def main_url_two_params(param1, value1, param2, value2, urlencode=None):
-    """Persists any GET request that needs to store and render again its two first parameters.
-    Used for pagination persistence when another form (like filter) runs on the same data set"""
+    """
+    Persists any GET request that needs to store and render again its two first parameters.
+    Used for pagination persistence when another form (like filter) runs on the same data set
+    """
     url = f'?{param1}={value1}&{param2}={value2}'
 
     if urlencode:
@@ -22,4 +24,16 @@ def main_url_two_params(param1, value1, param2, value2, urlencode=None):
     return url
 
 
+@register.filter
+def get_item(form, key):
+    """
+    Retrieves a specific item from a form's fields using the provided key.
 
+    Parameters:
+        form (django.forms.Form): The form from which to retrieve the item.
+        key (str): The key to identify the item to retrieve.
+
+    Returns:
+        The requested item if found, otherwise None.
+    """
+    return form.fields.get(key)
