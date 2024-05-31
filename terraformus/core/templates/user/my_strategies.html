@@ -13,20 +13,19 @@
         <div class="row my-2">
             <div class="col">
                 <a class="chip chip-action chip-outline chip-filter chip-xs border-dark  bg-primary text-light" type="button" href="{% url 'create_strategy' %}"><i class='material-icons mr-2 text-light'>add_circle_outline</i>Create New Strategy</a>
-                {#            <a class="btn btn-primary btn-xs" href="{% url 'create_strategy' %}">Create New Strategy</a>#}
             </div>
         </div>
 
 
         <table class="table table-bordered table-sm table-striped text-center">
             <thead>
-            <tr>
-                <th class="big-th" rowspan="3">
-                    Strategy
-                </th>
-                <th class="big-th" rowspan="3">Solutions</th>
-            </tr>
+                <tr>
+                    <th class="big-th" rowspan="3">Strategy</th>
+                    <th class="big-th" rowspan="3">External Assets</th>
+                    <th class="big-th" rowspan="3">Solutions</th>
+                </tr>
             </thead>
+        
             <tbody class="text-left">
 
             {% for item in all_strategies %}
@@ -34,13 +33,26 @@
                     <th class="align-text-top py-2" scope="row">
                         <a href="{% url 'edit_strategy' item.uuid %}">{{ item }}</a>
                         <br>
-                        <a class="chip chip-action chip-outline chip-filter chip-xs border-dark mt-3" type="button" href="{% url 'solution' item.uuid item.slug %}"><i class='material-icons mr-2'>visibility</i>View strategy</a>
+                        <a class="chip chip-action chip-outline chip-filter chip-xs border-dark mt-3" type="button" href="{% url 'strategy' item.uuid item.slug %}"><i class='material-icons mr-2'>visibility</i>View strategy</a>
+                        <br>
+                        <a class="chip chip-action chip-outline chip-filter chip-xs border-dark" type="button" href="{% url 'create_external_asset' 'strategy' item.uuid %}"><i class='material-icons mr-2'>add_circle_outline</i>Add External Asset</a>
                     </th>
 
                     <td class="align-text-top">
+                        {% for external_asset in item.externalasset_set.all %}
+                            <div class="mb-n3"><a class="" href="{% url 'edit_external_asset' 'strategy' external_asset.uuid %}">
+                                <span class="mr-1 badge badge-pill badge-primary">{{ external_asset.type }}</span><span class="big-title">{{ external_asset.title|truncatewords:7 }}</span></a></div>
+                            <br>
+                        {% endfor %}
+                    </td>
+                
+                    <td class="align-text-top">
                         {% for solution in item.solutions.all %}
-
-                            {{ solution }}<br>
+                            <a class="chip chip-action chip-outline chip-filter chip-xs border-dark" type="button" href="{% url 'solution' solution.solution.uuid solution.solution.slug %}">
+                                <i class='material-icons mr-2'>visibility</i>{{ solution }}
+                            </a>
+                            
+                            <br>
 
                         {% endfor %}
                     </td>
