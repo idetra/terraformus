@@ -96,6 +96,8 @@ ext_asset_ht = {
 }
 
 life_cycle_ht = {
+    'title': 'help text placeholder',
+    'type': 'Also known as "phase" of a life cycle',
     'total_duration': 'help text placeholder',
     'description': 'help text placeholder',
 }

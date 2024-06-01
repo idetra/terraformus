@@ -7,9 +7,9 @@ cost_types = {
 }
 
 resource_types = {
-    'hu': 'Human',
-    'se': 'Service',
     'ma': 'Material',
+    'se': 'Service',
+    'hu': 'Human',
 }
 
 life_cycle_types = {

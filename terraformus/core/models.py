@@ -140,8 +140,8 @@ class LifeCycle(models.Model):
     """
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     solution = models.ForeignKey('Solution', on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    type = models.CharField(max_length=2, choices=life_cycle_types,default=life_cycle_types['b'])
+    title = models.CharField(max_length=255, help_text=ht.life_cycle_ht['title'])
+    type = models.CharField(max_length=2, choices=life_cycle_types, default=life_cycle_types['b'], help_text=ht.life_cycle_ht['type'])
     total_duration = models.TextField(help_text=ht.life_cycle_ht['total_duration'])
     description = models.TextField(help_text=ht.life_cycle_ht['description'])
 
@@ -170,7 +170,7 @@ class LifeCycleWaste(models.Model):
     crud in inline form of LifeCycle
     """
     lifecycle = models.ForeignKey('LifeCycle', on_delete=models.CASCADE)
-    waste_type = models.TextField(help_text=ht.life_cycle_waste_ht['waste_type'])
+    waste_type = models.CharField(max_length=255, help_text=ht.life_cycle_waste_ht['waste_type'])
     reusable = models.BooleanField(default=False, help_text=ht.life_cycle_waste_ht['reusable'])
     recyclable = models.BooleanField(default=False, help_text=ht.life_cycle_waste_ht['recyclable'])
     cradle2cradle = models.BooleanField(default=False, help_text=ht.life_cycle_waste_ht['cradle2cradle'])

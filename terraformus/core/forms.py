@@ -115,9 +115,7 @@ class ExternalAssetForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ExternalAssetForm, self).__init__(*args, **kwargs)
-
         # Defining the widgets here to preserve help_text from models
-
         self.fields['type'].widget = forms.Select(choices=choices.external_asset.items(), attrs={'class': 'form-control'})
         self.fields['title'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['url'].widget = forms.TextInput(attrs={'class': 'form-control'})
@@ -129,17 +127,48 @@ class LifeCycleForm(forms.ModelForm):
         fields = '__all__'
         exclude = ['solution',]
 
+    def __init__(self, *args, **kwargs):
+        super(LifeCycleForm, self).__init__(*args, **kwargs)
+        # Defining the widgets here to preserve help_text from models
+        self.fields['title'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['type'].widget = forms.Select(choices=choices.life_cycle_types.items(), attrs={'class': 'form-control'})
+        self.fields['total_duration'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
+        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
+
 
 class InLineLifeCycleInputForm(forms.ModelForm):
     class Meta:
         model = LifeCycleInput
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super(InLineLifeCycleInputForm, self).__init__(*args, **kwargs)
+        # Defining the widgets here to preserve help_text from models
+        self.fields['resource_name'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['resource_type'].widget = forms.Select(choices=choices.resource_types.items(), attrs={'class': 'form-control'})
+        self.fields['unit'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['quantity'].widget = forms.NumberInput(attrs={'class': 'form-control'})
+        self.fields['reference_cost'].widget = forms.NumberInput(attrs={'class': 'form-control'})
+        self.fields['notes'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 7})
+
 
 class InLineLifeCycleWasteForm(forms.ModelForm):
     class Meta:
         model = LifeCycleWaste
         fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(InLineLifeCycleWasteForm, self).__init__(*args, **kwargs)
+        # Defining the widgets here to preserve help_text from models
+        self.fields['waste_type'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['reusable'].widget = forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        self.fields['recyclable'].widget = forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        self.fields['cradle2cradle'].widget = forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        self.fields['unit'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['quantity'].widget = forms.NumberInput(attrs={'class': 'form-control'})
+        self.fields['reference_cost'].widget = forms.NumberInput(attrs={'class': 'form-control'})
+        self.fields['destination_method'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 2})
+        self.fields['notes'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 2})
 
 
 # User related forms----------------------------------------------------------------------------------------------------

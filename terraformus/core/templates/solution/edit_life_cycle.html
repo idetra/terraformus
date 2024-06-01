@@ -7,37 +7,312 @@
     <div class="row justify-content-center my-5">
         <div class="col-8">
             <h5>Edit Life Cycle</h5>
+            <div class="my-4"></div>
             {{ form.non_field_errors }}
             <form method="post" action="">
                 {% csrf_token %}
-                {{ field.errors }}
-                {{ form.as_p }}
             
-                <h5>Edit Input</h5>
-
-                {% for form in input_form %}
-                    <div class="inputForm">
-                    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                        {{ form.as_p }}
+                <div class="form-row">
+                    <div class="form-group col-md-9">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                        <small class="form-text text-muted">{{ form.title.help_text }}</small>
+                        {% if form.title.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.title.errors }}
+                            </div>
+                        {% endif %}
                     </div>
-                {% endfor %}
-            
-                {{ input_form.management_form }}
-                <div class="my-5"></div>
-            
-                <h5>Edit Waste</h5>
-
-                {% for form in waste_form %}
-                    <div class="wasteForm">
-                    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                        {{ form.as_p }}
+                
+                    <div class="form-group col-md-3">
+                        {{ form.type.label_tag }}
+                        {{ form.type }}
+                        <small class="form-text text-muted">{{ form.type.help_text }}</small>
+                        {% if form.type.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.type.errors }}
+                            </div>
+                        {% endif %}
                     </div>
-                {% endfor %}
+                </div>
             
-                {{ waste_form.management_form }}
-                <div class="my-5"></div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {{ form.total_duration.label_tag }}
+                        {{ form.total_duration }}
+                        <small class="form-text text-muted">{{ form.total_duration.help_text }}</small>
+                        {% if form.total_duration.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.total_duration.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
             
-                <button class="btn btn-outline-dark" type="submit">Save</button> 
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {{ form.description.label_tag }}
+                        {{ form.description }}
+                        <small class="form-text text-muted">{{ form.description.help_text }}</small>
+                        {% if form.description.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.description.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {# INLINE FORMS #}
+            
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+            
+                        <h5>Edit Resources</h5>
+                        {% if input_form.non_form_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ input_form.non_form_errors }}
+                            </div>
+                        {% endif %}
+                    
+                        {% for form in input_form %}
+                            <div class="inputForm">
+                            {{ form.id }}
+                            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                            
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        {{ form.resource_name.label_tag }}
+                                        {{ form.resource_name }}
+                                        <small class="form-text text-muted">{{ form.resource_name.help_text }}</small>
+                                        {% if form.resource_name.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ form.resource_name.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        {{ form.resource_type.label_tag }}
+                                        {{ form.resource_type }}
+                                        <small class="form-text text-muted">{{ form.resource_type.help_text }}</small>
+                                        {% if form.resource_type.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ form.resource_type.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        {{ form.unit.label_tag }}
+                                        {{ form.unit }}
+                                        <small class="form-text text-muted">{{ form.unit.help_text }}</small>
+                                        {% if form.unit.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ form.unit.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                
+                                    <div class="form-group col-md-4">
+                                        {{ form.quantity.label_tag }}
+                                        {{ form.quantity }}
+                                        <small class="form-text text-muted">{{ form.quantity.help_text }}</small>
+                                        {% if form.quantity.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ form.quantity.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                
+                                    <div class="form-group col-md-4">
+                                        {{ form.reference_cost.label_tag }}
+                                        {{ form.reference_cost }}
+                                        <small class="form-text text-muted">{{ form.reference_cost.help_text }}</small>
+                                        {% if form.reference_cost.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ form.reference_cost.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                
+                                </div>
+                            
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        {{ form.notes.label_tag }}
+                                        {{ form.notes }}
+                                        <small class="form-text text-muted">{{ form.notes.help_text }}</small>
+                                        {% if form.notes.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ form.notes.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                        
+                            </div>
+                        {% endfor %}
+                
+                        {{ input_form.management_form }}
+                        <div class="my-5"></div>
+                    
+                    </div>
+                    
+                    <div class="form-group col-md-6">
+                    
+                        <h5>Edit By-product Waste</h5>
+                    
+                        {% if waste_form.non_form_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ waste_form.non_form_errors }}
+                            </div>
+                        {% endif %}
+                    
+                        {% for form in waste_form %}
+                            <div class="wasteForm">
+                            {{ form.id }}
+                            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                            
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        {{ form.waste_type.label_tag }}
+                                        {{ form.waste_type }}
+                                        <small class="form-text text-muted">{{ form.waste_type.help_text }}</small>
+                                        {% if form.waste_type.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ form.waste_type.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            
+                                <div class="form-row">
+                                    
+                                    <div class="form-group col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="{{ form.reusable.auto_id }}" 
+                                                   name="{{ form.reusable.html_name}}" {% if form.reusable.value %}checked{% endif %}>
+                                            <label class="form-check-label" for="{{ form.reusable.auto_id }}">
+                                                {{ form.reusable.label }}
+                                            </label>
+                                            {% if form.reusable.errors %}
+                                                <div class="invalid-feedback">
+                                                    {{ form.reusable.errors }}
+                                                </div>
+                                            {% endif %}
+                                            <small class="form-text text-muted">{{ form.reusable.help_text }}</small>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="form-group col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="{{ form.recyclable.auto_id }}" 
+                                                   name="{{ form.recyclable.html_name}}" {% if form.recyclable.value %}checked{% endif %}>
+                                            <label class="form-check-label" for="{{ form.recyclable.auto_id }}">
+                                                {{ form.recyclable.label }}
+                                            </label>
+                                            {% if form.recyclable.errors %}
+                                                <div class="invalid-feedback">
+                                                    {{ form.recyclable.errors }}
+                                                </div>
+                                            {% endif %}
+                                            <small class="form-text text-muted">{{ form.recyclable.help_text }}</small>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="form-group col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="{{ form.cradle2cradle.auto_id }}" 
+                                                   name="{{ form.cradle2cradle.html_name}}" {% if form.cradle2cradle.value %}checked{% endif %}>
+                                            <label class="form-check-label" for="{{ form.cradle2cradle.auto_id }}">
+                                                {{ form.cradle2cradle.label }}
+                                            </label>
+                                            {% if form.cradle2cradle.errors %}
+                                                <div class="invalid-feedback">
+                                                    {{ form.cradle2cradle.errors }}
+                                                </div>
+                                            {% endif %}
+                                            <small class="form-text text-muted">{{ form.cradle2cradle.help_text }}</small>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        {{ form.unit.label_tag }}
+                                        {{ form.unit }}
+                                        <small class="form-text text-muted">{{ form.unit.help_text }}</small>
+                                        {% if form.unit.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ form.unit.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        {{ form.quantity.label_tag }}
+                                        {{ form.quantity }}
+                                        <small class="form-text text-muted">{{ form.quantity.help_text }}</small>
+                                        {% if form.quantity.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ form.quantity.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                
+                                    <div class="form-group col-md-4">
+                                        {{ form.reference_cost.label_tag }}
+                                        {{ form.reference_cost }}
+                                        <small class="form-text text-muted">{{ form.reference_cost.help_text }}</small>
+                                        {% if form.reference_cost.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ form.reference_cost.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        {{ form.destination_method.label_tag }}
+                                        {{ form.destination_method }}
+                                        <small class="form-text text-muted">{{ form.destination_method.help_text }}</small>
+                                        {% if form.destination_method.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ form.destination_method.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        {{ form.notes.label_tag }}
+                                        {{ form.notes }}
+                                        <small class="form-text text-muted">{{ form.notes.help_text }}</small>
+                                        {% if form.notes.errors %}
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ form.notes.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            
+                            </div>
+                        {% endfor %}
+                    
+                        {{ waste_form.management_form }}
+                        <div class="my-5"></div>
+                    
+                    </div>
+                
+                </div>
+            
+                <button class="btn btn-primary" type="submit">Save</button> 
             </form>       
         </div>
     </div>
@@ -54,8 +329,8 @@
     <div class="modal fade" id="delete_life_cycle_{{ form.instance.uuid }}" tabindex="-1" aria-labelledby="delete_life_cycle" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-body text-left">
-                    <p>Are you sure you want to delete this life cycle instance and all its assets?</p>
+                <div class="modal-body text-center">
+                    <p>Are you sure you want to delete this life cycle and all its assets?</p>
                     <a class="btn btn-outline-danger" href="{% url 'delete_life_cycle' form.instance.uuid %}">Yes, delete</a>
                 </div>
             </div>
@@ -64,9 +339,8 @@
     
 {% endblock content %}
 
+
 {% block javascript %}
-    
-    
     
     <script type="text/javascript">
         $(function() {
@@ -77,8 +351,8 @@
                 addCssClass: "add-input_form",
                 added: updateConnectsNumForms,
                 removed: updateConnectsNumForms,
-                addText: 'Add another',
-                deleteText: 'Remove item above'
+                addText: 'Add another resource',
+                deleteText: 'Remove the resource above'
             }
     
             $('.inputForm').formset(inputOptions);
@@ -90,8 +364,8 @@
                 addCssClass: "add-waste_form",
                 added: updateReferenceNumForms,
                 removed: updateReferenceNumForms,
-                addText: 'Add another',
-                deleteText: 'Remove item above'
+                addText: 'Add another waste',
+                deleteText: 'Remove the waste above'
             }
     
             $('.wasteForm').formset(wasteOptions);
@@ -107,7 +381,28 @@
                 let numForms = $('.' + wasteOptions.formCssClass).length;
                 totalForms.val(numForms);
             }
-        })
+        });
+
+        // Added script to prevent submission of formsets with all fields empty
+        $(document).ready(function () {
+            $('form').submit(function(e) {
+                $(this).find('.inputForm, .wasteForm').each(function() {
+                    let clearResourceType = true;
+        
+                    $(this).find(':input').not('select[name*="resource_type"]').each(function() {
+                        if ($(this).val() !== "" && $(this).val() !== "None") {
+                            clearResourceType = false;
+                        }
+                    });
+        
+                    // If all fields are Empty or None, clear resource_type field
+                    if (clearResourceType) {
+                        $(this).find('select[name*="resource_type"]').val("");
+                    }
+                });
+            });
+        });
+
     </script>
     
 {% endblock javascript %}
