@@ -85,6 +85,13 @@ class StrategyForm(forms.ModelForm):
         model = Strategy
         fields = ['title', 'goal', 'definitions']
 
+    def __init__(self, *args, **kwargs):
+        super(StrategyForm, self).__init__(*args, **kwargs)
+        # Defining the widgets here to preserve help_text from models
+        self.fields['title'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['goal'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
+        self.fields['definitions'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
+
 
 class StrategySolutionForm(forms.Form):
     solution_title = forms.CharField(widget=forms.TextInput(
