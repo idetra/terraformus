@@ -11,7 +11,46 @@
             <form method="post" action="">
                 {% csrf_token %}
                 {{ field.errors }}
-                {{ form.as_p }}
+
+                <div class="form-row">
+                    <div class="form-group col-md-9">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                        <small class="form-text text-muted">{{ form.title.help_text }}</small>
+                        {% if form.title.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.title.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+            
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {{ form.goal.label_tag }}
+                        {{ form.goal }}
+                        <small class="form-text text-muted">{{ form.goal.help_text }}</small>
+                        {% if form.goal.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.goal.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {{ form.definitions.label_tag }}
+                        {{ form.definitions }}
+                        <small class="form-text text-muted">{{ form.definitions.help_text }}</small>
+                        {% if form.definitions.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.definitions.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
             
                 <h5>Edit Solutions</h5>
 
@@ -24,7 +63,7 @@
             
                 {{ strategy_solution_formset.management_form }}
                 <div class="my-5"></div>
-                <button class="btn btn-outline-dark" type="submit">Save</button>
+                <button class="btn btn-primary" type="submit">Save</button>
             </form>       
         
         </div>

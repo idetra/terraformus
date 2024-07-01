@@ -98,7 +98,7 @@ class StrategySolutionForm(forms.Form):
         attrs={'class': 'form-control custom-reference-width',
                'placeholder': 'Exact match (case sensitive)'}),
         max_length=255, required=False)
-    notes = forms.CharField(widget=forms.Textarea, required=False)
+    notes = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)
 
     def clean_solution_title(self):
         solution_title = self.cleaned_data.get('solution_title')
