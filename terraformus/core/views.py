@@ -53,7 +53,7 @@ def solutions(request):
     return render(request, 'solutions.html', context)
 
 
-def solution(request, uuid, slug):
+def solution(request, uuid, slug=None):
     """
     for slug to show on url, it is necessary to receive here even if it's not used in the view
     """
@@ -175,7 +175,7 @@ def strategies(request):
     return render(request, 'strategies.html', context)
 
 
-def strategy(request, uuid, slug):
+def strategy(request, uuid, slug=None):
     """
     for slug to show on url, it is necessary to receive here even if it's not used in the view
     """
