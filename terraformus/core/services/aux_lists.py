@@ -62,7 +62,7 @@ sector = [
 
 solutions_booleans = {
     'Solution type': solution_type,
-    'Population target': population_target,
+    # 'Population target': population_target,
     'Dimension target': dimension_target,
     'UN target': un_target,
     'Sector': sector

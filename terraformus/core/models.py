@@ -50,10 +50,10 @@ class Solution(models.Model):
     automation = models.BooleanField(default=False, help_text=ht.sol_type_ht['automation'])
     infrastructure = models.BooleanField(default=False, help_text=ht.sol_type_ht['infrastructure'])
     # population target ------------------------------------------------------------------------------------------------
-    extreme_poverty = models.BooleanField(default=False, help_text=ht.sol_population_target_ht['extreme_poverty'])
-    lower_class = models.BooleanField(default=False, help_text=ht.sol_population_target_ht['lower_class'])
-    middle_class = models.BooleanField(default=False, help_text=ht.sol_population_target_ht['middle_class'])
-    upper_class = models.BooleanField(default=False, help_text=ht.sol_population_target_ht['upper_class'])
+    # extreme_poverty = models.BooleanField(default=False, help_text=ht.sol_population_target_ht['extreme_poverty'])
+    # lower_class = models.BooleanField(default=False, help_text=ht.sol_population_target_ht['lower_class'])
+    # middle_class = models.BooleanField(default=False, help_text=ht.sol_population_target_ht['middle_class'])
+    # upper_class = models.BooleanField(default=False, help_text=ht.sol_population_target_ht['upper_class'])
     # dimension_target -------------------------------------------------------------------------------------------------
     individual = models.BooleanField(default=False, help_text=ht.sol_dimension_target_ht['individual'])
     apartment = models.BooleanField(default=False, help_text=ht.sol_dimension_target_ht['apartment'])
