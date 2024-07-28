@@ -11,6 +11,24 @@ from terraformus.core.services.choices import cost_types, life_cycle_types, reso
 from terraformus.core.services import help_text as ht, generators
 
 
+class HomePageControl(models.Model):
+    home_title = models.CharField(max_length=255, null=True, blank=True)
+    home_subtitle = models.CharField(max_length=255, null=True, blank=True)
+    what_is_the_platform_video = models.URLField(blank=True, null=True)
+    how_to_use_video = models.URLField(blank=True, null=True)
+    how_to_create_video = models.URLField(blank=True, null=True)
+    active = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        """Methods to run when saving a new HomePageControl instance"""
+        if self.active:  # if the current item is active, make all others inactive
+            HomePageControl.objects.filter().exclude(id=self.id).update(active=False)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.home_title
+
+
 class User(AbstractUser):
 
     def delete(self, *args, **kwargs):

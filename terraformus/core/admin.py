@@ -1,10 +1,23 @@
 from django.contrib import admin
-
-from terraformus.core.models import Profile, Solution, LifeCycle, LifeCycleInput, LifeCycleWaste, \
+from django.utils.html import format_html
+from terraformus.core.models import  HomePageControl, Profile, Solution, LifeCycle, LifeCycleInput, LifeCycleWaste, \
     Strategy, StrategySolution, ExternalAsset
 
-admin.site.register(Profile)
 
+class HomePageControlAdmin(admin.ModelAdmin):
+
+    def reminder(self, obj):
+        return format_html("<strong>Don't forget to use embed link for video urls</strong>")
+
+    reminder.short_description = 'Reminder'
+
+    # This adds the 'reminder' field to the list display
+    list_display = ('home_title', 'home_subtitle', 'active', 'reminder')
+
+
+# Register your models here.
+admin.site.register(HomePageControl, HomePageControlAdmin)
+admin.site.register(Profile)
 admin.site.register(Solution)
 admin.site.register(ExternalAsset)
 admin.site.register(LifeCycle)

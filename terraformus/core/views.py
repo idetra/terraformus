@@ -8,17 +8,23 @@ from django.forms import formset_factory, inlineformset_factory
 
 from django.shortcuts import render, redirect, get_object_or_404
 
+from terraformus.core import services
 from terraformus.core.forms import SolutionForm, DependsOnForm, ProfileForm, UserUpdateForm, ExternalAssetForm, \
     InLineLifeCycleInputForm, LifeCycleForm, InLineLifeCycleWasteForm, StrategyForm, StrategySolutionForm
 from terraformus.core.models import Solution, Strategy, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste, \
-    Rating, StrategySolution
+    Rating, StrategySolution, HomePageControl
 from terraformus.core.services import aux_lists
 
 
 def home(request):
     q = request.session.get('q', '')
+    home_page = HomePageControl.objects.get(active=True)
+    all_solutions = Solution.objects.all()
+    all_strategies = Strategy.objects.all()
+    dimensions = services.aux_lists.dimension_target
 
-    context = {'q': q}
+    context = {'q': q, 'home_page': home_page,
+               'all_solutions': all_solutions, 'all_strategies': all_strategies, 'dimensions': dimensions}
 
     return render(request, 'index.html', context)
 
