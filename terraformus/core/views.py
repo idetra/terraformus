@@ -18,7 +18,7 @@ from terraformus.core.services import aux_lists
 
 def home(request):
     q = request.session.get('q', '')
-    home_page = HomePageControl.objects.get(active=True)
+    home_page = get_object_or_404(HomePageControl, active=True)
     all_solutions = Solution.objects.all()
     all_strategies = Strategy.objects.all()
     dimensions = services.aux_lists.dimension_target
