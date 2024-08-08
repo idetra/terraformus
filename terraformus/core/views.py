@@ -23,12 +23,14 @@ def home(request):
     cost_types = [key for key, value in services.choices.cost_types.items()]
     dimensions = services.aux_lists.dimension_target
     un_targets = services.aux_lists.un_target
+    sectors = services.aux_lists.sector
 
     dimensions_table = services.generators.TableGenerator("Solution", "cost_type", dimensions, cost_types).table()
     un_targets_table = services.generators.TableGenerator("Solution", "cost_type", un_targets, cost_types).table()
+    sectors_table = services.generators.TableGenerator("Solution", "cost_type", sectors, cost_types).table()
 
     context = {'q': q, 'home_page': home_page,'all_strategies': all_strategies,
-               'dimensions_table': dimensions_table, 'un_targets_table': un_targets_table}
+               'dimensions_table': dimensions_table, 'un_targets_table': un_targets_table, 'sectors_table': sectors_table}
 
     return render(request, 'index.html', context)
 

@@ -1,5 +1,19 @@
 {% load core_template_tags %}
 
+<div class="row mt-3">
+    
+    <div class="col">
+        
+        Filter by:<br>
+        <button type="button" class="btn btn-outline-primary btn-xs">Dimensions</button>
+        <button type="button" class="btn btn-outline-primary btn-xs">UN Targets</button>
+        <button type="button" class="btn btn-outline-primary btn-xs">Sectors</button>
+        
+    </div>
+    
+</div>
+
+
 <table class="table table-bordered table-sm table-striped text-center mt-3">
     <thead>
         <tr>
@@ -40,41 +54,81 @@
 <br>
 <br>
 
-{#<table class="table table-bordered table-sm table-striped text-center mt-3">#}
-{#    <thead>#}
-{#        <tr>#}
-{#            <th scope="col">UN Targets</th>#}
-{#            <th scope="col">0 cost <br> (time/effort/material)</th>#}
-{#            <th scope="col">$ <br>(up to 1.000 USD)</th>#}
-{#            <th scope="col">$$ <br>(1.000 to 50.000 USD)</th>#}
-{#            <th scope="col">$$$ <br>(50.000 to 500.000 USD)</th>#}
-{#            <th scope="col">$$$$ <br>(over 500.000 USD)</th>#}
-{#        </tr>#}
-{#    </thead>#}
-{##}
-{#    <tbody>#}
-{#            #}
-{#        {% for dimension, cost_data in un_targets_table.items %}#}
-{#            <tr>#}
-{#                <th>{{ dimension|replace:"_, "|title }}</th>#}
-{#                {% for cost, solution_uuids in cost_data.items %}#}
-{#                    #}
-{#                    <td>#}
-{#                        {% if solution_uuids.count != 0 %}#}
-{#                            <a href="{% url 'solutions' %}?uuids={{ solution_uuids.uuids }}">#}
-{#                                <span class="badge badge-pill badge-primary">#}
-{#                                    {{ solution_uuids.count }} Solution{{ solution_uuids.count|pluralize }}#}
-{#                                </span>#}
-{#                            </a>#}
-{#                        {% endif %}#}
-{#                    </td>#}
-{#                    #}
-{#                {% endfor %}#}
-{#            </tr>#}
-{#        {% endfor %}#}
-{##}
-{#    </tbody>#}
-{#</table>#}
+<table class="table table-bordered table-sm table-striped text-center mt-3">
+    <thead>
+        <tr>
+            <th scope="col">UN Targets</th>
+            <th scope="col">0 cost <br> (time/effort/material)</th>
+            <th scope="col">$ <br>(up to 1.000 USD)</th>
+            <th scope="col">$$ <br>(1.000 to 50.000 USD)</th>
+            <th scope="col">$$$ <br>(50.000 to 500.000 USD)</th>
+            <th scope="col">$$$$ <br>(over 500.000 USD)</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for dimension, cost_data in un_targets_table.items %}
+            <tr>
+                <th>{{ dimension|replace:"_, "|title }}</th>
+                {% for cost, solution_uuids in cost_data.items %}
+
+                    <td>
+                        {% if solution_uuids.count != 0 %}
+                            <a href="{% url 'solutions' %}?uuids={{ solution_uuids.uuids }}">
+                                <span class="badge badge-pill badge-primary">
+                                    {{ solution_uuids.count }} Solution{{ solution_uuids.count|pluralize }}
+                                </span>
+                            </a>
+                        {% endif %}
+                    </td>
+
+                {% endfor %}
+            </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+
+<br>
+<br>
+<br>
+
+<table class="table table-bordered table-sm table-striped text-center mt-3">
+    <thead>
+        <tr>
+            <th scope="col">Sector</th>
+            <th scope="col">0 cost <br> (time/effort/material)</th>
+            <th scope="col">$ <br>(up to 1.000 USD)</th>
+            <th scope="col">$$ <br>(1.000 to 50.000 USD)</th>
+            <th scope="col">$$$ <br>(50.000 to 500.000 USD)</th>
+            <th scope="col">$$$$ <br>(over 500.000 USD)</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for dimension, cost_data in sectors_table.items %}
+            <tr>
+                <th>{{ dimension|replace:"_, "|title }}</th>
+                {% for cost, solution_uuids in cost_data.items %}
+
+                    <td>
+                        {% if solution_uuids.count != 0 %}
+                            <a href="{% url 'solutions' %}?uuids={{ solution_uuids.uuids }}">
+                                <span class="badge badge-pill badge-primary">
+                                    {{ solution_uuids.count }} Solution{{ solution_uuids.count|pluralize }}
+                                </span>
+                            </a>
+                        {% endif %}
+                    </td>
+
+                {% endfor %}
+            </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
 
 
 
