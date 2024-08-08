@@ -37,3 +37,17 @@ def get_item(form, key):
         The requested item if found, otherwise None.
     """
     return form.fields.get(key)
+
+
+@register.filter
+def replace(value, args):
+    """
+    Used to replace underscores, etc. with space on template tag calls, like {{ item }}
+
+    Usage: {{ item|replace:"_, "|title }} or {{ item|replace:"_, "|capfirst }}
+
+    Second parameter (title, capfirst) is optional
+
+    """
+    search, replace_with = args.split(',')
+    return value.replace(search, replace_with)

@@ -8,23 +8,27 @@ from django.forms import formset_factory, inlineformset_factory
 
 from django.shortcuts import render, redirect, get_object_or_404
 
-from terraformus.core import services
 from terraformus.core.forms import SolutionForm, DependsOnForm, ProfileForm, UserUpdateForm, ExternalAssetForm, \
     InLineLifeCycleInputForm, LifeCycleForm, InLineLifeCycleWasteForm, StrategyForm, StrategySolutionForm
 from terraformus.core.models import Solution, Strategy, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste, \
     Rating, StrategySolution, HomePageControl
-from terraformus.core.services import aux_lists
+from terraformus.core import services
 
 
 def home(request):
     q = request.session.get('q', '')
     home_page = get_object_or_404(HomePageControl, active=True)
-    all_solutions = Solution.objects.all()
     all_strategies = Strategy.objects.all()
+    # sectors, un_targets, environmental_impact (aggregate all wastes from all cycles)
+    cost_types = [key for key, value in services.choices.cost_types.items()]
     dimensions = services.aux_lists.dimension_target
+    un_targets = services.aux_lists.un_target
 
-    context = {'q': q, 'home_page': home_page,
-               'all_solutions': all_solutions, 'all_strategies': all_strategies, 'dimensions': dimensions}
+    dimensions_table = services.generators.TableGenerator("Solution", "cost_type", dimensions, cost_types).table()
+    un_targets_table = services.generators.TableGenerator("Solution", "cost_type", un_targets, cost_types).table()
+
+    context = {'q': q, 'home_page': home_page,'all_strategies': all_strategies,
+               'dimensions_table': dimensions_table, 'un_targets_table': un_targets_table}
 
     return render(request, 'index.html', context)
 
@@ -43,8 +47,21 @@ def solutions(request):
     search_fields = ['title', 'subtitle', 'slug', 'goal', 'user__first_name', 'user__last_name', 'uuid']
 
     query = Q()
+    # V2
+    split_q = q.split()  # split search terms
     for field in search_fields:
-        query |= Q(**{f'{field}__icontains': q})
+        for term in split_q:  # loop over search terms
+            query |= Q(**{f'{field}__icontains': term})
+
+    #V1
+    # for field in search_fields:
+    #     query |= Q(**{f'{field}__icontains': q})
+
+    uuid_string = request.GET.get('uuids', '')
+    if uuid_string:
+        uuids = uuid_string.split(',')
+        for uuid in uuids:
+            query |= Q(uuid__icontains=uuid.strip())
 
     solutions_query = Solution.objects.filter(query, banned=False).annotate(avg_rating=Avg('rating__rate')).order_by('-avg_rating')
     paginator = Paginator(solutions_query, number_of_rows_per_page)
@@ -53,7 +70,8 @@ def solutions(request):
     context = {
         'possible_rows_per_page': [10, 50, 100],
         'solutions_result': solutions_result,
-        'q': q
+        'q': q,
+        'uuids': uuid_string
     }
 
     return render(request, 'solutions.html', context)
@@ -100,7 +118,7 @@ def create_solution(request):
         depends_on_formset = DependsOnFormSet(prefix='connects_to')
 
     context = {'q': q, 'form': form, 'depends_on_formset': depends_on_formset,
-               'solutions_booleans': aux_lists.solutions_booleans}
+               'solutions_booleans': services.aux_lists.solutions_booleans}
 
     return render(request, 'solution/create_solution.html', context)
 
@@ -135,7 +153,7 @@ def edit_solution(request, uuid):
             prefix='connects_to', initial=[{'title': dep.title} for dep in solution_view.depends_on.all()])
 
     context = {'q': q, 'form': form, 'depends_on_form': depends_on_form,
-               'solutions_booleans': aux_lists.solutions_booleans}
+               'solutions_booleans': services.aux_lists.solutions_booleans}
 
     return render(request, 'solution/edit_solution.html', context)
 
