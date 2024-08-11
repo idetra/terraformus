@@ -15,8 +15,8 @@
             <span class="chip chip-xs rating">{{ data_point.average_rating }}</span>
             <a class="btn btn-xs btn-outline-dark px-n5" data-toggle="modal" data-target="#datapoint_ratings_{{ data_point.id }}">View all</a>
             {% if user.is_authenticated and data_point.author != request.user%}
-                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'rate' data_point.slug %}">Rate</a>
-                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'report' data_point.slug %}">Report</a>
+{#                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'rate' data_point.slug %}">Rate</a>#}
+{#                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'report' data_point.slug %}">Report</a>#}
             {% endif %}
 
             <br>
@@ -59,7 +59,7 @@
             <h6 class="selectable-text">{{ data_point.title }}</h6>
             <p>{{ data_point.description }}</p>
 {#            Unique ID: <span class="selectable-text bg-light">{{ data_point.unique_id }}</span>#}
-            <p class="text-left">Author: <a href="{% url 'author' data_point.author.username %}">
+{#            <p class="text-left">Author: <a href="{% url 'author' data_point.author.username %}">#}
                 <b>{{ data_point.author.get_full_name}}</b></a>
             <br>
                 <small>Created: {{ data_point.created_at }} | Edited: {{ data_point.last_edited }}</small>

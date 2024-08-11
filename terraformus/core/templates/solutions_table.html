@@ -4,20 +4,19 @@
     
     <div class="col">
         
-        Filter by:<br>
-        <button type="button" class="btn btn-outline-primary btn-xs">Dimensions</button>
-        <button type="button" class="btn btn-outline-primary btn-xs">UN Targets</button>
-        <button type="button" class="btn btn-outline-primary btn-xs">Sectors</button>
-        
+        <button id="show-dimensions" type="button" class="btn btn-outline-primary btn-xs">Dimensions</button>
+        <button id="show-un-targets" type="button" class="btn btn-outline-primary btn-xs">UN Targets</button>
+        <button id="show-sectors" type="button" class="btn btn-outline-primary btn-xs">Sectors</button>
+                
     </div>
     
 </div>
 
 
-<table class="table table-bordered table-sm table-striped text-center mt-3">
+<table id="dimension-table"  class="table table-bordered table-sm table-striped text-center mt-3">
     <thead>
         <tr>
-            <th scope="col">Dimension</th>
+            <th scope="col">Dimensions</th>
             <th scope="col">0 cost <br> (time/effort/material)</th>
             <th scope="col">$ <br>(up to 1.000 USD)</th>
             <th scope="col">$$ <br>(1.000 to 50.000 USD)</th>
@@ -50,11 +49,7 @@
     </tbody>
 </table>
 
-<br>
-<br>
-<br>
-
-<table class="table table-bordered table-sm table-striped text-center mt-3">
+<table id="un-target-table" style="display: none" class="table table-bordered table-sm table-striped text-center mt-3">
     <thead>
         <tr>
             <th scope="col">UN Targets</th>
@@ -90,14 +85,10 @@
     </tbody>
 </table>
 
-<br>
-<br>
-<br>
-
-<table class="table table-bordered table-sm table-striped text-center mt-3">
+<table id="sector-table" style="display: none" class="table table-bordered table-sm table-striped text-center mt-3">
     <thead>
         <tr>
-            <th scope="col">Sector</th>
+            <th scope="col">Sectors</th>
             <th scope="col">0 cost <br> (time/effort/material)</th>
             <th scope="col">$ <br>(up to 1.000 USD)</th>
             <th scope="col">$$ <br>(1.000 to 50.000 USD)</th>
@@ -131,4 +122,25 @@
 </table>
 
 
-
+{% block javascript %}
+    <script>
+        document.getElementById('show-dimensions').addEventListener('click', function(){
+            document.getElementById('dimension-table').style.display = 'table';
+            document.getElementById('un-target-table').style.display = 'none';
+            document.getElementById('sector-table').style.display = 'none';
+        });
+        
+        document.getElementById('show-un-targets').addEventListener('click', function(){
+            document.getElementById('dimension-table').style.display = 'none';
+            document.getElementById('un-target-table').style.display = 'table';
+            document.getElementById('sector-table').style.display = 'none';
+        });
+        
+        document.getElementById('show-sectors').addEventListener('click', function(){
+            document.getElementById('dimension-table').style.display = 'none';
+            document.getElementById('un-target-table').style.display = 'none';
+            document.getElementById('sector-table').style.display = 'table';
+        });
+    </script>
+    
+{% endblock javascript %}

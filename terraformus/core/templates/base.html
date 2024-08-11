@@ -71,7 +71,22 @@
         <!-- Django Formset js -->
         <script src="{% static 'js/jquery.formset.js' %}"></script>
     
-
+        <script>
+            $(document).ready(function () {
+                // Get the active tab from local storage
+                var activeTab = localStorage.getItem('activeTab');
+            
+                // If there's an active tab
+                if(activeTab){
+                    // Show the active tab
+                    $('button[aria-controls="' + activeTab + '"]').tab('show');
+                } else {
+                    // Otherwise, show the Strategies tab as default
+                    $('button[aria-controls="strategies_control"]').tab('show');
+                }
+            });
+        </script>
+        
         {% block javascript %}
         {% endblock javascript %}
 

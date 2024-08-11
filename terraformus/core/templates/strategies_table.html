@@ -1,1 +1,27 @@
-STRATEGIES TABLE HERE
+<table class="table table-bordered table-sm table-striped text-center mt-3">
+    <thead>
+        <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Goal</th>
+            <th scope="col">Solutions</th>
+        </tr>
+    </thead>
+    
+    <tbody>
+    
+        {% for strategy in all_strategies %}
+            <tr>
+                <th><a href="{% url 'strategy' strategy.uuid strategy.slug %}">{{ strategy.title }}</a></th>
+                <td>{{ strategy.goal }}</td>
+                <td>
+                    <a href="{% url 'solutions' %}?uuids={{ strategy.solutions_uuids }}">All solutions</a><br>
+                    {% for solution in strategy.solutions.all %}
+                        <a href="{% url 'solution' solution.solution.uuid solution.solution.slug %}">{{ solution }}</a><br>
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+
+    </tbody>
+
+</table>

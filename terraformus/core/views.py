@@ -3,7 +3,8 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
-from django.db.models import Avg, Q
+from django.db.models import Avg, Q, Value, Prefetch
+from django.db.models.functions.text import Concat
 from django.forms import formset_factory, inlineformset_factory
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -18,8 +19,13 @@ from terraformus.core import services
 def home(request):
     q = request.session.get('q', '')
     home_page = get_object_or_404(HomePageControl, active=True)
-    all_strategies = Strategy.objects.all()
-    # sectors, un_targets, environmental_impact (aggregate all wastes from all cycles)
+    all_strategies = Strategy.objects.prefetch_related(
+        Prefetch('solutions', queryset=StrategySolution.objects.select_related('solution'))
+    )
+
+    for strategy in all_strategies:
+        strategy.solutions_uuids = ",".join(str(solution.solution.uuid) for solution in strategy.solutions.all())
+
     cost_types = [key for key, value in services.choices.cost_types.items()]
     dimensions = services.aux_lists.dimension_target
     un_targets = services.aux_lists.un_target
