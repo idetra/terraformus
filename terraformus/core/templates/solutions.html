@@ -7,19 +7,24 @@
 
     <div class="row bg-white">
         <div class="col col-12">
-            {% for solution in solutions_result %}
+            {% for item in solutions_result %}
                 <div class="row justify-content-center">
                     <div class="col col-lg-6">
-                        <a href="{% url 'solution' solution.uuid solution.slug %}">
+                        {% if item.model_name == "Solution" %}
+                            <a href="{% url 'solution' item.uuid item.slug %}">
+                        {% elif item.model_name == "Strategy" %}
+                            <a href="{% url 'strategy' item.uuid item.slug %}">
+                        {% endif %}
                             <div class="card border-0">
                                 <div class="card-body m-0 p-2">
                                     <h6 class="card-title m-0 p-0" style="font-size: 16px;">
-                                        <span class="chip chip-xs rating">{{ solution.average_rating }}</span> {{ solution.title }}
+                                        <span class="chip chip-xs rating">{{ item.average_rating }}</span><span class="chip chip-xs rating">{{ item.model_name }}</span>
+                                        {{ item.title }}
                                     </h6>
-                                    <p class="card-text description">{{ solution.subtitle }}<br>
-                                        <span class="author-name">Author: {{ solution.user.get_full_name }}</span><br>
-                                        <small><span class="created">created: {{ solution.created_at }}</span> -
-                                        <span class="last-edited">edited: {{ solution.last_edited }}</span></small>
+                                    <p class="card-text description">{% if item.subtitle %}{{ item.subtitle }}<br>{% endif %}
+                                        <span class="author-name">Author: {{ item.user.get_full_name }}</span><br>
+{#                                        <small><span class="created">created: {{ item.created_at }}</span> -#}
+{#                                        <span class="last-edited">edited: {{ item.last_edited }}</span></small>#}
                                     </p>
                                 </div>
                             </div>

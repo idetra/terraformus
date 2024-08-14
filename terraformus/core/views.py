@@ -1,3 +1,6 @@
+from functools import cmp_to_key
+from itertools import chain
+from operator import attrgetter
 from django.apps import apps
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
@@ -23,8 +26,8 @@ def home(request):
         Prefetch('solutions', queryset=StrategySolution.objects.select_related('solution'))
     )
 
-    for strategy in all_strategies:
-        strategy.solutions_uuids = ",".join(str(solution.solution.uuid) for solution in strategy.solutions.all())
+    for strategy in all_strategies:  # noqa
+        strategy.solutions_uuids = ",".join(str(solution.solution.uuid) for solution in strategy.solutions.all())  # noqa
 
     cost_types = [key for key, value in services.choices.cost_types.items()]
     dimensions = services.aux_lists.dimension_target
@@ -52,27 +55,34 @@ def solutions(request):
 
     q = request.GET.get('q', '')
     request.session['q'] = q
-    search_fields = ['title', 'subtitle', 'slug', 'goal', 'user__first_name', 'user__last_name', 'uuid']
 
-    query = Q()
-    # V2
-    split_q = q.split()  # split search terms
-    for field in search_fields:
-        for term in split_q:  # loop over search terms
-            query |= Q(**{f'{field}__icontains': term})
+    solution_search_fields = ['title', 'subtitle', 'slug', 'goal', 'user__first_name', 'user__last_name', 'uuid']
+    strategy_search_fields = ['title', 'slug', 'goal', 'user__first_name', 'user__last_name', 'uuid']
 
-    #V1
-    # for field in search_fields:
-    #     query |= Q(**{f'{field}__icontains': q})
+    solution_query = services.generators.build_query(q, solution_search_fields)
+    strategy_query = services.generators.build_query(q, strategy_search_fields)
 
     uuid_string = request.GET.get('uuids', '')
     if uuid_string:
         uuids = uuid_string.split(',')
         for uuid in uuids:
-            query |= Q(uuid__icontains=uuid.strip())
+            solution_query |= Q(uuid__icontains=uuid.strip())
+            # strategy_query |= Q(uuid__icontains=uuid.strip())  # not needed, just future ref.
+        strategies_query_result = Strategy.objects.none()  # When 'uuids' is provided, ignore the strategies
 
-    solutions_query = Solution.objects.filter(query, banned=False).annotate(avg_rating=Avg('rating__rate')).order_by('-avg_rating')
-    paginator = Paginator(solutions_query, number_of_rows_per_page)
+    else:
+        strategies_query_result = Strategy.objects.filter(strategy_query, banned=False).annotate(
+            avg_rating=Avg('rating__rate'))
+
+    solutions_query_result = Solution.objects.filter(solution_query, banned=False).annotate(avg_rating=Avg('rating__rate'))
+    # strategies_query_result = Strategy.objects.filter(strategy_query, banned=False).annotate(avg_rating=Avg('rating__rate'))
+
+    results = sorted(
+        chain(solutions_query_result, strategies_query_result),
+        key=cmp_to_key(services.generators.rate_compare)
+    )
+
+    paginator = Paginator(results, number_of_rows_per_page)
     solutions_result = paginator.get_page(page_number)
 
     context = {
@@ -212,14 +222,14 @@ def strategy(request, uuid, slug=None):
     for slug to show on url, it is necessary to receive here even if it's not used in the view
     """
     q = request.session.get('q', '')
-    # data_point = get_object_or_404(DataPoint, uuid=uuid)
-    # rating = Rating.objects.select_related('rating_reply').filter(content=data_point)
-    #
-    # if data_point.banned:
-    #     return render(request, 'datapoint/banned.html', {'q': q})
+    strategy_view = get_object_or_404(Strategy, uuid=uuid)
+    rating = Rating.objects.select_related('rating_reply').filter(strategy=strategy_view)
+
+    if strategy_view.banned:
+        return render(request, 'strategy/banned.html', {'q': q})
 
     context = {'q': q,
-        # "data_point": data_point,  'rating': rating
+        "strategy_view": strategy_view,  'rating': rating
                }
 
     return render(request, 'strategy/strategy.html', context)

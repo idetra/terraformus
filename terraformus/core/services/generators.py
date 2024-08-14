@@ -1,5 +1,5 @@
 import uuid
-
+from django.db.models import Q
 from django.db import IntegrityError
 from django.apps import apps
 
@@ -107,3 +107,21 @@ class TableGenerator:
                 }
 
         return output_table
+
+
+def build_query(q, search_fields):
+    query = Q()  # Instantiate a Q object to build complex queries
+    split_q = q.split()  # Split the query string into separate terms
+    for field in search_fields:
+        for term in split_q:
+            query |= Q(**{f'{field}__icontains': term})  # For each term in each search field, add an 'icontains' lookup
+    return query
+
+
+def rate_compare(a, b):
+    if a.avg_rating is None:
+        return -1
+    elif b.avg_rating is None:
+        return 1
+    else:
+        return b.avg_rating - a.avg_rating

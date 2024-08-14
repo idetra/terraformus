@@ -139,6 +139,10 @@ class Solution(models.Model):
         self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
 
+    @staticmethod
+    def model_name():
+        return "Solution"
+
 
 class ExternalAsset(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -223,7 +227,7 @@ class Strategy(models.Model):
 
     def average_rating(self):
         """returns the average rating for each content"""
-        return Rating.objects.filter(content=self).aggregate(avg_rating=Avg('rate'))["avg_rating"] or 0
+        return Rating.objects.filter(strategy=self).aggregate(avg_rating=Avg('rate'))["avg_rating"] or 0
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -231,6 +235,10 @@ class Strategy(models.Model):
 
     class Meta:
         verbose_name_plural = 'Strategies'
+
+    @staticmethod
+    def model_name():
+        return "Strategy"
 
 
 class StrategySolution(models.Model):
