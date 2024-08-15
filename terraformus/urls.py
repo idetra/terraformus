@@ -19,7 +19,7 @@ urlpatterns = [
     path('edit_life_cycle/<uuid:uuid>', views.edit_life_cycle, name='edit_life_cycle'),
     path('delete_life_cycle/<uuid:uuid>', views.delete_life_cycle, name='delete_life_cycle'),
     # strategies
-    path('strategies/', views.strategies, name='strategies'),
+    # path('strategies/', views.strategies, name='strategies'),
     path('strategy/<uuid:uuid>/<str:slug>', views.strategy, name='strategy'),
     path('create_strategy/', views.create_strategy, name='create_strategy'),
     path('edit_strategy/<uuid:uuid>', views.edit_strategy, name='edit_strategy'),

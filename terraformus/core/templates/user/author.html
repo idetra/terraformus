@@ -3,30 +3,37 @@
 {% load i18n %}
 
 {% block content %}
-
-
-
+    
     <div class="row justify-content-center">
         <div class="col-8">
-    <h4 class="mt-4">{{ author_profile.user.get_full_name }}</h4>
+            <h4 class="mt-4">{{ author_profile.user.get_full_name }}</h4>
+            <br>
 
-    <br>
+            {{ author_profile.biography }}
 
-    {{ author_profile.biography }}
+            <br>
+            <br>
+        
+            <p class="text-center text-white bg-dark">SOLUTIONS</p>
+            {% for solution in author_solutions %}
 
-    <br>
-    <br>
-
-            <p class="text-center text-white bg-dark">DATA POINTS</p>
-            {% for data_point in data_points %}
-
-                <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-start" href="{% url 'datapoint' data_point.slug %}">
-                    {{ data_point.title|truncatechars:100 }}
+                <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-start" href="{% url 'solution' solution.uuid solution.slug %}">
+                    {{ solution.title|truncatechars:100 }}
                 </a>
-                <p>{{ data_point.description }}</p>
+                <p>{{ solution.subtitle }}</p>
+
+            {% endfor %}
+            <br>
+            <p class="text-center text-white bg-dark">STRATEGIES</p>
+            {% for strategy in author_strategies %}
+
+                <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-start" href="{% url 'strategy' strategy.uuid strategy.slug %}">
+                    {{ strategy.title|truncatechars:100 }}
+                </a>
                 <br>
 
             {% endfor %}
+        
         </div>
     </div>
 
