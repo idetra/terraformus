@@ -44,20 +44,19 @@
                             <span class="material-icons md-18 mr-2">edit</span> Edit
                         </a>
 
-                        <a class="btn btn-xs btn-danger ml-5" data-toggle="modal" data-target="#delete_datapoint_{{ solution_view.slug }}">
+                        <a class="btn btn-xs btn-danger ml-5" data-toggle="modal" data-target="#delete_solution_{{ solution_view.slug }}">
                             <span class="material-icons md-18 mr-2">delete</span> Delete
                         </a>
 
                         <!-- Delete Modal -->
-                        <div class="modal fade" id="delete_datapoint_{{ solution_view.slug }}" tabindex="-1" aria-labelledby="delete_datapoint" aria-hidden="true">
+                        <div class="modal fade" id="delete_solution_{{ solution_view.slug }}" tabindex="-1" aria-labelledby="delete_solution" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-body text-left">
-                                        <p>Are you sure you want to delete the data point</p>
+                                        <p>Are you sure you want to delete the solution</p>
                                         <p>"{{ solution_view.title }}" ?</p>
                                         <p>This may lead to discontinuity:</p>
-                                        <p>- All connections that depend on this data point will be severed</p>
-                                        <p>- That includes all connections made by other users</p>
+                                        <p>- All connections that depend on this solution will be severed</p>
                                         <a class="btn btn-outline-danger" href="{% url 'delete_solution' solution_view.uuid %}">Yes, delete</a>
                                     </div>
                                 </div>
@@ -67,7 +66,9 @@
                 </div>
             {% endif %}
 
-            {{ solution_view }}
+            <p>{{ solution_view.goal }}</p>
+            <p>{{ solution_view.automation }}</p>
+            
         
             <br>
         

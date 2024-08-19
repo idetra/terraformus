@@ -1,7 +1,8 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
 from terraformus.core.models import  HomePageControl, Profile, Solution, LifeCycle, LifeCycleInput, LifeCycleWaste, \
-    Strategy, StrategySolution, ExternalAsset
+    Strategy, StrategySolution, ExternalAsset, User
 
 
 class HomePageControlAdmin(admin.ModelAdmin):
@@ -25,3 +26,4 @@ admin.site.register(LifeCycleInput)
 admin.site.register(LifeCycleWaste)
 admin.site.register(Strategy)
 admin.site.register(StrategySolution)
+admin.site.register(User, UserAdmin)

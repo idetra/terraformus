@@ -100,13 +100,21 @@ def solution(request, uuid, slug=None):
     for slug to show on url, it is necessary to receive here even if it's not used in the view
     """
     q = request.session.get('q', '')
-    solution_view = get_object_or_404(Solution, uuid=uuid)
+    # solution_view = get_object_or_404(Solution, uuid=uuid)
+    solution_view = get_object_or_404(
+        Solution.objects.select_related('derives_from').prefetch_related('depends_on'), uuid=uuid)
+    # solution_view = get_object_or_404(Solution, uuid=uuid).select_related('derives_from').prefetch_related('depends_on')
     rating = Rating.objects.select_related('rating_reply').filter(solution=solution_view)
+    external_assets = ExternalAsset.objects.filter(solution=solution_view)
+    lifecycles = LifeCycle.objects.filter(solution=solution_view)
+    lifecycle_inputs = LifeCycleInput.objects.filter(lifecycle__in=lifecycles)
+    lifecycle_wastes = LifeCycleWaste.objects.filter(lifecycle__in=lifecycles)
 
     if solution_view.banned:
         return render(request, 'banned.html', {'q': q})
 
-    context = {'q': q, "solution_view": solution_view,  'rating': rating}
+    context = {'q': q, "solution_view": solution_view,  'rating': rating, 'lifecycle_inputs': lifecycle_inputs,
+               'lifecycle_wastes': lifecycle_wastes, 'external_assets': external_assets}
 
     return render(request, 'solution/solution.html', context)
 
