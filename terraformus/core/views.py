@@ -109,12 +109,20 @@ def solution(request, uuid, slug=None):
     lifecycles = LifeCycle.objects.filter(solution=solution_view)
     lifecycle_inputs = LifeCycleInput.objects.filter(lifecycle__in=lifecycles)
     lifecycle_wastes = LifeCycleWaste.objects.filter(lifecycle__in=lifecycles)
+    boolean_fieldnames = services.generators.collect_boolean_fieldnames('Solution', solution_view)
+
+    solution_type_bools = [sol for sol in boolean_fieldnames if sol in services.help_text.sol_type_ht]
+    dimension_target_bools = [sol for sol in boolean_fieldnames if sol in services.help_text.sol_dimension_target_ht]
+    un_target_bools = [sol for sol in boolean_fieldnames if sol in services.help_text.sol_un_target_ht]
+    sector_bools = [sol for sol in boolean_fieldnames if sol in services.help_text.sol_sector_ht]
 
     if solution_view.banned:
         return render(request, 'banned.html', {'q': q})
 
     context = {'q': q, "solution_view": solution_view,  'rating': rating, 'lifecycle_inputs': lifecycle_inputs,
-               'lifecycle_wastes': lifecycle_wastes, 'external_assets': external_assets}
+               'lifecycle_wastes': lifecycle_wastes, 'external_assets': external_assets,
+               'boolean_fieldnames': boolean_fieldnames, 'solution_type_bools': solution_type_bools, 'dimension_target_bools': dimension_target_bools,
+               'un_target_bools': un_target_bools, 'sector_bools': sector_bools}
 
     return render(request, 'solution/solution.html', context)
 

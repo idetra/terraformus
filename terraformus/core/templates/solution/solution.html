@@ -1,15 +1,70 @@
 {% extends "base.html" %}
 {% load static %}
 {% load i18n %}
+{% load core_template_tags %}
 
 {% block content %}
-
-    <div class="row mt-4">
-
-        <div class="col-md-3">
-
-            {#            <button class="btn btn-xs btn-outline-dark bg-light" onclick="goBack()">Back</button><br><br>#}
+    
+    <div class="row">
+    
+        <div class="col col-8 mt-1">
+             <h6 class="selectable-text">{{ solution_view.title }}</h6>
+{#            <p>{{ solution_view.description }}</p>#}
+            <p class="text-left">Author: <a href="{% url 'author' solution_view.user.username %}">
+                <b>{{ solution_view.user.get_full_name}}</b></a>
+            <br>
+                <small>Created: {{ solution_view.created_at }} | Edited: {{ solution_view.last_edited }}</small>
+            </p>
         
+            {% if solution_view.user == request.user %}
+
+                <a class="btn btn-xs btn-outline-dark bg-light mr-1" href="{% url 'edit_solution' solution_view.uuid %}">
+                    <span class="material-icons md-18 mr-2">edit</span> Edit
+                </a>
+                <a class="btn btn-xs btn-danger" data-toggle="modal" data-target="#delete_solution_{{ solution_view.slug }}">
+                    <span class="material-icons md-18 mr-2">delete</span> Delete
+                </a>
+                <br><br>
+                <!-- Delete Modal -->
+                <div class="modal fade" id="delete_solution_{{ solution_view.slug }}" tabindex="-1" aria-labelledby="delete_solution" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body text-left">
+                                <p>Are you sure you want to delete the solution</p>
+                                <p>"{{ solution_view.title }}" ?</p>
+                                <p>This may lead to discontinuity:</p>
+                                <p>- All connections that depend on this solution will be severed</p>
+                                <a class="btn btn-outline-danger" href="{% url 'delete_solution' solution_view.uuid %}">Yes, delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% endif %}
+
+            <p>
+                Solution Type: {% for item in solution_type_bools %}<span class="badge badge-pill badge-info m-1">{{ item|replace:"_, " }}</span>{% endfor %} 
+            </p>
+
+            <p>Cost type: {{ solution_view.get_cost_type_display }}</p>        
+            <p>Goal: {{ solution_view.goal }}</p>
+        
+            {% if solution_view.derives_from %}
+                <p>Derives from: <a href="{% url 'solution' solution_view.derives_from.uuid solution_view.derives_from.slug %}">{{ solution_view.derives_from }}</a></p>
+            {% endif %}
+        
+            {% if solution_view.depends_on.all %}
+                Depends on:
+                {% for sol in solution_view.depends_on.all %}
+                    <p><a href="{% url 'solution' sol.uuid sol.slug %}">{{ sol }}</a></p>
+                {% endfor %}
+            {% endif %}
+            
+        </div>
+    
+        
+        <div class="col col-4 mt-2">
+            
             <p class="text-center text-white bg-dark">RATING</p>
 
             <span class="chip chip-xs rating">{{ solution_view.average_rating }}</span>
@@ -21,61 +76,77 @@
 
             <br>
             <br>
-        
-
-        </div>
-
-        <div class="col-md-6">
-        
-            <h6 class="selectable-text">{{ solution_view.title }}</h6>
-            <p>{{ solution_view.description }}</p>
-{#            Unique ID: <span class="selectable-text bg-light">{{ solution_view.unique_id }}</span>#}
-            <p class="text-left">Author: <a href="{% url 'author' solution_view.user.username %}">
-                <b>{{ solution_view.user.get_full_name}}</b></a>
-            <br>
-                <small>Created: {{ solution_view.created_at }} | Edited: {{ solution_view.last_edited }}</small>
-            </p>
-
-            {% if solution_view.user == request.user %}
-                <div class="row mb-3">
-                    <div class="col text-center">
-
-                        <a class="btn btn-xs btn-outline-dark bg-light mr-5" href="{% url 'edit_solution' solution_view.uuid %}">
-                            <span class="material-icons md-18 mr-2">edit</span> Edit
-                        </a>
-
-                        <a class="btn btn-xs btn-danger ml-5" data-toggle="modal" data-target="#delete_solution_{{ solution_view.slug }}">
-                            <span class="material-icons md-18 mr-2">delete</span> Delete
-                        </a>
-
-                        <!-- Delete Modal -->
-                        <div class="modal fade" id="delete_solution_{{ solution_view.slug }}" tabindex="-1" aria-labelledby="delete_solution" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-body text-left">
-                                        <p>Are you sure you want to delete the solution</p>
-                                        <p>"{{ solution_view.title }}" ?</p>
-                                        <p>This may lead to discontinuity:</p>
-                                        <p>- All connections that depend on this solution will be severed</p>
-                                        <a class="btn btn-outline-danger" href="{% url 'delete_solution' solution_view.uuid %}">Yes, delete</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-
-            <p>{{ solution_view.goal }}</p>
-            <p>{{ solution_view.automation }}</p>
             
-        
+            <p class="text-center text-white bg-dark">CLASSIFICATION</p>
+            Dimension Target:
+            {% for item in dimension_target_bools %}<span class="badge badge-pill badge-secondary m-1">{{ item|replace:"_, " }}</span>{% endfor %}    
             <br>
+            UN Target:
+            {% for item in un_target_bools %}<span class="badge badge-pill badge-warning m-1">{{ item|replace:"_, " }}</span>{% endfor %}    
+            <br>
+            Sector:
+            {% for item in sector_bools %}<span class="badge badge-pill badge-success m-1">{{ item|replace:"_, " }}</span>{% endfor %}    
+            <br>
+            <br>
+        
+            <p class="text-center text-white bg-dark">ASSETS</p>
+            {%  for asset in external_assets %}
+                <span class="badge badge-pill badge-info">{{ asset.get_type_display }}</span>
+                <a class="btn btn-xs btn-outline-dark bg-light mb-1" target="_blank" href="{{ asset.url }}">{{ asset }}</a>
+                <br>
+            {% endfor %}
+        
+        </div>
+    
+    </div>
+    
+    <br>
+    <br>
+    
+    <div class="row">
+    
+        <div class="col col-12">
+            
+            How this solution can be updated
+            <p>{{ solution_view.update }}</p>
+        
+            How this solution can be upgraded
+            <p>{{ solution_view.upgrade }}</p>
+        
+            How this solution can scale up
+            <p>{{ solution_view.scale_up }}</p>
+            
+        </div>
+    
+    </div>
+    
+    <br>
+    <br>
+    
+    <p class="text-center text-white bg-dark">LIFE CYCLE</p>
+    <p class="text-center">(area under development)</p>
+    <div class="row">
+
+        <div class="col-md-4">
+        <p class="text-center text-white bg-dark">BUILD</p>
+
+        </div>
+
+        <div class="col-md-4">
+        <p class="text-center text-white bg-dark">OPERATION</p>
+        
+{#            Life cycle inputs:<br>#}
+{#            {% for i in lifecycle_inputs %}#}
+{##}
+{#                    {{ i }}<br>#}
+{#                {{ i.unit }}<br>#}
+{#                <br>#}
+{#            {% endfor %}#}
         
         </div>
 
-        <div class="col-md-3">
-
+        <div class="col-md-4">
+            <p class="text-center text-white bg-dark">END OF LIFE</p>
             
         </div>
 

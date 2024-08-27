@@ -2,6 +2,7 @@ import uuid
 from django.db.models import Q
 from django.db import IntegrityError
 from django.apps import apps
+from django.db import models
 
 
 def create_anonymous_user():
@@ -125,3 +126,13 @@ def rate_compare(a, b):
         return 1
     else:
         return b.avg_rating - a.avg_rating
+
+
+def collect_boolean_fieldnames(model_name, instance):
+    fieldnames = []
+    model = apps.get_model('core', model_name)
+    for field in model._meta.fields:  # noqa
+        if isinstance(field, models.BooleanField):
+            if getattr(instance, field.name) == True:  # Check if BooleanField value is True
+                fieldnames.append(field.name)
+    return fieldnames
