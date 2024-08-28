@@ -107,8 +107,11 @@ def solution(request, uuid, slug=None):
     rating = Rating.objects.select_related('rating_reply').filter(solution=solution_view)
     external_assets = ExternalAsset.objects.filter(solution=solution_view)
     lifecycles = LifeCycle.objects.filter(solution=solution_view)
-    lifecycle_inputs = LifeCycleInput.objects.filter(lifecycle__in=lifecycles)
-    lifecycle_wastes = LifeCycleWaste.objects.filter(lifecycle__in=lifecycles)
+
+    build_lifecycles = [lc for lc in lifecycles if lc.type == "b"]
+    operation_lifecycles = [lc for lc in lifecycles if lc.type == "o"]
+    end_lifecycles = [lc for lc in lifecycles if lc.type == "e"]
+
     boolean_fieldnames = services.generators.collect_boolean_fieldnames('Solution', solution_view)
 
     solution_type_bools = [sol for sol in boolean_fieldnames if sol in services.help_text.sol_type_ht]
@@ -119,10 +122,10 @@ def solution(request, uuid, slug=None):
     if solution_view.banned:
         return render(request, 'banned.html', {'q': q})
 
-    context = {'q': q, "solution_view": solution_view,  'rating': rating, 'lifecycle_inputs': lifecycle_inputs,
-               'lifecycle_wastes': lifecycle_wastes, 'external_assets': external_assets,
-               'boolean_fieldnames': boolean_fieldnames, 'solution_type_bools': solution_type_bools, 'dimension_target_bools': dimension_target_bools,
-               'un_target_bools': un_target_bools, 'sector_bools': sector_bools}
+    context = {'q': q, "solution_view": solution_view,  'rating': rating, 'build_lifecycles': build_lifecycles,
+        'operation_lifecycles': operation_lifecycles, 'end_lifecycles': end_lifecycles, 'external_assets': external_assets,
+        'boolean_fieldnames': boolean_fieldnames, 'solution_type_bools': solution_type_bools, 'dimension_target_bools': dimension_target_bools,
+        'un_target_bools': un_target_bools, 'sector_bools': sector_bools}
 
     return render(request, 'solution/solution.html', context)
 
