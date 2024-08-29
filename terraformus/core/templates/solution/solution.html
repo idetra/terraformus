@@ -5,10 +5,10 @@
 {% load core_template_tags %}
 
 {% block content %}
-    
+
     <div class="row">
-    
-        <div class="col col-7 mt-1">
+
+        <div class="col col-md-7 mt-1">
              <h6 class="selectable-text">{{ solution_view.title }}</h6>
             <p>{{ solution_view.subtitle }}</p>
             <small class="text-left"><u>Author</u>: <a href="{% url 'author' solution_view.user.username %}">
@@ -17,7 +17,7 @@
                 <u>Created</u>: {{ solution_view.created_at }} | Edited: {{ solution_view.last_edited }}
             </small>
             <br><br>
-        
+
             {% if solution_view.user == request.user %}
 
                 <a class="btn btn-xs btn-outline-dark bg-light mr-1" href="{% url 'edit_solution' solution_view.uuid %}">
@@ -45,28 +45,28 @@
             {% endif %}
 
             <p>
-                <u>Solution Type</u>: {% for item in solution_type_bools %}<span class="badge badge-pill badge-info m-1">{{ item|replace:"_, " }}</span>{% endfor %} 
+                <u>Solution Type</u>: {% for item in solution_type_bools %}<span class="badge badge-pill badge-info m-1">{{ item|replace:"_, " }}</span>{% endfor %}
             </p>
 
-            <p><u>Cost type</u>: {{ solution_view.get_cost_type_display }}</p>        
+            <p><u>Cost type</u>: {{ solution_view.get_cost_type_display }}</p>
             <p><u>Goal</u>: {{ solution_view.goal }}</p>
-        
+
             {% if solution_view.derives_from %}
                 <p><u>Derives from</u>: <a href="{% url 'solution' solution_view.derives_from.uuid solution_view.derives_from.slug %}">{{ solution_view.derives_from }}</a></p>
             {% endif %}
-        
+
             {% if solution_view.depends_on.all %}
                 <p><u>Depends on</u>:</p>
                 {% for sol in solution_view.depends_on.all %}
                     <p class="mt-n3"><a href="{% url 'solution' sol.uuid sol.slug %}">{{ sol }}</a></p>
                 {% endfor %}
             {% endif %}
-            
+
         </div>
-    
-        
-        <div class="col col-5 mt-2">
-            
+
+
+        <div class="col col-md-5 mt-2">
+
             <p class="text-center text-white bg-dark">RATING</p>
 
             <span class="chip chip-xs rating">{{ solution_view.average_rating }}</span>
@@ -78,62 +78,72 @@
 
             <br>
             <br>
-            
+
             <p class="text-center text-white bg-dark">CLASSIFICATION</p>
             <u>Dimension Target</u>:
-            {% for item in dimension_target_bools %}<span class="badge badge-pill badge-secondary m-1">{{ item|replace:"_, " }}</span>{% endfor %}    
+            {% for item in dimension_target_bools %}<span class="badge badge-pill badge-secondary m-1">{{ item|replace:"_, " }}</span>{% endfor %}
             <br>
             <u>UN Target</u>:
-            {% for item in un_target_bools %}<span class="badge badge-pill badge-warning m-1">{{ item|replace:"_, " }}</span>{% endfor %}    
+            {% for item in un_target_bools %}<span class="badge badge-pill badge-warning m-1">{{ item|replace:"_, " }}</span>{% endfor %}
             <br>
             <u>Sector</u>:
-            {% for item in sector_bools %}<span class="badge badge-pill badge-success m-1">{{ item|replace:"_, " }}</span>{% endfor %}    
+            {% for item in sector_bools %}<span class="badge badge-pill badge-success m-1">{{ item|replace:"_, " }}</span>{% endfor %}
             <br>
             <br>
-        
+
             <p class="text-center text-white bg-dark">ASSETS</p>
             {%  for asset in external_assets %}
+                {% if solution_view.user == request.user %}
+                    <a class="" href="{% url 'edit_external_asset' 'solution' asset.uuid %}"><span class="material-icons md-18">edit</span></a>
+                {% endif %}
                 <span class="badge badge-pill badge-info">{{ asset.get_type_display }}</span>
                 <a class="btn btn-xs btn-outline-dark bg-light mb-1" target="_blank" href="{{ asset.url }}">
                     <span class="material-icons md-18 mr-2">open_in_new</span>
-                    {{ asset|truncatechars:45 }} </a>
+                    {{ asset|truncatechars:42 }} </a>
                 <br>
             {% endfor %}
-        
+
         </div>
-    
+
     </div>
-    
+
     <br>
     <br>
-    
+
     <div class="row">
-    
+
         <div class="col col-12">
-            
+
             <p><u>How this solution can be updated</u>:<br>{{ solution_view.update }}</p>
-        
+
             <p><u>How this solution can be upgraded</u>:<br>{{ solution_view.upgrade }}</p>
-        
+
             <p><u>How this solution can scale up</u>:<br>{{ solution_view.scale_up }}</p>
-            
+
         </div>
-    
+
     </div>
-    
+
     <br>
     <br>
-    
-    
+
+
     <p class="text-center text-white bg-dark">LIFE CYCLE</p>
-    
+
    <div class="row">
         <div class="col-md-4">
             <p class="text-center text-white bg-dark">BUILD</p>
             {% for lc in build_lifecycles %}
                 <div class="row">
                     <div class="col">
-                        <h6>{{ lc.title }}</h6>
+                        <div class="vertical-center">
+                            {% if solution_view.user == request.user %}
+                                <a class="" href="{% url 'edit_life_cycle' lc.uuid %}">
+                                    <span class="material-icons md-18 mr-1">edit</span>
+                                </a>
+                            {% endif %}
+                            <h6 class="normalize-bottom">{{ lc.title }}</h6>
+                        </div>
                         <u>Total duration</u>: {{ lc.total_duration }}<br>
                         <u>Description</u>: {{ lc.description }}<br>
                         <u>Total cost</u>: {{ lc.total_aggregated_cost|floatformat:2|intcomma }}<br><br>
@@ -171,13 +181,20 @@
                 <div class="mb-4"></div>
             {% endfor %}
         </div>
-   
+
         <div class="col-md-4">
             <p class="text-center text-white bg-dark">OPERATION</p>
             {% for lc in operation_lifecycles %}
                 <div class="row">
                     <div class="col">
-                        <h6>{{ lc.title }}</h6>
+                        <div class="vertical-center">
+                            {% if solution_view.user == request.user %}
+                                <a class="" href="{% url 'edit_life_cycle' lc.uuid %}">
+                                    <span class="material-icons md-18 mr-1">edit</span>
+                                </a>
+                            {% endif %}
+                            <h6 class="normalize-bottom">{{ lc.title }}</h6>
+                        </div>
                         <u>Total duration</u>: {{ lc.total_duration }}<br>
                         <u>Description</u>: {{ lc.description }}<br>
                         <u>Total cost</u>: {{ lc.total_aggregated_cost|floatformat:2|intcomma }}<br><br>
@@ -215,13 +232,20 @@
                 <div class="mb-4"></div>
             {% endfor %}
         </div>
-   
+
         <div class="col-md-4">
             <p class="text-center text-white bg-dark">END OF LIFE</p>
             {% for lc in end_lifecycles %}
                 <div class="row">
                     <div class="col">
-                        <h6>{{ lc.title }}</h6>
+                        <div class="vertical-center">
+                            {% if solution_view.user == request.user %}
+                                <a class="" href="{% url 'edit_life_cycle' lc.uuid %}">
+                                    <span class="material-icons md-18 mr-1">edit</span>
+                                </a>
+                            {% endif %}
+                            <h6 class="normalize-bottom">{{ lc.title }}</h6>
+                        </div>
                         <u>Total duration</u>: {{ lc.total_duration }}<br>
                         <u>Description</u>: {{ lc.description }}<br>
                         <u>Total cost</u>: {{ lc.total_aggregated_cost|floatformat:2|intcomma }}<br><br>
@@ -259,7 +283,7 @@
                 <div class="mb-4"></div>
             {% endfor %}
         </div>
-   
+
     </div>
 
     <div class="mb-5"></div>

@@ -141,3 +141,12 @@
 .big-title {
     font-size: 15px;
 }
+
+.vertical-center {
+  display: flex;
+  align-items: center;
+}
+
+.normalize-bottom {
+    margin-bottom: 0;
+}
