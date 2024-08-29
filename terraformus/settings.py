@@ -61,6 +61,12 @@ INSTALLED_APPS = [
     # 'rest_framework',
 ]
 
+
+# Humanize django contrib
+
+# THOUSAND_SEPARATOR = '.'
+
+
 # Allauth configurations
 
 SITE_ID = 1

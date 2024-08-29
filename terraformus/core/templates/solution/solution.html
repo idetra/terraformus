@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% load i18n %}
+{% load humanize %}
 {% load core_template_tags %}
 
 {% block content %}
@@ -9,12 +10,13 @@
     
         <div class="col col-7 mt-1">
              <h6 class="selectable-text">{{ solution_view.title }}</h6>
-{#            <p>{{ solution_view.description }}</p>#}
-            <p class="text-left">Author: <a href="{% url 'author' solution_view.user.username %}">
+            <p>{{ solution_view.subtitle }}</p>
+            <small class="text-left"><u>Author</u>: <a href="{% url 'author' solution_view.user.username %}">
                 <b>{{ solution_view.user.get_full_name}}</b></a>
             <br>
-                <small>Created: {{ solution_view.created_at }} | Edited: {{ solution_view.last_edited }}</small>
-            </p>
+                <u>Created</u>: {{ solution_view.created_at }} | Edited: {{ solution_view.last_edited }}
+            </small>
+            <br><br>
         
             {% if solution_view.user == request.user %}
 
@@ -43,20 +45,20 @@
             {% endif %}
 
             <p>
-                Solution Type: {% for item in solution_type_bools %}<span class="badge badge-pill badge-info m-1">{{ item|replace:"_, " }}</span>{% endfor %} 
+                <u>Solution Type</u>: {% for item in solution_type_bools %}<span class="badge badge-pill badge-info m-1">{{ item|replace:"_, " }}</span>{% endfor %} 
             </p>
 
-            <p>Cost type: {{ solution_view.get_cost_type_display }}</p>        
-            <p>Goal: {{ solution_view.goal }}</p>
+            <p><u>Cost type</u>: {{ solution_view.get_cost_type_display }}</p>        
+            <p><u>Goal</u>: {{ solution_view.goal }}</p>
         
             {% if solution_view.derives_from %}
-                <p>Derives from: <a href="{% url 'solution' solution_view.derives_from.uuid solution_view.derives_from.slug %}">{{ solution_view.derives_from }}</a></p>
+                <p><u>Derives from</u>: <a href="{% url 'solution' solution_view.derives_from.uuid solution_view.derives_from.slug %}">{{ solution_view.derives_from }}</a></p>
             {% endif %}
         
             {% if solution_view.depends_on.all %}
-                Depends on:
+                <p><u>Depends on</u>:</p>
                 {% for sol in solution_view.depends_on.all %}
-                    <p><a href="{% url 'solution' sol.uuid sol.slug %}">{{ sol }}</a></p>
+                    <p class="mt-n3"><a href="{% url 'solution' sol.uuid sol.slug %}">{{ sol }}</a></p>
                 {% endfor %}
             {% endif %}
             
@@ -78,13 +80,13 @@
             <br>
             
             <p class="text-center text-white bg-dark">CLASSIFICATION</p>
-            Dimension Target:
+            <u>Dimension Target</u>:
             {% for item in dimension_target_bools %}<span class="badge badge-pill badge-secondary m-1">{{ item|replace:"_, " }}</span>{% endfor %}    
             <br>
-            UN Target:
+            <u>UN Target</u>:
             {% for item in un_target_bools %}<span class="badge badge-pill badge-warning m-1">{{ item|replace:"_, " }}</span>{% endfor %}    
             <br>
-            Sector:
+            <u>Sector</u>:
             {% for item in sector_bools %}<span class="badge badge-pill badge-success m-1">{{ item|replace:"_, " }}</span>{% endfor %}    
             <br>
             <br>
@@ -109,14 +111,11 @@
     
         <div class="col col-12">
             
-            How this solution can be updated
-            <p>{{ solution_view.update }}</p>
+            <p><u>How this solution can be updated</u>:<br>{{ solution_view.update }}</p>
         
-            How this solution can be upgraded
-            <p>{{ solution_view.upgrade }}</p>
+            <p><u>How this solution can be upgraded</u>:<br>{{ solution_view.upgrade }}</p>
         
-            How this solution can scale up
-            <p>{{ solution_view.scale_up }}</p>
+            <p><u>How this solution can scale up</u>:<br>{{ solution_view.scale_up }}</p>
             
         </div>
     
@@ -130,127 +129,137 @@
     
    <div class="row">
         <div class="col-md-4">
-            {% for lc in build_lifecycles %}    
-                <p class="text-center text-white bg-dark">BUILD</p>
+            <p class="text-center text-white bg-dark">BUILD</p>
+            {% for lc in build_lifecycles %}
                 <div class="row">
                     <div class="col">
-                        {{ lc.title }}<br>
-                        Total duration: {{ lc.total_duration }}<br>
-                        Description: {{ lc.description }}<br>
-                        Total cost: ???<br><br>
+                        <h6>{{ lc.title }}</h6>
+                        <u>Total duration</u>: {{ lc.total_duration }}<br>
+                        <u>Description</u>: {{ lc.description }}<br>
+                        <u>Total cost</u>: {{ lc.total_aggregated_cost|floatformat:2|intcomma }}<br><br>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
                         {% for input in lc.lifecycleinput_set.all %}
-                            Input: {{ input.resource_name }}<br>
-                            Type: {{ input.get_resource_type_display }}<br>
-                            Unit: {{ input.unit }}<br>
-                            Quantity: {{ input.quantity }}<br>
-                            Ref. unit cost: {{ input.reference_cost }}<br>
-                            Total cost: ???<br>
-                            Notes: {{ input.notes }}<br>
+                            <u>Input</u>: <b>{{ input.resource_name }}</b><br>
+                            <u>Type</u>: {{ input.get_resource_type_display }}<br>
+                            <u>Unit</u>: {{ input.unit }}<br>
+                            <u>Quantity</u>: {{ input.quantity }}<br>
+                            <u>Ref. unit cost</u>: {{ input.reference_cost|floatformat:2|intcomma }}<br>
+                            <u>Total cost</u>: {{ input.total_cost|floatformat:2|intcomma }}<br>
+                            <u>Notes</u>: {{ input.notes }}<br>
+                            <div class="mb-4"></div>
                         {% endfor %}
                     </div>
                     <div class="col">
                         {% for waste in lc.lifecyclewaste_set.all %}
-                            Waste: {{ waste.waste_type }}<br>
+                            <u>Waste</u>: <b>{{ waste.waste_type }}</b><br>
                             {% if waste.reusable %}<span class="badge badge-pill badge-secondary mb-1">Reusable</span><br>{% endif %}
                             {% if waste.recyclable %}<span class="badge badge-pill badge-secondary mb-1">Recyclable</span><br>{% endif %}
                             {% if waste.cradle2cradle %}<span class="badge badge-pill badge-secondary mb-1">Cradle 2 cradle</span><br>{% endif %}
-                            Unit: {{ waste.unit }}<br>
-                            Quantity: {{ waste.quantity }}<br>
-                            Ref. unit cost: {{ waste.reference_cost }}<br>
-                            Total cost: ???<br>
-                            Destination method: {{ waste.destination_method }}<br>
-                            Notes: {{ waste.notes }}<br>
+                            <u>Unit</u>: {{ waste.unit }}<br>
+                            <u>Quantity</u>: {{ waste.quantity }}<br>
+                            <u>Ref. unit cost</u>: {{ waste.reference_cost|floatformat:2|intcomma }}<br>
+                            <u>Total cost</u>: {{ waste.total_cost|floatformat:2|intcomma }}<br>
+                            <u>Destination method</u>: {{ waste.destination_method }}<br>
+                            <u>Notes</u>: {{ waste.notes }}<br>
+                            <div class="mb-4"></div>
                         {% endfor %}
                     </div>
                 </div>
+                <div class="mb-4"></div>
             {% endfor %}
         </div>
    
         <div class="col-md-4">
+            <p class="text-center text-white bg-dark">OPERATION</p>
             {% for lc in operation_lifecycles %}
-                <p class="text-center text-white bg-dark">OPERATION</p>
                 <div class="row">
                     <div class="col">
-                        {{ lc.title }}<br>
-                        Total duration: {{ lc.total_duration }}<br>
-                        Description: {{ lc.description }}<br>
-                        Total cost: ???<br><br>
+                        <h6>{{ lc.title }}</h6>
+                        <u>Total duration</u>: {{ lc.total_duration }}<br>
+                        <u>Description</u>: {{ lc.description }}<br>
+                        <u>Total cost</u>: {{ lc.total_aggregated_cost|floatformat:2|intcomma }}<br><br>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
                         {% for input in lc.lifecycleinput_set.all %}
-                            Input: {{ input.resource_name }}<br>
-                            Type: {{ input.get_resource_type_display }}<br>
-                            Unit: {{ input.unit }}<br>
-                            Quantity: {{ input.quantity }}<br>
-                            Ref. unit cost: {{ input.reference_cost }}<br>
-                            Total cost: ???<br>
-                            Notes: {{ input.notes }}<br>
+                            <u>Input</u>: <b>{{ input.resource_name }}</b><br>
+                            <u>Type</u>: {{ input.get_resource_type_display }}<br>
+                            <u>Unit</u>: {{ input.unit }}<br>
+                            <u>Quantity</u>: {{ input.quantity }}<br>
+                            <u>Ref. unit cost</u>: {{ input.reference_cost|floatformat:2|intcomma }}<br>
+                            <u>Total cost</u>: {{ input.total_cost|floatformat:2|intcomma }}<br>
+                            <u>Notes</u>: {{ input.notes }}<br>
+                            <div class="mb-4"></div>
                         {% endfor %}
                     </div>
                     <div class="col">
                         {% for waste in lc.lifecyclewaste_set.all %}
-                            Waste: {{ waste.waste_type }}<br>
+                            <u>Waste</u>: <b>{{ waste.waste_type }}</b><br>
                             {% if waste.reusable %}<span class="badge badge-pill badge-secondary mb-1">Reusable</span><br>{% endif %}
                             {% if waste.recyclable %}<span class="badge badge-pill badge-secondary mb-1">Recyclable</span><br>{% endif %}
                             {% if waste.cradle2cradle %}<span class="badge badge-pill badge-secondary mb-1">Cradle 2 cradle</span><br>{% endif %}
-                            Unit: {{ waste.unit }}<br>
-                            Quantity: {{ waste.quantity }}<br>
-                            Ref. unit cost: {{ waste.reference_cost }}<br>
-                            Total cost: ???<br>
-                            Destination method: {{ waste.destination_method }}<br>
-                            Notes: {{ waste.notes }}<br>
+                            <u>Unit</u>: {{ waste.unit }}<br>
+                            <u>Quantity</u>: {{ waste.quantity }}<br>
+                            <u>Ref. unit cost</u>: {{ waste.reference_cost|floatformat:2|intcomma }}<br>
+                            <u>Total cost</u>: {{ waste.total_cost|floatformat:2|intcomma }}<br>
+                            <u>Destination method</u>: {{ waste.destination_method }}<br>
+                            <u>Notes</u>: {{ waste.notes }}<br>
+                            <div class="mb-4"></div>
                         {% endfor %}
                     </div>
                 </div>
+                <div class="mb-4"></div>
             {% endfor %}
         </div>
    
         <div class="col-md-4">
+            <p class="text-center text-white bg-dark">END OF LIFE</p>
             {% for lc in end_lifecycles %}
-                <p class="text-center text-white bg-dark">END OF LIFE</p>
                 <div class="row">
                     <div class="col">
-                        {{ lc.title }}<br>
-                        Total duration: {{ lc.total_duration }}<br>
-                        Description: {{ lc.description }}<br>
-                        Total cost: ???<br><br>
+                        <h6>{{ lc.title }}</h6>
+                        <u>Total duration</u>: {{ lc.total_duration }}<br>
+                        <u>Description</u>: {{ lc.description }}<br>
+                        <u>Total cost</u>: {{ lc.total_aggregated_cost|floatformat:2|intcomma }}<br><br>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
                         {% for input in lc.lifecycleinput_set.all %}
-                            Input: {{ input.resource_name }}<br>
-                            Type: {{ input.get_resource_type_display }}<br>
-                            Unit: {{ input.unit }}<br>
-                            Quantity: {{ input.quantity }}<br>
-                            Ref. unit cost: {{ input.reference_cost }}<br>
-                            Total cost: ???<br>
-                            Notes: {{ input.notes }}<br>
+                            <u>Input</u>: <b>{{ input.resource_name }}</b><br>
+                            <u>Type</u>: {{ input.get_resource_type_display }}<br>
+                            <u>Unit</u>: {{ input.unit }}<br>
+                            <u>Quantity</u>: {{ input.quantity }}<br>
+                            <u>Ref. unit cost</u>: {{ input.reference_cost|floatformat:2|intcomma }}<br>
+                            <u>Total cost</u>: {{ input.total_cost|floatformat:2|intcomma }}<br>
+                            <u>Notes</u>: {{ input.notes }}<br>
+                            <div class="mb-4"></div>
                         {% endfor %}
                     </div>
                     <div class="col">
                         {% for waste in lc.lifecyclewaste_set.all %}
-                            Waste: {{ waste.waste_type }}<br>
+                            <u>Waste</u>: <b>{{ waste.waste_type }}</b><br>
                             {% if waste.reusable %}<span class="badge badge-pill badge-secondary mb-1">Reusable</span><br>{% endif %}
                             {% if waste.recyclable %}<span class="badge badge-pill badge-secondary mb-1">Recyclable</span><br>{% endif %}
                             {% if waste.cradle2cradle %}<span class="badge badge-pill badge-secondary mb-1">Cradle 2 cradle</span><br>{% endif %}
-                            Unit: {{ waste.unit }}<br>
-                            Quantity: {{ waste.quantity }}<br>
-                            Ref. unit cost: {{ waste.reference_cost }}<br>
-                            Total cost: ???<br>
-                            Destination method: {{ waste.destination_method }}<br>
-                            Notes: {{ waste.notes }}<br>
+                            <u>Unit</u>: {{ waste.unit }}<br>
+                            <u>Quantity</u>: {{ waste.quantity }}<br>
+                            <u>Ref. unit cost</u>: {{ waste.reference_cost|floatformat:2|intcomma }}<br>
+                            <u>Total cost</u>: {{ waste.total_cost|floatformat:2|intcomma }}<br>
+                            <u>Destination method</u>: {{ waste.destination_method }}<br>
+                            <u>Notes</u>: {{ waste.notes }}<br>
+                            <div class="mb-4"></div>
                         {% endfor %}
                     </div>
                 </div>
+                <div class="mb-4"></div>
             {% endfor %}
         </div>
+   
     </div>
 
     <div class="mb-5"></div>

@@ -167,6 +167,11 @@ class LifeCycle(models.Model):
     total_duration = models.TextField(help_text=ht.life_cycle_ht['total_duration'])
     description = models.TextField(help_text=ht.life_cycle_ht['description'])
 
+    def total_aggregated_cost(self):
+        inputs_cost = sum(input.total_cost() for input in self.lifecycleinput_set.all())
+        waste_cost = sum(waste.total_cost() for waste in self.lifecyclewaste_set.all())
+        return inputs_cost + waste_cost
+
     def __str__(self):
         return f"{self.get_type_display()} - {self.title} - {self.solution.title}"
 
@@ -182,6 +187,9 @@ class LifeCycleInput(models.Model):
     quantity = models.IntegerField(help_text=ht.life_cycle_input_ht['quantity'])
     reference_cost = models.IntegerField(help_text=ht.life_cycle_input_ht['reference_cost'])
     notes = models.TextField(help_text=ht.life_cycle_input_ht['notes'], null=True, blank=True)
+
+    def total_cost(self):
+        return self.quantity * self.reference_cost
 
     def __str__(self):
         return self.resource_name
@@ -201,6 +209,9 @@ class LifeCycleWaste(models.Model):
     reference_cost = models.IntegerField(help_text=ht.life_cycle_waste_ht['reference_cost'])
     destination_method = models.TextField(help_text=ht.life_cycle_waste_ht['destination_method'])
     notes = models.TextField(help_text=ht.life_cycle_waste_ht['notes'], null=True, blank=True)
+
+    def total_cost(self):
+        return self.quantity * self.reference_cost
 
     def __str__(self):
         return self.waste_type
