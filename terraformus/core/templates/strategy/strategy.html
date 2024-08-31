@@ -1,52 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
 {% load i18n %}
 
 {% block content %}
 
-    <div class="row mt-4">
+    <div class="row">
 
-        <div class="col-md-3">
-
-            {#            <button class="btn btn-xs btn-outline-dark bg-light" onclick="goBack()">Back</button><br><br>#}
-        
-            <p class="text-center text-white bg-dark">RATING</p>
-
-            <span class="chip chip-xs rating">{{ data_point.average_rating }}</span>
-            <a class="btn btn-xs btn-outline-dark px-n5" data-toggle="modal" data-target="#datapoint_ratings_{{ data_point.id }}">View all</a>
-            {% if user.is_authenticated and data_point.author != request.user%}
-{#                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'rate' data_point.slug %}">Rate</a>#}
-{#                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'report' data_point.slug %}">Report</a>#}
-            {% endif %}
-
-            <br>
-            <br>
-
-            <p class="text-center text-white bg-dark">PREVIOUS</p>
-            {% for item in data_point.connects_to.all %}
-                {% if item.author == data_point.author %}
-                    <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-start mb-1" href="{% url 'datapoint' item.uuid item.slug %}">
-
-{#                    <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-start mb-1" href="{% url 'datapoint' item.slug %}" data-toggle="tooltip" data-placement="right" title="{{ item.title }}">#}
-                        {{ item.title|truncatechars:35 }}
-                    </a>
-                {% endif %}
-            {% endfor %}
-
-            <br>
-
-            {% for item in data_point.connects_to.all %}
-                {% if item.author != data_point.author %}
-                    <a class="btn btn-xs btn-outline-warning bg-light d-flex justify-content-start mb-1" href="{% url 'datapoint' item.uuid item.slug %}">
-                        {{ item.title|truncatechars:35 }}
-                    </a>
-                {% endif %}
-            {% endfor %}
-
-        </div>
-
-        <div class="col-md-6">
-        
+        <div class="col col-md-7 mt-1">
+            
             {% if message %}
                 <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
                     {{ message }}
@@ -56,95 +18,94 @@
                 </div>
             {% endif %}
         
-            <h6 class="selectable-text">{{ data_point.title }}</h6>
-            <p>{{ data_point.description }}</p>
-{#            Unique ID: <span class="selectable-text bg-light">{{ data_point.unique_id }}</span>#}
-{#            <p class="text-left">Author: <a href="{% url 'author' data_point.author.username %}">#}
-                <b>{{ data_point.author.get_full_name}}</b></a>
+            <h6 class="selectable-text">{{ strategy_view.title }}</h6>
+            <small class="text-left"><u>Author</u>: <a href="{% url 'author' strategy_view.user.username %}">
+                <b>{{ strategy_view.user.get_full_name}}</b></a>
             <br>
-                <small>Created: {{ data_point.created_at }} | Edited: {{ data_point.last_edited }}</small>
-            </p>
+                <u>Created</u>: {{ strategy_view.created_at }} | Edited: {{ strategy_view.last_edited }}
+            </small>
+            <br><br>
+        
+            {% if strategy_view.user == request.user %}
 
-            {% if data_point.author == request.user %}
-                <div class="row mb-3">
-                    <div class="col text-center">
-
-                        <a class="btn btn-xs btn-outline-dark bg-light mr-5" href="{% url 'edit_datapoint' data_point.slug %}">
-                            <span class="material-icons md-18 mr-2">edit</span> Edit
-                        </a>
-
-                        <a class="btn btn-xs btn-danger ml-5" data-toggle="modal" data-target="#delete_datapoint_{{ data_point.slug }}">
-                            <span class="material-icons md-18 mr-2">delete</span> Delete
-                        </a>
-
-                        <!-- Delete Modal -->
-                        <div class="modal fade" id="delete_datapoint_{{ data_point.slug }}" tabindex="-1" aria-labelledby="delete_datapoint" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-body text-left">
-                                        <p>Are you sure you want to delete the data point</p>
-                                        <p>"{{ data_point.title }}" ?</p>
-                                        <p>This may lead to discontinuity:</p>
-                                        <p>- All connections that depend on this data point will be severed</p>
-                                        <p>- That includes all connections made by other users</p>
-                                        <a class="btn btn-outline-danger" href="{% url 'delete_datapoint' data_point.slug %}">Yes, delete</a>
-                                    </div>
-                                </div>
+                <a class="btn btn-xs btn-outline-dark bg-light mr-1" href="{% url 'edit_strategy' strategy_view.uuid %}">
+                    <span class="material-icons md-18 mr-2">edit</span> Edit
+                </a>
+                <a class="btn btn-xs btn-danger" data-toggle="modal" data-target="#delete_solution_{{ strategy_view.slug }}">
+                    <span class="material-icons md-18 mr-2">delete</span> Delete
+                </a>
+                <br><br>
+                <!-- Delete Modal -->
+                <div class="modal fade" id="delete_solution_{{ strategy_view.slug }}" tabindex="-1" aria-labelledby="delete_solution" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body text-left">
+                                <p>Are you sure you want to delete the strategy</p>
+                                <p>"{{ strategy_view.title }}" ?</p>
+                                <p>This may lead to discontinuity:</p>
+                                <p>- All connections that depend on this strategy will be severed</p>
+                                <a class="btn btn-outline-danger" href="{% url 'delete_solution' strategy_view.uuid %}">Yes, delete</a>
                             </div>
                         </div>
                     </div>
                 </div>
-            {% endif %}
 
-            {{ data_point.content|safe }}
+            {% endif %}
+        
+            <p><u>Total cost</u>: {{ strategy_view.total_full_cost|floatformat:2|intcomma }}</p>
+        
+            <p><u>Goal</u>: {{ strategy_view.goal }}</p>
+        
+        </div>
+        
+        <div class="col col-md-5 mt-2">
+        
+            <p class="text-center text-white bg-dark">RATING</p>
+
+            <span class="chip chip-xs rating">{{ strategy_view.average_rating }}</span>
+            <a class="btn btn-xs btn-outline-dark px-n5" data-toggle="modal" data-target="#datapoint_ratings_{{ strategy_view.id }}">View all</a>
+            {% if user.is_authenticated and strategy_view.user != request.user %}
+                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'rate' strategy_view.slug %}">Rate</a>
+                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'report' strategy_view.slug %}">Report</a>
+            {% endif %}
+        
             <br>
+            <br>
+        
+            <p class="text-center text-white bg-dark">ASSETS</p>
+            {%  for asset in external_assets %}
+                {% if strategy_view.user == request.user %}
+                    <a class="" href="{% url 'edit_external_asset' 'solution' asset.uuid %}"><span class="material-icons md-18">edit</span></a>
+                {% endif %}
+                <span class="badge badge-pill badge-info">{{ asset.get_type_display }}</span>
+                <a class="btn btn-xs btn-outline-dark bg-light mb-1" target="_blank" href="{{ asset.url }}">
+                    <span class="material-icons md-18 mr-2">open_in_new</span>
+                    {{ asset|truncatechars:42 }} </a>
+                <br>
+            {% endfor %}
         
         </div>
 
-        <div class="col-md-3">
-
-            <p class="text-center text-white bg-dark">REFERENCES</p>
-            {% for ref in data_point.reference_set.all|dictsortreversed:"scientific" %}
-                <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-between mb-1" target="_blank" href="{{ ref.url }}">
-{#                <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-between mb-1" target="_blank" href="{{ ref.url }}" data-toggle="tooltip" data-placement="left" title="{{ ref.title }}">#}
-                    {% if ref.scientific %}
-                    <span class="badge badge-warning badge-before">Sci</span>
-                    {% endif %}
-                    {{ ref.title|truncatechars:30 }} <span class="material-icons">open_in_new</span>
-                </a>
+    </div>
+    
+    <br>
+    <br>
+    
+    <div class="row">
+        <div class="col col-12">
+            <p><u>Solutions</u>:</p>
+            {% for solution in strategy_view.solutions.all %}
+                <p class="mt-n1">Title: <a href="{% url 'solution' solution.solution.uuid solution.solution.slug %}">{{ solution.solution.title }}</a></p>
+                <p class="mt-n3">Cost: {{ solution.solution.total_full_cost|floatformat:2|intcomma }}</p>
+                <p class="mt-n3">Notes: {{ solution.notes }}</p>
+                <br>
             {% endfor %}
-
-            <br>
-
-            <p class="text-center text-white bg-dark">NEXT</p>
-            {% for item in data_point.to_connections.all %}
-                {% if item.from_datapoint.author == data_point.author %}
-                    <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-start mb-1" href="{% url 'datapoint' item.from_datapoint.uuid item.from_datapoint.slug %}">
-
-{#                    <a class="btn btn-xs btn-outline-dark bg-light d-flex justify-content-start mb-1" href="{% url 'datapoint' item.from_datapoint.slug %}" data-toggle="tooltip" data-placement="left" title="{{ item.from_datapoint.title }}">#}
-                        {{ item.from_datapoint.title|truncatechars:35 }}
-                    </a>
-                {% endif %}
-            {% endfor %}
-
-            <br>
-
-            {% for item in data_point.to_connections.all %}
-                {% if item.from_datapoint.author != data_point.author %}
-                    <a class="btn btn-xs btn-outline-warning bg-light d-flex justify-content-start mb-1" href="{% url 'datapoint' item.from_datapoint.uuid item.from_datapoint.slug %}">
-                        {{ item.from_datapoint.title|truncatechars:35 }}
-                    </a>
-                {% endif %}
-            {% endfor %}
-
         </div>
-
     </div>
 
 
-
     <!-- View all ratings Modal -->
-    <div class="modal fade" id="datapoint_ratings_{{ data_point.id }}" tabindex="-1" aria-labelledby="datapoint_ratings" aria-hidden="true">
+    <div class="modal fade" id="datapoint_ratings_{{ strategy_view.id }}" tabindex="-1" aria-labelledby="datapoint_ratings" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg">
             <div class="modal-content">
                 <div class="modal-body">
@@ -154,7 +115,7 @@
                         <a href="{% url 'author' item.author.username %}">{{ item.author.get_full_name }}</a> rated {{ item.rate }}<br>
                         Comment:<br>{{ item.comment }}<br><br>
                         <small>Last edited: {{ item.last_edited }}</small>
-                        {% if data_point.author == request.user %}
+                        {% if strategy_view.author == request.user %}
                             <br>
                             <a class="btn btn-xs btn-outline-dark bg-light mr-5" href="{% url 'rating_reply' item.id %}">
                                 Reply

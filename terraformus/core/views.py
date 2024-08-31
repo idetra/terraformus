@@ -204,49 +204,20 @@ def delete_solution(request, uuid):
 # STRATEGIES -----------------------------------------------------------------------------------------------------------
 
 
-# def strategies(request):
-#     # page_number = request.GET.get('page', '1')
-#     # number_of_rows_per_page = request.GET.get('rows_per_page', '10')
-#     #
-#     # if not (number_of_rows_per_page.isdigit() and int(number_of_rows_per_page) > 0):
-#     #     number_of_rows_per_page = '10'
-#     #
-#     q = request.GET.get('q', '')
-#     # request.session['q'] = q
-#     # search_fields = ['title', 'description', 'slug', 'content', 'author__first_name', 'author__last_name']
-#     #
-#     # query = Q()
-#     # for field in search_fields:
-#     #     query |= Q(**{f'{field}__icontains': q})
-#     #
-#     # data_points_query = DataPoint.objects.filter(query, banned=False).annotate(
-#     #     avg_rating=Avg('rating__rate')).order_by('-avg_rating')
-#     #
-#     # paginator = Paginator(data_points_query, number_of_rows_per_page)
-#     # data_points = paginator.get_page(page_number)
-#
-#     context = {
-#         # 'possible_rows_per_page': [10, 50, 100],
-#         # 'data_points': data_points,
-#         'q': q
-#     }
-#
-#     return render(request, 'strategies.html', context)
-
-
 def strategy(request, uuid, slug=None):
     """
     for slug to show on url, it is necessary to receive here even if it's not used in the view
     """
     q = request.session.get('q', '')
-    strategy_view = get_object_or_404(Strategy, uuid=uuid)
+    strategy_view = get_object_or_404(Strategy.objects.prefetch_related('solutions'), uuid=uuid)
+    external_assets = ExternalAsset.objects.filter(strategy=strategy_view)
     rating = Rating.objects.select_related('rating_reply').filter(strategy=strategy_view)
 
     if strategy_view.banned:
         return render(request, 'strategy/banned.html', {'q': q})
 
     context = {'q': q,
-        "strategy_view": strategy_view,  'rating': rating
+        "strategy_view": strategy_view,  'rating': rating, 'external_assets': external_assets,
                }
 
     return render(request, 'strategy/strategy.html', context)

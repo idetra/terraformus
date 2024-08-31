@@ -9,7 +9,17 @@
     <div class="row">
 
         <div class="col col-md-7 mt-1">
-             <h6 class="selectable-text">{{ solution_view.title }}</h6>
+        
+            {% if message %}
+                <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+                    {{ message }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+            {% endif %}
+        
+            <h6 class="selectable-text">{{ solution_view.title }}</h6>
             <p>{{ solution_view.subtitle }}</p>
             <small class="text-left"><u>Author</u>: <a href="{% url 'author' solution_view.user.username %}">
                 <b>{{ solution_view.user.get_full_name}}</b></a>
@@ -44,11 +54,9 @@
 
             {% endif %}
 
-            <p>
-                <u>Solution Type</u>: {% for item in solution_type_bools %}<span class="badge badge-pill badge-info m-1">{{ item|replace:"_, " }}</span>{% endfor %}
-            </p>
-
+            <p><u>Solution Type</u>: {% for item in solution_type_bools %}<span class="badge badge-pill badge-info m-1">{{ item|replace:"_, " }}</span>{% endfor %}</p>
             <p><u>Cost type</u>: {{ solution_view.get_cost_type_display }}</p>
+            <p><u>Total cost</u>: {{ solution_view.total_full_cost|floatformat:2|intcomma }}</p>
             <p><u>Goal</u>: {{ solution_view.goal }}</p>
 
             {% if solution_view.derives_from %}
@@ -71,7 +79,7 @@
 
             <span class="chip chip-xs rating">{{ solution_view.average_rating }}</span>
             <a class="btn btn-xs btn-outline-dark px-n5" data-toggle="modal" data-target="#datapoint_ratings_{{ solution_view.id }}">View all</a>
-            {% if user.is_authenticated and solution_view.user != request.user%}
+            {% if user.is_authenticated and solution_view.user != request.user %}
                 <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'rate' solution_view.slug %}">Rate</a>
                 <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'report' solution_view.slug %}">Report</a>
             {% endif %}

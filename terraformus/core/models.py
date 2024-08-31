@@ -131,6 +131,9 @@ class Solution(models.Model):
     def __str__(self):
         return self.title
 
+    def total_full_cost(self):
+        return sum(lifecycle_instance.total_aggregated_cost() for lifecycle_instance in self.lifecycle_set.all())
+
     def average_rating(self):
         """returns the average rating for each content"""
         return Rating.objects.filter(solution=self).aggregate(avg_rating=Avg('rate'))["avg_rating"] or 0
@@ -235,6 +238,9 @@ class Strategy(models.Model):
 
     def __str__(self):
         return self.title
+
+    def total_full_cost(self):
+        return sum(sol.solution.total_full_cost() for sol in self.solutions.all())
 
     def average_rating(self):
         """returns the average rating for each content"""
