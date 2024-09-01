@@ -1,9 +1,9 @@
 <table class="table table-bordered table-sm table-striped text-center mt-3">
     <thead>
         <tr>
-            <th scope="col">Title</th>
-            <th scope="col">Goal</th>
-            <th scope="col">Solutions</th>
+            <th style="width:20%;" scope="col">Title</th>
+            <th style="width:60%;" scope="col">Goal</th>
+            <th style="width:20%;" scope="col">Solutions</th>
         </tr>
     </thead>
     
@@ -11,9 +11,9 @@
     
         {% for strategy in all_strategies %}
             <tr>
-                <th><a href="{% url 'strategy' strategy.uuid strategy.slug %}">{{ strategy.title }}</a></th>
-                <td>{{ strategy.goal }}</td>
-                <td>
+                <th style="width:20%;"><a href="{% url 'strategy' strategy.uuid strategy.slug %}">{{ strategy.title }}</a></th>
+                <td style="width:60%;">{{ strategy.goal }}</td>
+                <td style="width:20%;">
                     <a href="{% url 'solutions' %}?uuids={{ strategy.solutions_uuids }}">All solutions</a><br>
                     {% for solution in strategy.solutions.all %}
                         <a href="{% url 'solution' solution.solution.uuid solution.solution.slug %}">{{ solution }}</a><br>
