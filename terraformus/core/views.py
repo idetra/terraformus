@@ -247,6 +247,12 @@ def create_strategy(request):
 
                     strategy_form.solutions.add(strategy_solution_instance)
 
+                    if not created:
+                        strategy_solution_instance.notes = notes
+                        strategy_solution_instance.save()
+
+                    strategy_form.solutions.add(strategy_solution_instance)
+
             return redirect('my_strategies')
 
     else:
@@ -279,9 +285,14 @@ def edit_strategy(request, uuid):
                     if strategy_solution_form.cleaned_data.get('DELETE'):
                         strategy_solution_obj = StrategySolution.objects.get(solution=strategy_solution)
                         strategy_form.solutions.remove(strategy_solution_obj)
+                        strategy_solution_obj.delete()
                     else:
                         strategy_solution_obj, created = StrategySolution.objects.get_or_create(
                             solution=strategy_solution, defaults={'notes': notes})
+
+                        if not created:
+                            strategy_solution_obj.notes = notes
+                            strategy_solution_obj.save()
 
                         strategy_form.solutions.add(strategy_solution_obj)
             return redirect('my_strategies')
