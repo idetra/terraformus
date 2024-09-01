@@ -29,8 +29,8 @@ urlpatterns = [
     path('edit_external_asset/<str:model_name>/<uuid:uuid>', views.edit_external_asset, name='edit_external_asset'),
     path('delete_external_asset/<str:model_name>/<uuid:uuid>', views.delete_external_asset, name='delete_external_asset'),
     # extras
-    path('rate/<str:slug>', views.rate, name='rate'),
-    path('report/<str:slug>', views.report, name='report'),
+    path('rate/<str:model_name>/<str:uuid>', views.rate, name='rate'),
+    path('report/<str:model_name>/<str:uuid>', views.report, name='report'),
     path('rating_reply/<int:pk>', views.rating_reply, name='rating_reply'),
     # users
     path('profile/', views.profile, name='profile'),

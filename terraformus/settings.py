@@ -233,8 +233,7 @@ JAZZMIN_SETTINGS = {
         "core.LifeCycleWaste",
         "core.StrategySolution",
         "core.Profile",
-
-
+        "core.Report",
     ],
 
     # Use modals instead of popups

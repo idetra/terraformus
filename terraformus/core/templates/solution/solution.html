@@ -78,10 +78,12 @@
             <p class="text-center text-white bg-dark">RATING</p>
 
             <span class="chip chip-xs rating">{{ solution_view.average_rating }}</span>
-            <a class="btn btn-xs btn-outline-dark px-n5" data-toggle="modal" data-target="#datapoint_ratings_{{ solution_view.id }}">View all</a>
+            {% if rating.all %}
+                <a class="btn btn-xs btn-outline-dark px-n5" data-toggle="modal" data-target="#datapoint_ratings_{{ solution_view.id }}">View all</a>
+            {% endif %}
             {% if user.is_authenticated and solution_view.user != request.user %}
-                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'rate' solution_view.slug %}">Rate</a>
-                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'report' solution_view.slug %}">Report</a>
+                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'rate' 'Solution' solution_view.uuid %}">Rate</a>
+                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'report' 'Solution' solution_view.uuid %}">Report</a>
             {% endif %}
 
             <br>

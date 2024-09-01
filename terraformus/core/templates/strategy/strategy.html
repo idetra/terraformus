@@ -63,10 +63,12 @@
             <p class="text-center text-white bg-dark">RATING</p>
 
             <span class="chip chip-xs rating">{{ strategy_view.average_rating }}</span>
-            <a class="btn btn-xs btn-outline-dark px-n5" data-toggle="modal" data-target="#datapoint_ratings_{{ strategy_view.id }}">View all</a>
+            {% if rating.all %}
+                <a class="btn btn-xs btn-outline-dark px-n5" data-toggle="modal" data-target="#datapoint_ratings_{{ strategy_view.id }}">View all</a>
+            {% endif %}
             {% if user.is_authenticated and strategy_view.user != request.user %}
-                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'rate' strategy_view.slug %}">Rate</a>
-                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'report' strategy_view.slug %}">Report</a>
+                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'rate' 'Strategy' strategy_view.uuid %}">Rate</a>
+                <a class="btn btn-xs btn-outline-dark bg-light" href="{% url 'report' 'Strategy' strategy_view.uuid %}">Report</a>
             {% endif %}
         
             <br>
@@ -112,10 +114,10 @@
 
                     {% for item in rating %}
 
-                        <a href="{% url 'author' item.author.username %}">{{ item.author.get_full_name }}</a> rated {{ item.rate }}<br>
+                        <a href="{% url 'author' item.user.username %}">{{ item.user.get_full_name }}</a> rated {{ item.rate }}<br>
                         Comment:<br>{{ item.comment }}<br><br>
                         <small>Last edited: {{ item.last_edited }}</small>
-                        {% if strategy_view.author == request.user %}
+                        {% if strategy_view.user == request.user %}
                             <br>
                             <a class="btn btn-xs btn-outline-dark bg-light mr-5" href="{% url 'rating_reply' item.id %}">
                                 Reply

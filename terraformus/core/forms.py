@@ -8,7 +8,7 @@ from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Invisible
 
 from terraformus.core.models import Solution, Profile, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste, \
-    Strategy
+    Strategy, Rating, RatingReply, Report
 from terraformus.core.services import aux_lists, choices
 
 
@@ -176,6 +176,46 @@ class InLineLifeCycleWasteForm(forms.ModelForm):
         self.fields['reference_cost'].widget = forms.NumberInput(attrs={'class': 'form-control'})
         self.fields['destination_method'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 2})
         self.fields['notes'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 2})
+
+
+# Rating/reply/report forms---------------------------------------------------------------------------------------------
+
+
+class RatingForm(forms.ModelForm):
+    rate = forms.ChoiceField(
+        choices=[(i, i) for i in range(1, 11)],
+        widget=forms.Select(attrs={'class': 'form-control custom-select-width'})
+    )
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 10})
+    )
+
+    class Meta:
+        model = Rating
+        fields = ['rate', 'comment']
+
+
+class RatingReplyForm(forms.ModelForm):
+    comment = forms.CharField(
+        label="Your reply:",
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 10})
+    )
+
+    class Meta:
+        model = RatingReply
+        fields = ['comment']
+
+
+class ReportForm(forms.ModelForm):
+
+    comment = forms.CharField(
+        label='Why should this content be banned',
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 10})
+    )
+
+    class Meta:
+        model = Report
+        fields = ['comment']
 
 
 # User related forms----------------------------------------------------------------------------------------------------

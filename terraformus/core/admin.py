@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
-from terraformus.core.models import  HomePageControl, Profile, Solution, LifeCycle, LifeCycleInput, LifeCycleWaste, \
-    Strategy, StrategySolution, ExternalAsset, User
+from terraformus.core.models import HomePageControl, Profile, Solution, LifeCycle, LifeCycleInput, LifeCycleWaste, \
+    Strategy, StrategySolution, ExternalAsset, User, Report
 
 
 class HomePageControlAdmin(admin.ModelAdmin):
@@ -16,6 +16,11 @@ class HomePageControlAdmin(admin.ModelAdmin):
     list_display = ('home_title', 'home_subtitle', 'active', 'reminder')
 
 
+class ReportAdmin(admin.ModelAdmin):
+
+    list_display = ('user', 'solution', 'strategy', 'comment')
+
+
 # Register your models here.
 admin.site.register(HomePageControl, HomePageControlAdmin)
 admin.site.register(Profile)
@@ -27,3 +32,4 @@ admin.site.register(LifeCycleWaste)
 admin.site.register(Strategy)
 admin.site.register(StrategySolution)
 admin.site.register(User, UserAdmin)
+admin.site.register(Report, ReportAdmin)

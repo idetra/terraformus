@@ -13,9 +13,10 @@ from django.forms import formset_factory, inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from terraformus.core.forms import SolutionForm, DependsOnForm, ProfileForm, UserUpdateForm, ExternalAssetForm, \
-    InLineLifeCycleInputForm, LifeCycleForm, InLineLifeCycleWasteForm, StrategyForm, StrategySolutionForm
+    InLineLifeCycleInputForm, LifeCycleForm, InLineLifeCycleWasteForm, StrategyForm, StrategySolutionForm, RatingForm, \
+    RatingReplyForm, ReportForm
 from terraformus.core.models import Solution, Strategy, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste, \
-    Rating, StrategySolution, HomePageControl, Profile
+    Rating, StrategySolution, HomePageControl, Profile, RatingReply, Report
 from terraformus.core import services
 
 
@@ -454,31 +455,35 @@ def delete_life_cycle(request, uuid):
 
 
 @login_required
-def rate(request, slug):
+def rate(request, model_name, uuid):
     q = request.session.get('q', '')
-    # data_point = get_object_or_404(DataPoint, slug=slug)
-    #
-    # if data_point.author == request.user:
-    #     message = "You can't rate your own DataPoint."
-    #     rating = Rating.objects.select_related('rating_reply').filter(content=data_point)
-    #     context = {"data_point": data_point, 'q': q, 'rating': rating, 'message': message}
-    #     return render(request, 'datapoint/datapoint.html', context)
-    #
-    # rating, created = Rating.objects.get_or_create(content=data_point, author=request.user)
-    #
-    # if request.method == 'POST':
-    #     form = RatingForm(request.POST, instance=rating)
-    #     if form.is_valid():
-    #         rating = form.save()
-    #         rating.save()
-    #
-    #     return redirect('datapoint', slug=slug)
-    #
-    # else:
-    #     form = RatingForm(instance=rating)
+    used_model = apps.get_model('core', model_name)
+    data_point = get_object_or_404(used_model, uuid=uuid)
+    kwargs = {f"{model_name.lower()}": data_point}
+    # template_path = f'{model_name.lower()}/{model_name.lower()}.html'
+
+    if data_point.user == request.user:
+        return redirect('home')
+        # message = "You can't rate your own solution/strategy."
+        # rating = Rating.objects.select_related('rating_reply').filter(**kwargs, )
+        # context = {f"{model_name.lower()}_view": data_point, 'q': q, 'rating': rating, 'message': message}
+        # return render(request, template_path, context)
+
+    rating, created = Rating.objects.get_or_create(**kwargs, user=request.user)
+
+    if request.method == 'POST':
+        form = RatingForm(request.POST, instance=rating)
+        if form.is_valid():
+            rating = form.save()
+            rating.save()
+
+        return redirect(f'{model_name.lower()}', uuid=uuid, slug=data_point.slug)
+
+    else:
+        form = RatingForm(instance=rating)
 
     context = {
-        # 'form': form, 'data_point': data_point,
+        'form': form, 'data_point': data_point,
                'q': q}
 
     return render(request, 'rate_report/rate.html', context)
@@ -487,45 +492,58 @@ def rate(request, slug):
 @login_required
 def rating_reply(request, pk):
     q = request.session.get('q', '')
-    # rating = get_object_or_404(Rating, pk=pk)
-    # reply, created = RatingReply.objects.get_or_create(rating=rating, author=request.user)
-    # data_point = rating.content
-    # if request.method == 'POST':
-    #     form = RatingReplyForm(request.POST, instance=reply)
-    #     if form.is_valid():
-    #         reply = form.save()
-    #         reply.save()
-    #
-    #     return redirect('datapoint', slug=data_point.slug)
-    #
-    # else:
-    #     form = RatingReplyForm(instance=reply)
+    rating = get_object_or_404(Rating, pk=pk)
+    reply, created = RatingReply.objects.get_or_create(rating=rating, user=request.user)
+
+    if rating.solution:
+        model_name = "solution"
+        data_point = rating.solution
+    elif rating.strategy:
+        model_name = "strategy"
+        data_point = rating.strategy
+    else:
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = RatingReplyForm(request.POST, instance=reply)
+        if form.is_valid():
+            reply = form.save()
+            reply.save()
+
+        return redirect(f'{model_name}', uuid=data_point.uuid, slug=data_point.slug)
+
+    else:
+        form = RatingReplyForm(instance=reply)
 
     context = {
-        # 'form': form, 'rating': rating,
+        'form': form, 'rating': rating,
                'q': q}
 
     return render(request, 'rate_report/rating_reply.html', context)
 
 
 @login_required
-def report(request, slug):
+def report(request, model_name, uuid):
     q = request.session.get('q', '')
-    # data_point = get_object_or_404(DataPoint, slug=slug)
-    # user_report, created = Report.objects.get_or_create(content=data_point, author=request.user)
-    # if request.method == 'POST':
-    #     form = ReportForm(request.POST, instance=user_report)
-    #     if form.is_valid():
-    #         user_report = form.save()
-    #         user_report.save()
-    #
-    #     return redirect('datapoint', slug=slug)
-    #
-    # else:
-    #     form = ReportForm(instance=user_report)
+    used_model = apps.get_model('core', model_name)
+    data_point = get_object_or_404(used_model, uuid=uuid)
+    kwargs = {f"{model_name.lower()}": data_point}
+
+    user_report, created = Report.objects.get_or_create(**kwargs, user=request.user)
+
+    if request.method == 'POST':
+        form = ReportForm(request.POST, instance=user_report)
+        if form.is_valid():
+            user_report = form.save()
+            user_report.save()
+
+        return redirect(f'{model_name.lower()}', uuid=uuid, slug=data_point.slug)
+
+    else:
+        form = ReportForm(instance=user_report)
 
     context = {
-        # 'form': form, 'data_point': data_point,
+        'form': form, 'data_point': data_point,
                'q': q}
 
     return render(request, 'rate_report/report.html', context)
