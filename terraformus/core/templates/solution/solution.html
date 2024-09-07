@@ -33,24 +33,6 @@
                 <a class="btn btn-xs btn-outline-dark bg-light mr-1" href="{% url 'edit_solution' solution_view.uuid %}">
                     <span class="material-icons md-18 mr-2">edit</span> Edit
                 </a>
-                <a class="btn btn-xs btn-danger" data-toggle="modal" data-target="#delete_solution_{{ solution_view.slug }}">
-                    <span class="material-icons md-18 mr-2">delete</span> Delete
-                </a>
-                <br><br>
-                <!-- Delete Modal -->
-                <div class="modal fade" id="delete_solution_{{ solution_view.slug }}" tabindex="-1" aria-labelledby="delete_solution" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-body text-left">
-                                <p>Are you sure you want to delete the solution</p>
-                                <p>"{{ solution_view.title }}" ?</p>
-                                <p>This may lead to discontinuity:</p>
-                                <p>- All connections that depend on this solution will be severed</p>
-                                <a class="btn btn-outline-danger" href="{% url 'delete_solution' solution_view.uuid %}">Yes, delete</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
             {% endif %}
 

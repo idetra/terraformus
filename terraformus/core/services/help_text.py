@@ -1,30 +1,18 @@
 solution_ht = {
-    'title': 'An identifiable unique name for this solution.',
-    'subtitle': 'A secondary explanation of what this solution is.',
-    'goal': 'What problem your solution aims to solve',
-    'type': 'Industrial level category (ies) of your solution',
-    'population_target': 'help text placeholder',
-    'dimension_target': 'help text placeholder',
-    'un_target': 'help text placeholder',
-    'sector': 'help text placeholder',
-    'cost_type': 'help text placeholder',
-    'update': 'help text placeholder',
-    'upgrade': 'help text placeholder',
-    'scale_up': 'help text placeholder',
-    'depends_on': 'help text placeholder',
-    'derives_from': 'help text placeholder',
+    'title': 'An identifiable unique name for this solution',
+    'subtitle': 'An extended explanation of what this solution is',
+    'goal': 'What problem(s) your solution aims to solve',
+    'cost_type': 'What is the cost tier or your solution',
+    'update': 'How to modernize this solution',
+    'upgrade': 'How to enhanced this solution',
+    'scale_up': 'How to expand this solution',
+    'depends_on': 'If your solution depends on other solution(s), add it above - add more than one using the links below',
+    'derives_from': 'If your solution is branching out from another solution, refer it above.',
 }
 
 sol_type_ht = {
-    'automation': 'help text placeholder',
-    'infrastructure': 'help text placeholder',
-}
-
-sol_population_target_ht = {
-    'extreme_poverty': 'help text placeholder',
-    'lower_class': 'help text placeholder',
-    'middle_class': 'help text placeholder',
-    'upper_class': 'help text placeholder',
+    'automation': 'Your solution automates one or more processes',
+    'infrastructure': 'Your solution improves or creates known infrastructure',
 }
 
 sol_dimension_target_ht = {
