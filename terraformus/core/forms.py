@@ -9,7 +9,7 @@ from django_recaptcha.widgets import ReCaptchaV2Invisible
 
 from terraformus.core.models import Solution, Profile, ExternalAsset, LifeCycle, LifeCycleInput, LifeCycleWaste, \
     Strategy, Rating, RatingReply, Report
-from terraformus.core.services import aux_lists, choices
+from terraformus.core.services import aux_lists, choices, help_text
 
 
 # SOLUTIONS & STRATEGIES -----------------------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ class DependsOnForm(forms.Form):
         attrs={'class': 'form-control custom-reference-width',
                'placeholder': 'Solution title (exact match, case sensitive)'}),
                 max_length=255, required=False,
-                help_text=mark_safe('<small class="form-text text-muted">If your solution depends on other solution(s), add it above - add more than one using the links below</small>'))
+                help_text=mark_safe('<small class="form-text text-muted">If your solution depends on another, add it above</small>'))
 
     def clean_title(self):
         title = self.cleaned_data.get('title')
@@ -97,8 +97,11 @@ class StrategySolutionForm(forms.Form):
     solution_title = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control custom-reference-width',
                'placeholder': 'Exact match (case sensitive)'}),
-        max_length=255, required=False)
-    notes = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)
+        max_length=255, required=False,
+    help_text=mark_safe(f'<small class="form-text text-muted">Insert the title of the solution that comprises your strategy</small>'))
+
+    notes = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4,}), required=False,
+                            help_text=mark_safe(f'<small class="form-text text-muted">{help_text.strategy_solution_ht["notes"]}</small>'))
 
     def clean_solution_title(self):
         solution_title = self.cleaned_data.get('solution_title')
@@ -108,7 +111,6 @@ class StrategySolutionForm(forms.Form):
             except Solution.DoesNotExist:
                 raise ValidationError('No Solution with this title exists')
         return None
-
 
 
 # EXTERNAL ASSETS & LIFE CYCLES ----------------------------------------------------------------------------------------
