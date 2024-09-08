@@ -188,7 +188,7 @@ JAZZMIN_SETTINGS = {
     "site_brand": "terraformus Admin",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
-    "site_logo": "",
+    "site_logo": "img/logo/terraformus-logo.png",
 
     # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
     "login_logo": "",
@@ -215,7 +215,7 @@ JAZZMIN_SETTINGS = {
     "topmenu_links": [
 
         # Url that gets reversed (Permissions can be added)
-        {"name": "terraformus Website",  "url": "home"},
+        {"name": "Terraformus Website",  "url": "home"},
     ],
 
     # Field name on user model that contains avatar ImageField/URLField/Charfield or a callable that receives the user
