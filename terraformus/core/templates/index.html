@@ -4,7 +4,8 @@
 
     <div class="row justify-content-center">
         <div class="col text-center">
-            <p>{{ home_page.home_title }} - {{ home_page.home_subtitle }}</p>
+            <p>{% if home_page.home_title %}{{ home_page.home_title }}{% endif %}
+                {% if home_page.home_subtitle %} - {{ home_page.home_subtitle }}{% endif %}</p>
         </div>
     </div>
     
