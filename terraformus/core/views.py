@@ -1,13 +1,10 @@
 from functools import cmp_to_key
 from itertools import chain
-from operator import attrgetter
 from django.apps import apps
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
-from django.db.models import Avg, Q, Value, Prefetch
-from django.db.models.functions.text import Concat
+from django.db.models import Avg, Q, Prefetch
 from django.forms import formset_factory, inlineformset_factory
 
 from django.shortcuts import render, redirect, get_object_or_404

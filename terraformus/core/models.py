@@ -39,9 +39,9 @@ class User(AbstractUser):
 
         self.solution_set.all().update(user=superuser)
         self.strategy_set.all().update(user=superuser)
-        self.rating_set.all().update(author=superuser)
-        self.ratingreply_set.all().update(author=superuser)
-        self.report_set.all().update(author=superuser)
+        self.rating_set.all().update(user=superuser)
+        self.ratingreply_set.all().update(user=superuser)
+        self.report_set.all().update(user=superuser)
 
         super().delete(*args, **kwargs)  # Delete the actual user
 
@@ -112,7 +112,7 @@ class Solution(models.Model):
     security = models.BooleanField(default=False, help_text=ht.sol_sector_ht['security'])
     governance = models.BooleanField(default=False, help_text=ht.sol_sector_ht['governance'])
 
-    cost_type = models.PositiveSmallIntegerField(choices=cost_types, default=cost_types[0], help_text=ht.solution_ht['cost_type'])
+    cost_type = models.PositiveSmallIntegerField(choices=cost_types, default=0, help_text=ht.solution_ht['cost_type'])
     update = models.TextField(help_text=ht.solution_ht['update'])
     upgrade = models.TextField(help_text=ht.solution_ht['upgrade'])
     scale_up = models.TextField(help_text=ht.solution_ht['scale_up'])
