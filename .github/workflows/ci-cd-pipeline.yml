@@ -15,11 +15,11 @@ jobs:
     steps:
     # Checkout code
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     # Set up Python
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.12'
 
@@ -48,7 +48,7 @@ jobs:
 
     # Add the SSH key
     - name: Add SSH key
-      uses: webfactory/ssh-agent@v0.5.3
+      uses: webfactory/ssh-agent@v0.6.0
       with:
         ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
