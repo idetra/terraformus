@@ -42,6 +42,9 @@ urlpatterns = [
     path('privacy_policy/', views.privacy_policy, name='privacy_policy'),
     path('terms_of_service/', views.terms_of_service, name='terms_of_service'),
     path('admin/', admin.site.urls),
+    # api
+    path('api/v1/', include('terraformus.api.urls')),
+    # home
     path('', views.home, name='home'),
 ]
 
