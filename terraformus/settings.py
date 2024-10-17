@@ -113,7 +113,9 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Terraformus API',
     'DESCRIPTION': 'Access all solutions and strategies from Terraformus',
     'VERSION': '0.1.0',
-    # 'SERVE_INCLUDE_SCHEMA': False,  # Don't include schema on the same page
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SERVE_FORMATS': ['json', 'yaml'],
+
     # 'SWAGGER_UI_SETTINGS': {
     #     'docExpansion': 'none',  # Customize as needed
     #     'defaultModelRendering': 'example',  # Customize as needed
