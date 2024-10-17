@@ -18,11 +18,12 @@
                         API
                     </a>
                     <div class="dropdown-menu">
+                        <a class="dropdown-item" target="_blank" href="{% url 'solution_list' %}">Solutions</a>
+                        <a class="dropdown-item" target="_blank" href="{% url 'strategy_list' %}">Strategies</a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" target="_blank" href="{% url 'swagger-ui' %}">Docs</a>
                         <a class="dropdown-item" target="_blank" href="{% url 'redoc-ui' %}">ReDoc</a>
                         <a class="dropdown-item" target="_blank" href="{% url 'schema' %}">Schema</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" target="_blank" href="{% url 'solution_list' %}">Solutions</a>
                     </div>
                 </li>
             </ul>

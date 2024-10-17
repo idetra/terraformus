@@ -7,13 +7,30 @@ from terraformus.core.models import Solution, ExternalAsset, LifeCycle, LifeCycl
 class LifeCycleInputSerializer(serializers.ModelSerializer):
     class Meta:
         model = LifeCycleInput
-        fields = '__all__'
+        fields = [
+            "resource_name",
+            "resource_type",
+            "unit",
+            "quantity",
+            "reference_cost",
+            "notes",
+        ]
 
 
 class LifeCycleWasteSerializer(serializers.ModelSerializer):
     class Meta:
         model = LifeCycleWaste
-        fields = '__all__'
+        fields = [
+            "waste_type",
+            "reusable",
+            "recyclable",
+            "cradle2cradle",
+            "unit",
+            "quantity",
+            "reference_cost",
+            "destination_method",
+            "notes",
+        ]
 
 
 class LifeCycleSerializer(serializers.ModelSerializer):
@@ -22,13 +39,26 @@ class LifeCycleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LifeCycle
-        exclude = ['id']
+        fields = [
+            'title',
+            'uuid',
+            'type',
+            'total_duration',
+            'description',
+            'inputs',
+            'wastes',
+        ]
 
 
 class ExternalAssetSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExternalAsset
-        exclude = ['id']
+        fields = [
+            'title',
+            'uuid',
+            'type',
+            'url',
+        ]
 
 
 class SolutionsSerializer(serializers.ModelSerializer):
@@ -42,7 +72,6 @@ class SolutionsSerializer(serializers.ModelSerializer):
             'title',
             'uuid',
             'user_full_name',
-            'slug',
             'subtitle',
             'goal',
             'automation',
@@ -92,8 +121,8 @@ class SolutionsSerializer(serializers.ModelSerializer):
             'update',
             'upgrade',
             'scale_up',
-            'depends_on',
-            'derives_from',
+            'depends_on',  # todo: instantiate the dependents solutions here - or return just the uuid?
+            'derives_from',  # todo: instantiate the solution here - what happens if empty?
             'created_at',
             'edited_at',
             'external_assets',
@@ -124,15 +153,16 @@ class StrategySerializer(serializers.ModelSerializer):
             'title',
             'uuid',
             'user_full_name',
-            'slug',
             'goal',
             'definitions',
-            'solutions',
             'created_at',
             'edited_at',
             'external_assets',
+            'solutions',
         ]
 
     @extend_schema_field(serializers.CharField)
     def get_user_full_name(self, obj):
         return f"{obj.user.first_name} {obj.user.last_name}"
+
+# todo: all choice fields must render the value from the key value pair (get_item_display)
