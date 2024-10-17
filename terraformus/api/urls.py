@@ -14,5 +14,7 @@ urlpatterns = [
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema', permission_classes=[permissions.AllowAny]), name='swagger-ui'),
     path('redoc/', SpectacularRedocView.as_view(url_name='schema', permission_classes=[permissions.AllowAny]), name='redoc-ui'),
     path('solutions/', views.SolutionList.as_view(), name='solution_list'),
-    path('solutions/<uuid:uuid>', views.SolutionItem.as_view(), name='solution_item')
+    path('solutions/<uuid:uuid>', views.SolutionItem.as_view(), name='solution_item'),
+    path('strategies/', views.StrategyList.as_view(), name='strategy_list'),
+    path('strategies/<uuid:uuid>', views.StrategyItem.as_view(), name='strategy_item'),
 ]
