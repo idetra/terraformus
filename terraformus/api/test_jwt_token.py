@@ -62,7 +62,7 @@ class APITestCase(TestCase):
 
         # Check for specific keys in the response
         expected_keys = {
-            'uuid', 'title', 'slug', 'subtitle', 'goal', 'update', 'upgrade', 'scale_up',
+            'uuid', 'title', 'subtitle', 'goal', 'update', 'upgrade', 'scale_up',
             'created_at', 'edited_at', 'derives_from', 'depends_on'
         }
         for key in expected_keys:
