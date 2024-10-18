@@ -5,6 +5,8 @@ from terraformus.core.models import Solution, ExternalAsset, LifeCycle, LifeCycl
 
 
 class LifeCycleInputSerializer(serializers.ModelSerializer):
+    resource_type = serializers.SerializerMethodField()
+
     class Meta:
         model = LifeCycleInput
         fields = [
@@ -15,6 +17,10 @@ class LifeCycleInputSerializer(serializers.ModelSerializer):
             "reference_cost",
             "notes",
         ]
+
+    @extend_schema_field(serializers.CharField)
+    def get_resource_type(self, obj):
+        return obj.get_resource_type_display()
 
 
 class LifeCycleWasteSerializer(serializers.ModelSerializer):
@@ -36,6 +42,7 @@ class LifeCycleWasteSerializer(serializers.ModelSerializer):
 class LifeCycleSerializer(serializers.ModelSerializer):
     inputs = LifeCycleInputSerializer(source='lifecycleinput_set', many=True)
     wastes = LifeCycleWasteSerializer(source='lifecyclewaste_set', many=True)
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = LifeCycle
@@ -49,8 +56,14 @@ class LifeCycleSerializer(serializers.ModelSerializer):
             'wastes',
         ]
 
+    @extend_schema_field(serializers.CharField)
+    def get_type(self, obj):
+        return obj.get_type_display()
+
 
 class ExternalAssetSerializer(serializers.ModelSerializer):
+    type = serializers.SerializerMethodField()
+
     class Meta:
         model = ExternalAsset
         fields = [
@@ -60,18 +73,31 @@ class ExternalAssetSerializer(serializers.ModelSerializer):
             'url',
         ]
 
+    @extend_schema_field(serializers.CharField)
+    def get_type(self, obj):
+        return obj.get_type_display()
+
+
+class SolutionSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Solution
+        fields = ['title', 'uuid']
+
 
 class SolutionsSerializer(serializers.ModelSerializer):
     external_assets = ExternalAssetSerializer(source='externalasset_set', many=True)
     lifecycles = LifeCycleSerializer(source='lifecycle_set', many=True)
-    user_full_name = serializers.SerializerMethodField()
+    depends_on = SolutionSummarySerializer(many=True, read_only=True)
+    derives_from = SolutionSummarySerializer(read_only=True)
+    user = serializers.SerializerMethodField()
+    cost_type = serializers.SerializerMethodField()
 
     class Meta:
         model = Solution
         fields = [
             'title',
             'uuid',
-            'user_full_name',
+            'user',
             'subtitle',
             'goal',
             'automation',
@@ -121,8 +147,8 @@ class SolutionsSerializer(serializers.ModelSerializer):
             'update',
             'upgrade',
             'scale_up',
-            'depends_on',  # todo: instantiate the dependents solutions here - or return just the uuid?
-            'derives_from',  # todo: instantiate the solution here - what happens if empty?
+            'depends_on',
+            'derives_from',
             'created_at',
             'edited_at',
             'external_assets',
@@ -130,8 +156,12 @@ class SolutionsSerializer(serializers.ModelSerializer):
         ]
 
     @extend_schema_field(serializers.CharField)
-    def get_user_full_name(self, obj):
+    def get_user(self, obj):
         return f"{obj.user.first_name} {obj.user.last_name}"
+
+    @extend_schema_field(serializers.CharField)
+    def get_cost_type(self, obj):
+        return obj.get_cost_type_display()
 
 
 class StrategySolutionSerializer(serializers.ModelSerializer):
@@ -145,14 +175,14 @@ class StrategySolutionSerializer(serializers.ModelSerializer):
 class StrategySerializer(serializers.ModelSerializer):
     external_assets = ExternalAssetSerializer(source='externalasset_set', many=True)
     solutions = StrategySolutionSerializer(source='strategysolution_set', many=True)
-    user_full_name = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
 
     class Meta:
         model = Strategy
         fields = [
             'title',
             'uuid',
-            'user_full_name',
+            'user',
             'goal',
             'definitions',
             'created_at',
@@ -162,7 +192,5 @@ class StrategySerializer(serializers.ModelSerializer):
         ]
 
     @extend_schema_field(serializers.CharField)
-    def get_user_full_name(self, obj):
+    def get_user(self, obj):
         return f"{obj.user.first_name} {obj.user.last_name}"
-
-# todo: all choice fields must render the value from the key value pair (get_item_display)
