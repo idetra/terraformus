@@ -33,6 +33,7 @@ class SolutionItem(generics.RetrieveAPIView):
 
 class StrategyList(generics.ListAPIView):
     def get_queryset(self):
+        print("Fetching strategies list")
         return Strategy.objects.filter(banned=False)
 
     permission_classes = [permissions.IsAuthenticated]
@@ -44,10 +45,10 @@ class StrategyItem(generics.RetrieveAPIView):
     def get_queryset(self):
         return Strategy.objects.filter(banned=False).prefetch_related(
             'externalasset_set',
-            'strategysolution_set__solution__externalasset_set',
-            'strategysolution_set__solution__lifecycle_set',
-            'strategysolution_set__solution__lifecycle_set__lifecycleinput_set',
-            'strategysolution_set__solution__lifecycle_set__lifecyclewaste_set',
+            'solutions__solution__externalasset_set',
+            'solutions__solution__lifecycle_set',
+            'solutions__solution__lifecycle_set__lifecycleinput_set',
+            'solutions__solution__lifecycle_set__lifecyclewaste_set'
         )
 
     permission_classes = [permissions.IsAuthenticated]

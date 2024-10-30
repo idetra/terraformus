@@ -173,8 +173,8 @@ class StrategySolutionSerializer(serializers.ModelSerializer):
 
 
 class StrategySerializer(serializers.ModelSerializer):
-    external_assets = ExternalAssetSerializer(source='externalasset_set', many=True)
-    solutions = StrategySolutionSerializer(source='strategysolution_set', many=True)
+    external_assets = ExternalAssetSerializer(many=True, source='externalasset_set')
+    solutions = StrategySolutionSerializer(many=True)
     user = serializers.SerializerMethodField()
 
     class Meta:
