@@ -10,7 +10,7 @@ from terraformus.tokens import CustomRefreshToken, CustomAccessToken
 
 class SolutionList(generics.ListAPIView):
     def get_queryset(self):
-        return Solution.objects.filter(banned=False)
+        return Solution.objects.exclude(banned=True)
 
     permission_classes = [permissions.IsAuthenticated]
     queryset = Solution.objects.all()
@@ -19,8 +19,7 @@ class SolutionList(generics.ListAPIView):
 
 class SolutionItem(generics.RetrieveAPIView):
     def get_queryset(self):
-        return Solution.objects.filter(
-            banned=False).prefetch_related(
+        return Solution.objects.exclude(banned=True).prefetch_related(
             'externalasset_set',
             'lifecycle_set__lifecycleinput_set',
             'lifecycle_set__lifecyclewaste_set'
@@ -34,7 +33,7 @@ class SolutionItem(generics.RetrieveAPIView):
 class StrategyList(generics.ListAPIView):
     def get_queryset(self):
         print("Fetching strategies list")
-        return Strategy.objects.filter(banned=False)
+        return Strategy.objects.exclude(banned=True)
 
     permission_classes = [permissions.IsAuthenticated]
     queryset = Strategy.objects.all()
@@ -43,7 +42,7 @@ class StrategyList(generics.ListAPIView):
 
 class StrategyItem(generics.RetrieveAPIView):
     def get_queryset(self):
-        return Strategy.objects.filter(banned=False).prefetch_related(
+        return Strategy.objects.exclude(banned=True).prefetch_related(
             'externalasset_set',
             'solutions__solution__externalasset_set',
             'solutions__solution__lifecycle_set',
